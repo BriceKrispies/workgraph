@@ -267,3 +267,37 @@ pub fn scope_retrospective_options(scope: Option<&Map<String, Json>>) -> Retrosp
         .unwrap_or(true);
     (period_days, project, repository, use_model, None)
 }
+
+/// The `analytics export` arguments: the target, `--format` (default `csv`), `--dataset`, and the
+/// metric query built from `--metric` and `--by` when a metric is given.
+pub struct ExportOptions {
+    pub target: std::path::PathBuf,
+    pub format: String,
+    pub dataset: Option<String>,
+    pub request: Option<QueryRequest>,
+}
+
+/// The `analytics export` options as the command reads them.
+#[must_use]
+pub fn export_options(m: &ArgMatches) -> ExportOptions {
+    let metric = option_text(m, "--metric");
+    let request = metric.map(|metric| QueryRequest {
+        metric,
+        group_by: option_list(m, "--by"),
+        period: "week".to_owned(),
+        project: None,
+        repository: None,
+        category: None,
+        provider: None,
+        model: None,
+        since: None,
+        until: None,
+        limit: None,
+    });
+    ExportOptions {
+        target: std::path::PathBuf::from(one(m, "target").unwrap_or_default()),
+        format: one(m, "--format").unwrap_or_else(|| "csv".to_owned()),
+        dataset: option_text(m, "--dataset"),
+        request,
+    }
+}

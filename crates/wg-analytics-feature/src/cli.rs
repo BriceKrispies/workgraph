@@ -13,7 +13,7 @@ use wg_iface::cli::args::option_text;
 use wg_runtime::{CliState, human_context};
 
 use crate::service;
-use crate::spec::{args, query, view};
+use crate::spec::{args, export, query, view};
 
 /// The `analytics` group.
 pub const GROUP: wg_runtime::CliGroup = wg_runtime::CliGroup {
@@ -138,6 +138,24 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let out =
                 service::subagents::bottlenecks(state.app()?, &context, ws, since, until, top)?;
             state.emit(&out, Some(&|c| view::bottlenecks_view(c, &out)))
+        }
+        Some("export") => {
+            let context = human_context(None)?;
+            let options = args::export_options(m);
+            let out = service::export::export(
+                state.app()?,
+                &context,
+                ws,
+                &options.target,
+                &options.format,
+                options.dataset.as_deref(),
+                options.request.as_ref(),
+            )?;
+            let value = export::export_document(&out.path, &out.format, &out.dataset, out.bytes);
+            state.emit(
+                &value,
+                Some(&|c| export::export_view(c, &out.path, out.bytes)),
+            )
         }
         _ => Err(CliFailure::fail(
             wg_iface::cli::not_implemented_message(path),

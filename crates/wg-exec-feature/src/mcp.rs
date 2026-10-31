@@ -268,5 +268,5 @@ fn history_text(
         },
     )?;
     let dto = wg_json::dict(vec![("events", events), ("attempts", attempts)]);
-    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+    wg_json::resource_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
 }

@@ -329,5 +329,5 @@ fn task_text(app: &mut App, agent: &Agent, workspace: &str, task: &str) -> Resul
         Some(workspace),
         &[task.to_owned()],
     )?)?;
-    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+    wg_json::resource_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
 }

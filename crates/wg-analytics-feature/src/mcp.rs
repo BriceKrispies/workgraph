@@ -150,7 +150,7 @@ fn bottlenecks(app: &mut App, agent: &Agent, a: &Value) -> Result<Value, WgError
 fn resource(app: &mut App, agent: &Agent, uri: &str) -> Option<Result<String, WgError>> {
     if uri == "workgraph://analytics/catalog" {
         return Some(
-            wg_json::log_json(&query::definitions())
+            wg_json::resource_json(&query::definitions())
                 .map_err(|err| WgError::workgraph(err.to_string())),
         );
     }
@@ -175,5 +175,5 @@ fn metric_by_week(
         ..QueryRequest::default()
     };
     let dto = service::query(app, &context, Some(workspace), &request)?;
-    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+    wg_json::resource_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
 }

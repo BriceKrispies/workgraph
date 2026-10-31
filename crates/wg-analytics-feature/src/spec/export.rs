@@ -400,3 +400,27 @@ fn task_fact_row(fact: &TaskFact) -> Vec<Raw> {
     ]);
     row
 }
+
+/// The `analytics export` result document (`AnalyticsService.export`): path, format, dataset and bytes.
+#[must_use]
+pub fn export_document(path: &str, format: &str, dataset: &str, bytes: u64) -> wg_json::Value {
+    use wg_json::{Value, dict};
+    use wg_wire::convention::text;
+    dict!({
+        "path": text(path),
+        "format": text(format),
+        "dataset": text(dataset),
+        "bytes": Value::Int(i128::from(bytes)),
+    })
+}
+
+/// The human line of `analytics export`: `wrote <path> (<bytes> bytes)`.
+#[must_use]
+pub fn export_view(console: &wg_render::Console, path: &str, bytes: u64) -> String {
+    console
+        .print(&format!(
+            "wrote {} ({bytes} bytes)",
+            wg_render::escape(path)
+        ))
+        .text
+}

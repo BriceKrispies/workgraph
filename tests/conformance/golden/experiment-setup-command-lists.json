@@ -1,0 +1,110 @@
+{
+  "scenario": "experiment-setup-command-lists",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: setup must be a list of non-empty command lists of strings\", \"details\": {\"problems\": [\"setup must be a list of non-empty command lists of strings\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: setup must be a list of non-empty command lists of strings\", \"details\": {\"problems\": [\"setup must be a list of non-empty command lists of strings\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: setup must be a list of non-empty command lists of strings\", \"details\": {\"problems\": [\"setup must be a list of non-empty command lists of strings\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: setup must be a list of non-empty command lists of strings\", \"details\": {\"problems\": [\"setup must be a list of non-empty command lists of strings\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"exp-setup\",\n  \"title\": \"Setup\",\n  \"question\": null,\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 5\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"setup\": [\n      [\n        \"python\",\n        \"-V\"\n      ]\n    ]\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts@13|Z>\",\n  \"updated_at\": \"<ts@13|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

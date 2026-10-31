@@ -33,7 +33,7 @@
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json\",\n  \"added\": [\n    \"SessionStart\",\n    \"SessionEnd\",\n    \"PreToolUse\",\n    \"PostToolUse\",\n    \"PostToolUseFailure\",\n    \"SubagentStart\",\n    \"SubagentStop\",\n    \"TaskCreated\",\n    \"TaskCompleted\",\n    \"Stop\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json.workgraph-backup-20261026T152708Z\",\n  \"command\": \"workgraph\"\n}\n",
+      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json\",\n  \"added\": [\n    \"SessionStart\",\n    \"SessionEnd\",\n    \"PreToolUse\",\n    \"PostToolUse\",\n    \"PostToolUseFailure\",\n    \"SubagentStart\",\n    \"SubagentStop\",\n    \"TaskCreated\",\n    \"TaskCompleted\",\n    \"Stop\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json.workgraph-backup-<ts@4|compact>\",\n  \"command\": \"workgraph\"\n}\n",
       "stderr": ""
     },
     {
@@ -89,7 +89,7 @@
       "index": 10,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json\",\n  \"removed\": [\n    \"PostToolUse\",\n    \"PostToolUseFailure\",\n    \"PreToolUse\",\n    \"SessionEnd\",\n    \"SessionStart\",\n    \"Stop\",\n    \"SubagentStart\",\n    \"SubagentStop\",\n    \"TaskCompleted\",\n    \"TaskCreated\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json.workgraph-backup-20261026T152855Z\"\n}\n",
+      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json\",\n  \"removed\": [\n    \"PostToolUse\",\n    \"PostToolUseFailure\",\n    \"PreToolUse\",\n    \"SessionEnd\",\n    \"SessionStart\",\n    \"Stop\",\n    \"SubagentStart\",\n    \"SubagentStop\",\n    \"TaskCompleted\",\n    \"TaskCreated\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\proj\\\\.claude\\\\settings.json.workgraph-backup-<ts@12|compact>\"\n}\n",
       "stderr": ""
     },
     {

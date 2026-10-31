@@ -12,7 +12,7 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme Corp\",\n  \"description\": \"Shared work\",\n  \"key_prefix\": \"AC\",\n  \"settings\": {},\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"archived_at\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme Corp\",\n  \"description\": \"Shared work\",\n  \"key_prefix\": \"AC\",\n  \"settings\": {},\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@1|Z>\",\n  \"archived_at\": null\n}\n",
       "stderr": ""
     },
     {
@@ -47,7 +47,7 @@
       "index": 6,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:2>\",\n  \"slug\": \"beta\",\n  \"name\": \"Beta\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {},\n  \"created_at\": \"<ts:3|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"archived_at\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:2>\",\n  \"slug\": \"beta\",\n  \"name\": \"Beta\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {},\n  \"created_at\": \"<ts@6|Z>\",\n  \"updated_at\": \"<ts@6|Z>\",\n  \"archived_at\": null\n}\n",
       "stderr": ""
     },
     {
@@ -89,7 +89,7 @@
       "index": 12,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"acme\",\n    \"name\": \"Acme Corp\",\n    \"description\": \"Shared work\",\n    \"key_prefix\": \"AC\",\n    \"settings\": {},\n    \"created_at\": \"<ts:2|Z>\",\n    \"updated_at\": \"<ts:2|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"beta\",\n    \"name\": \"Beta\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:3|Z>\",\n    \"updated_at\": \"<ts:3|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:3>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"acme\",\n    \"name\": \"Acme Corp\",\n    \"description\": \"Shared work\",\n    \"key_prefix\": \"AC\",\n    \"settings\": {},\n    \"created_at\": \"<ts@1|Z>\",\n    \"updated_at\": \"<ts@1|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"beta\",\n    \"name\": \"Beta\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@6|Z>\",\n    \"updated_at\": \"<ts@6|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:3>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@0|Z>\",\n    \"updated_at\": \"<ts@0|Z>\",\n    \"archived_at\": null\n  }\n]\n",
       "stderr": ""
     },
     {
@@ -110,7 +110,7 @@
       "index": 15,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme Corp\",\n  \"description\": \"Shared work\",\n  \"key_prefix\": \"AC\",\n  \"settings\": {},\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"archived_at\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme Corp\",\n  \"description\": \"Shared work\",\n  \"key_prefix\": \"AC\",\n  \"settings\": {},\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@1|Z>\",\n  \"archived_at\": null\n}\n",
       "stderr": ""
     },
     {
@@ -124,7 +124,7 @@
       "index": 17,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:1>\",\n    \"slug\": \"acme\",\n    \"name\": \"Acme Corp\",\n    \"description\": \"Shared work\",\n    \"key_prefix\": \"AC\",\n    \"settings\": {},\n    \"created_at\": \"<ts:2|Z>\",\n    \"updated_at\": \"<ts:2|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 0,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}\n",
+      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:1>\",\n    \"slug\": \"acme\",\n    \"name\": \"Acme Corp\",\n    \"description\": \"Shared work\",\n    \"key_prefix\": \"AC\",\n    \"settings\": {},\n    \"created_at\": \"<ts@1|Z>\",\n    \"updated_at\": \"<ts@1|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 0,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}\n",
       "stderr": ""
     },
     {
@@ -138,7 +138,7 @@
       "index": 19,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:2>\",\n    \"slug\": \"beta\",\n    \"name\": \"Beta\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:3|Z>\",\n    \"updated_at\": \"<ts:3|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 0,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}\n",
+      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:2>\",\n    \"slug\": \"beta\",\n    \"name\": \"Beta\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@6|Z>\",\n    \"updated_at\": \"<ts@6|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 0,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}\n",
       "stderr": ""
     },
     {

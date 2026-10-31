@@ -75,7 +75,7 @@
       "index": 10,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@0|Z>\",\n    \"updated_at\": \"<ts@0|Z>\",\n    \"archived_at\": null\n  }\n]\n",
       "stderr": ""
     },
     {
@@ -103,7 +103,7 @@
       "index": 14,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"team\",\n    \"name\": \"Team Alpha\",\n    \"description\": \"\",\n    \"key_prefix\": \"TA\",\n    \"settings\": {},\n    \"created_at\": \"<ts:2|Z>\",\n    \"updated_at\": \"<ts:2|Z>\",\n    \"archived_at\": null\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@0|Z>\",\n    \"updated_at\": \"<ts@0|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"team\",\n    \"name\": \"Team Alpha\",\n    \"description\": \"\",\n    \"key_prefix\": \"TA\",\n    \"settings\": {},\n    \"created_at\": \"<ts@12|Z>\",\n    \"updated_at\": \"<ts@12|Z>\",\n    \"archived_at\": null\n  }\n]\n",
       "stderr": ""
     },
     {
@@ -131,7 +131,7 @@
       "index": 18,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"team\",\n    \"name\": \"Team Alpha\",\n    \"description\": \"\",\n    \"key_prefix\": \"TA\",\n    \"settings\": {},\n    \"created_at\": \"<ts:2|Z>\",\n    \"updated_at\": \"<ts:2|Z>\",\n    \"archived_at\": null\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:1>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@0|Z>\",\n    \"updated_at\": \"<ts@0|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"team\",\n    \"name\": \"Team Alpha\",\n    \"description\": \"\",\n    \"key_prefix\": \"TA\",\n    \"settings\": {},\n    \"created_at\": \"<ts@12|Z>\",\n    \"updated_at\": \"<ts@12|Z>\",\n    \"archived_at\": null\n  }\n]\n",
       "stderr": ""
     },
     {

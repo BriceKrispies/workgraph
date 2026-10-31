@@ -12,14 +12,14 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"core\",\n  \"name\": \"Core\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [],\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"core\",\n  \"name\": \"Core\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [],\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@1|Z>\"\n}\n",
       "stderr": ""
     },
     {
       "index": 2,
       "kind": "mcp",
       "exit": 0,
-      "stdout": "{\n  \"workspaces\": [\n    {\n      \"id\": \"<id:2>\",\n      \"slug\": \"default\",\n      \"name\": \"Default\",\n      \"description\": \"\",\n      \"key_prefix\": \"WG\",\n      \"settings\": {},\n      \"created_at\": \"<ts:1|Z>\",\n      \"updated_at\": \"<ts:1|Z>\",\n      \"archived_at\": null\n    }\n  ]\n}",
+      "stdout": "{\n  \"workspaces\": [\n    {\n      \"id\": \"<id:2>\",\n      \"slug\": \"default\",\n      \"name\": \"Default\",\n      \"description\": \"\",\n      \"key_prefix\": \"WG\",\n      \"settings\": {},\n      \"created_at\": \"<ts@0|Z>\",\n      \"updated_at\": \"<ts@0|Z>\",\n      \"archived_at\": null\n    }\n  ]\n}",
       "stderr": ""
     },
     {
@@ -40,7 +40,7 @@
       "index": 5,
       "kind": "mcp",
       "exit": 0,
-      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:2>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 1,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}",
+      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:2>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@0|Z>\",\n    \"updated_at\": \"<ts@0|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 1,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}",
       "stderr": ""
     },
     {
@@ -75,7 +75,7 @@
       "index": 10,
       "kind": "mcp",
       "exit": 0,
-      "stdout": "{\n  \"projects\": [\n    {\n      \"id\": \"<id:1>\",\n      \"workspace_id\": \"<id:2>\",\n      \"slug\": \"core\",\n      \"name\": \"Core\",\n      \"description\": \"\",\n      \"status\": \"active\",\n      \"settings\": {},\n      \"repository_ids\": [],\n      \"created_at\": \"<ts:2|Z>\",\n      \"updated_at\": \"<ts:2|Z>\"\n    }\n  ]\n}",
+      "stdout": "{\n  \"projects\": [\n    {\n      \"id\": \"<id:1>\",\n      \"workspace_id\": \"<id:2>\",\n      \"slug\": \"core\",\n      \"name\": \"Core\",\n      \"description\": \"\",\n      \"status\": \"active\",\n      \"settings\": {},\n      \"repository_ids\": [],\n      \"created_at\": \"<ts@1|Z>\",\n      \"updated_at\": \"<ts@1|Z>\"\n    }\n  ]\n}",
       "stderr": ""
     },
     {
@@ -96,7 +96,7 @@
       "index": 13,
       "kind": "mcp",
       "exit": 0,
-      "stdout": "{\n  \"project\": {\n    \"id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"slug\": \"core\",\n    \"name\": \"Core\",\n    \"description\": \"\",\n    \"status\": \"active\",\n    \"settings\": {},\n    \"repository_ids\": [],\n    \"created_at\": \"<ts:2|Z>\",\n    \"updated_at\": \"<ts:2|Z>\"\n  },\n  \"repositories\": [],\n  \"tasks_by_status\": {},\n  \"open_tasks\": 0,\n  \"accepted_tasks\": 0,\n  \"recent_tasks\": []\n}",
+      "stdout": "{\n  \"project\": {\n    \"id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"slug\": \"core\",\n    \"name\": \"Core\",\n    \"description\": \"\",\n    \"status\": \"active\",\n    \"settings\": {},\n    \"repository_ids\": [],\n    \"created_at\": \"<ts@1|Z>\",\n    \"updated_at\": \"<ts@1|Z>\"\n  },\n  \"repositories\": [],\n  \"tasks_by_status\": {},\n  \"open_tasks\": 0,\n  \"accepted_tasks\": 0,\n  \"recent_tasks\": []\n}",
       "stderr": ""
     },
     {

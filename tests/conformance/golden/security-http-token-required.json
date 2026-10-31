@@ -54,7 +54,7 @@
       "index": 7,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"id\":\"<id:1>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:1|Z>\",\"archived_at\":null}]",
+      "stdout": "[{\"id\":\"<id:1>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts@0|Z>\",\"updated_at\":\"<ts@0|Z>\",\"archived_at\":null}]",
       "stderr": ""
     }
   ]

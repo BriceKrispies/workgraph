@@ -12,14 +12,14 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {},\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"archived_at\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {},\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@1|Z>\",\n  \"archived_at\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {\n    \"allowed_roots\": [\n      \"<tmp>\",\n      \"<home>\"\n    ]\n  },\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"archived_at\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {\n    \"allowed_roots\": [\n      \"<tmp>\",\n      \"<home>\"\n    ]\n  },\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@2|Z>\",\n  \"archived_at\": null\n}\n",
       "stderr": ""
     },
     {

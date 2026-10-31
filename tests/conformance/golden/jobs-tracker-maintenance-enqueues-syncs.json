@@ -19,14 +19,14 @@
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "worker DESKTOP-1IULO99-27320-9d6112 started (concurrency 4)\n{\n  \"worker\": \"DESKTOP-1IULO99-27320-9d6112\",\n  \"completed\": 0,\n  \"failed\": 2\n}\n",
-      "stderr": "{\"ts\": \"<ts:1|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker started\", \"worker\": \"DESKTOP-1IULO99-27320-9d6112\", \"concurrency\": 4}\n{\"ts\": \"<ts:4|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker stopped\", \"worker\": \"DESKTOP-1IULO99-27320-9d6112\", \"completed\": 0, \"failed\": 2}\n"
+      "stdout": "worker <worker:1> started (concurrency 4)\n{\n  \"worker\": \"<worker:1>\",\n  \"completed\": 0,\n  \"failed\": 2\n}\n",
+      "stderr": "{\"ts\": \"<ts@2|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker started\", \"worker\": \"<worker:1>\", \"concurrency\": 4}\n{\"ts\": \"<ts@2|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker stopped\", \"worker\": \"<worker:1>\", \"completed\": 0, \"failed\": 2}\n"
     },
     {
       "index": 3,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"tracker_sync\",\n      \"status\": \"queued\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:6|db>\",\n      \"last_error\": \"environment variable WG_TEST_JIRA_TOKEN is not set; Jira credentials are read from it\",\n      \"error_kind\": \"config_error\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:3|db>\"\n    },\n    {\n      \"id\": \"<id:2>\",\n      \"kind\": \"tracker_sync\",\n      \"status\": \"queued\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:5|db>\",\n      \"last_error\": \"environment variable WG_TEST_JIRA_TOKEN is not set; Jira credentials are read from it\",\n      \"error_kind\": \"config_error\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:2|db>\"\n    }\n  ]\n}\n",
+      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"tracker_sync\",\n      \"status\": \"queued\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts@3|db>\",\n      \"last_error\": \"environment variable WG_TEST_JIRA_TOKEN is not set; Jira credentials are read from it\",\n      \"error_kind\": \"config_error\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts@2|db>\"\n    },\n    {\n      \"id\": \"<id:2>\",\n      \"kind\": \"tracker_sync\",\n      \"status\": \"queued\",\n      \"attempts\": 1,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts@3|db>\",\n      \"last_error\": \"environment variable WG_TEST_JIRA_TOKEN is not set; Jira credentials are read from it\",\n      \"error_kind\": \"config_error\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts@2|db>\"\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {

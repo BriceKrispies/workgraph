@@ -54,7 +54,7 @@
       "index": 7,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"name\":\"claude_code\",\"adapter\":\"claude_code\",\"available\":true,\"detail\":\"2.1.310 (Claude Code)\",\"capabilities\":{\"streaming_progress\":true,\"usage_reporting\":true,\"cost_reporting\":true,\"session_resume\":true,\"isolated_workspace\":true,\"cancellation\":true,\"subagents\":true,\"lifecycle_hooks\":true},\"config\":{\"adapter\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"extra_args\":[]}}]",
+      "stdout": "[{\"name\":\"claude_code\",\"adapter\":\"claude_code\",\"available\":true,\"detail\":\"2.1.314 (Claude Code)\",\"capabilities\":{\"streaming_progress\":true,\"usage_reporting\":true,\"cost_reporting\":true,\"session_resume\":true,\"isolated_workspace\":true,\"cancellation\":true,\"subagents\":true,\"lifecycle_hooks\":true},\"config\":{\"adapter\":\"claude_code\",\"executable\":\"claude\",\"model\":null,\"permission_mode\":\"acceptEdits\",\"allowed_tools\":[],\"max_turns\":null,\"max_budget_usd\":null,\"extra_args\":[]}}]",
       "stderr": ""
     },
     {
@@ -68,7 +68,7 @@
       "index": 9,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"user\":{\"scope\":\"user\",\"settings\":\"C:\\\\Users\\\\Brice\\\\.claude\\\\settings.json\",\"exists\":true,\"error\":null,\"installed_events\":[\"PostToolUse\",\"PostToolUseFailure\",\"PreToolUse\",\"SessionEnd\",\"SessionStart\",\"Stop\",\"SubagentStart\",\"SubagentStop\",\"TaskCompleted\",\"TaskCreated\"],\"missing_events\":[],\"command_resolves\":true},\"hooks\":{\"hook_events\":0,\"last_received_at\":null,\"by_event\":{},\"spooled\":0,\"spool_failed\":0},\"sessions\":[]}",
+      "stdout": "{\"user\":{\"scope\":\"user\",\"settings\":\"<home>\\\\.claude\\\\settings.json\",\"exists\":false,\"error\":null,\"installed_events\":[],\"missing_events\":[\"PostToolUse\",\"PostToolUseFailure\",\"PreToolUse\",\"SessionEnd\",\"SessionStart\",\"Stop\",\"SubagentStart\",\"SubagentStop\",\"TaskCompleted\",\"TaskCreated\"],\"command_resolves\":false},\"hooks\":{\"hook_events\":0,\"last_received_at\":null,\"by_event\":{},\"spooled\":0,\"spool_failed\":0},\"sessions\":[]}",
       "stderr": ""
     },
     {

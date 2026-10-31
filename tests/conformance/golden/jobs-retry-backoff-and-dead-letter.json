@@ -19,8 +19,8 @@
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "worker DESKTOP-1IULO99-26732-423da3 started (concurrency 4)\n{\n  \"worker\": \"DESKTOP-1IULO99-26732-423da3\",\n  \"completed\": 0,\n  \"failed\": 1\n}\n",
-      "stderr": "{\"ts\": \"<ts:2|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker started\", \"worker\": \"DESKTOP-1IULO99-26732-423da3\", \"concurrency\": 4}\n{\"ts\": \"<ts:4|db>\", \"level\": \"error\", \"logger\": \"workgraph.worker\", \"msg\": \"job failed\", \"job\": \"<id:1>\", \"kind\": \"noop\", \"exc\": \"Traceback (most recent call last):\\n  File \\\"C:\\\\dev\\\\workgraph\\\\.claude\\\\worktrees\\\\agent-aacb121650295b13b\\\\src\\\\workgraph\\\\jobs\\\\worker.py\\\", line 239, in _execute\\n    result = handler(self.app, ctx)\\n             ^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"C:\\\\dev\\\\workgraph\\\\.claude\\\\worktrees\\\\agent-aacb121650295b13b\\\\src\\\\workgraph\\\\jobs\\\\handlers.py\\\", line 154, in noop\\n    raise RuntimeError(str(job.job.payload[\\\"fail\\\"]))\\nRuntimeError: always\"}\n{\"ts\": \"<ts:6|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker stopped\", \"worker\": \"DESKTOP-1IULO99-26732-423da3\", \"completed\": 0, \"failed\": 1}\n"
+      "stdout": "worker <worker:1> started (concurrency 4)\n{\n  \"worker\": \"<worker:1>\",\n  \"completed\": 0,\n  \"failed\": 1\n}\n",
+      "stderr": "{\"ts\": \"<ts@2|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker started\", \"worker\": \"<worker:1>\", \"concurrency\": 4}\n{\"ts\": \"<ts@2|db>\", \"level\": \"error\", \"logger\": \"workgraph.worker\", \"msg\": \"job failed\", \"job\": \"<id:1>\", \"kind\": \"noop\", \"exc\": \"Traceback (most recent call last):\\n  File \\\"<repo>\\\\src\\\\workgraph\\\\jobs\\\\worker.py\\\", line 239, in _execute\\n    result = handler(self.app, ctx)\\n             ^^^^^^^^^^^^^^^^^^^^^^\\n  File \\\"<repo>\\\\src\\\\workgraph\\\\jobs\\\\handlers.py\\\", line 154, in noop\\n    raise RuntimeError(str(job.job.payload[\\\"fail\\\"]))\\nRuntimeError: always\"}\n{\"ts\": \"<ts@2|db>\", \"level\": \"info\", \"logger\": \"workgraph.worker\", \"msg\": \"worker stopped\", \"worker\": \"<worker:1>\", \"completed\": 0, \"failed\": 1}\n"
     },
     {
       "index": 3,
@@ -33,7 +33,7 @@
       "index": 4,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {\n    \"fail\": \"always\"\n  },\n  \"result\": null,\n  \"attempts\": 1,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts:7|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": \"RuntimeError: always\",\n  \"error_kind\": \"exception\",\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts:1|db>\",\n  \"finished_at\": null,\n  \"runs\": [\n    {\n      \"attempt\": 1,\n      \"worker\": \"DESKTOP-1IULO99-26732-423da3\",\n      \"status\": \"failed\",\n      \"error\": \"RuntimeError: always\",\n      \"started_at\": \"<ts:3|db>\",\n      \"finished_at\": \"<ts:5|db>\"\n    }\n  ]\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {\n    \"fail\": \"always\"\n  },\n  \"result\": null,\n  \"attempts\": 1,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts@4|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": \"RuntimeError: always\",\n  \"error_kind\": \"exception\",\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts@1|db>\",\n  \"finished_at\": null,\n  \"runs\": [\n    {\n      \"attempt\": 1,\n      \"worker\": \"<worker:1>\",\n      \"status\": \"failed\",\n      \"error\": \"RuntimeError: always\",\n      \"started_at\": \"<ts@2|db>\",\n      \"finished_at\": \"<ts@2|db>\"\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {

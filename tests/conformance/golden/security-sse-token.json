@@ -19,7 +19,7 @@
       "index": 2,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"event\":\"domain\",\"data\":{\"seq\":1,\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"event_type\":\"workspace.created\",\"entity_type\":\"workspace\",\"entity_id\":\"<id:2>\",\"actor\":\"human:Brice\",\"actor_kind\":\"human\",\"occurred_at\":\"<ts:1|Z>\",\"correlation_id\":\"<id:3>\",\"causation_id\":null,\"attempt_id\":null,\"schema_version\":1,\"data\":{\"key_prefix\":\"WG\",\"name\":\"Default\",\"slug\":\"default\"}},\"id\":\"1\"}\n",
+      "stdout": "{\"event\":\"domain\",\"data\":{\"seq\":1,\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"event_type\":\"workspace.created\",\"entity_type\":\"workspace\",\"entity_id\":\"<id:2>\",\"actor\":\"human:Brice\",\"actor_kind\":\"human\",\"occurred_at\":\"<ts@0|Z>\",\"correlation_id\":\"<id:3>\",\"causation_id\":null,\"attempt_id\":null,\"schema_version\":1,\"data\":{\"key_prefix\":\"WG\",\"name\":\"Default\",\"slug\":\"default\"}},\"id\":\"1\"}\n",
       "stderr": ""
     }
   ]

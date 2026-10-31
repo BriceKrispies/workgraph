@@ -115,9 +115,9 @@
     },
     {
       "index": 16,
-      "kind": "cli",
-      "exit": 0,
-      "stdout": "[\n  {\n    \"connection\": \"work-jira\",\n    \"workspace\": \"work\",\n    \"projects\": [\n      \"ABC\"\n    ],\n    \"cursor\": null,\n    \"last_sync\": null,\n    \"last_full_sync\": null,\n    \"tracked_tasks\": 0,\n    \"missing\": 0,\n    \"unresolved_pull_request_repos\": []\n  }\n]\n",
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
       "stderr": ""
     },
     {
@@ -130,12 +130,26 @@
     {
       "index": 18,
       "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"connection\": \"work-jira\",\n    \"workspace\": \"work\",\n    \"projects\": [\n      \"ABC\"\n    ],\n    \"cursor\": null,\n    \"last_sync\": null,\n    \"last_full_sync\": null,\n    \"tracked_tasks\": 0,\n    \"missing\": 0,\n    \"unresolved_pull_request_repos\": []\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "cli",
       "exit": 4,
       "stdout": "{\"error\": {\"code\": \"not_found\", \"message\": \"tracker connection 'nope' is not configured\", \"details\": {\"connection\": \"nope\"}}}\n",
       "stderr": ""
     },
     {
-      "index": 19,
+      "index": 21,
       "kind": "assert",
       "exit": null,
       "stdout": "",

@@ -54,7 +54,7 @@
       "index": 7,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:1>\",\n    \"slug\": \"acme\",\n    \"name\": \"Acme Corp\",\n    \"description\": \"\",\n    \"key_prefix\": \"AC\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 0,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}\n",
+      "stdout": "{\n  \"workspace\": {\n    \"id\": \"<id:1>\",\n    \"slug\": \"acme\",\n    \"name\": \"Acme Corp\",\n    \"description\": \"\",\n    \"key_prefix\": \"AC\",\n    \"settings\": {},\n    \"created_at\": \"<ts@0|Z>\",\n    \"updated_at\": \"<ts@0|Z>\",\n    \"archived_at\": null\n  },\n  \"projects\": 0,\n  \"repositories\": 0,\n  \"tasks_by_status\": {},\n  \"ready_tasks\": 0,\n  \"running_attempts\": 0,\n  \"queued_jobs\": 0,\n  \"dead_jobs\": 0\n}\n",
       "stderr": ""
     },
     {
@@ -75,7 +75,7 @@
       "index": 10,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:2>\",\n  \"workspace_id\": \"<id:1>\",\n  \"key\": \"AC-1\",\n  \"number\": 1,\n  \"title\": \"First task\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:2>\",\n  \"workspace_id\": \"<id:1>\",\n  \"key\": \"AC-1\",\n  \"number\": 1,\n  \"title\": \"First task\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@10|Z>\",\n  \"updated_at\": \"<ts@10|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {

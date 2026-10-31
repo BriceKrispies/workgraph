@@ -1,0 +1,152 @@
+{
+  "scenario": "experiment-replay-rust-rho-base",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"rhofeat\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts@4|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\rhofeat\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts@4|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts@4|Z>\",\n  \"updated_at\": \"<ts@4|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"sha\": \"<sha:2>\",\n    \"parent\": \"<sha:1>\",\n    \"subject\": \"Add two with a rho test program\",\n    \"body\": \"\",\n    \"test_paths\": [\n      \"crates/foo/tests/bar.rs\",\n      \"libraries/gpu/tests/two_is_two.rho\"\n    ],\n    \"source_paths\": [\n      \"crates/foo/src/lib.rs\",\n      \"crates/foo/src/two.rho\"\n    ],\n    \"features\": {\n      \"src_lines\": 5,\n      \"test_lines\": 5,\n      \"src_files\": 2,\n      \"test_files\": 2,\n      \"packages\": [\n        \"crates/foo\"\n      ],\n      \"band\": 2\n    },\n    \"oracle\": [\n      [\n        \"cargo\",\n        \"test\",\n        \"-p\",\n        \"foo-core\",\n        \"--test\",\n        \"bar\"\n      ]\n    ],\n    \"excluded\": []\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"sha\": \"<sha:2>\",\n    \"status\": \"created\",\n    \"task_key\": \"WG-1\",\n    \"reason\": null\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:4>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Replay 7420a3f210b5: Add two with a rho test program\",\n  \"description\": \"Replay of commit `<sha:2>`.\\n\\nAdd two with a rho test program\\n\\n\\n\\n## Tests\\n- `crates/foo/tests/bar.rs`\\n- `libraries/gpu/tests/two_is_two.rho`\\n\\n## Oracle\\n- `cargo test -p foo-core --test bar`\\n\\nBase branch: `wg/replay/7420a3f210b5`\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [\n    \"experiment-pool\",\n    \"replay\"\n  ],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [\n    \"<id:1>\"\n  ],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {\n    \"replay\": {\n      \"base_ref\": \"wg/replay/7420a3f210b5\",\n      \"classifier\": \"replay-classifier-2\",\n      \"features\": {\n        \"band\": 2,\n        \"packages\": [\n          \"crates/foo\"\n        ],\n        \"src_files\": 2,\n        \"src_lines\": 5,\n        \"test_files\": 2,\n        \"test_lines\": 5\n      },\n      \"oracle\": [\n        [\n          \"cargo\",\n          \"test\",\n          \"-p\",\n          \"foo-core\",\n          \"--test\",\n          \"bar\"\n        ]\n      ],\n      \"parent\": \"<sha:1>\",\n      \"sha\": \"<sha:2>\",\n      \"source_paths\": [\n        \"crates/foo/src/lib.rs\",\n        \"crates/foo/src/two.rho\"\n      ],\n      \"test_paths\": [\n        \"crates/foo/tests/bar.rs\",\n        \"libraries/gpu/tests/two_is_two.rho\"\n      ],\n      \"validated\": false,\n      \"validated_at\": null,\n      \"validation\": null\n    }\n  },\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@9|Z>\",\n  \"updated_at\": \"<ts@9|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"rhoexp\",\n  \"title\": \"Rho base\",\n  \"question\": null,\n  \"status\": \"draft\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"name\": \"haiku\",\n        \"model\": \"claude-haiku-5-5\"\n      }\n    ],\n    \"brief_template\": \"replay-v1\",\n    \"primary_size\": \"src_lines\",\n    \"bands\": {\n      \"min\": 1,\n      \"max\": 4\n    },\n    \"staircase\": {\n      \"per_visit\": 2,\n      \"up\": 1,\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24\n    },\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ]\n  },\n  \"frozen_at\": null,\n  \"created_at\": \"<ts@13|Z>\",\n  \"updated_at\": \"<ts@13|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"rhoexp\",\n  \"title\": \"Rho base\",\n  \"question\": null,\n  \"status\": \"running\",\n  \"protocol\": {\n    \"arms\": [\n      {\n        \"model\": \"claude-haiku-5-5\",\n        \"name\": \"haiku\"\n      }\n    ],\n    \"bands\": {\n      \"max\": 4,\n      \"min\": 1\n    },\n    \"brief_template\": \"replay-v1\",\n    \"budget\": {\n      \"trials\": 40\n    },\n    \"oracle_template\": [\n      \"python\",\n      \"-c\",\n      \"import sys; sys.exit(0 if open('flag.txt').read().strip() == '1' else 1)\"\n    ],\n    \"primary_size\": \"src_lines\",\n    \"staircase\": {\n      \"down\": 2,\n      \"max_reversals\": 6,\n      \"max_trials\": 24,\n      \"per_visit\": 2,\n      \"up\": 1\n    }\n  },\n  \"frozen_at\": \"<ts@14|Z>\",\n  \"created_at\": \"<ts@13|Z>\",\n  \"updated_at\": \"<ts@14|Z>\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"experiment_id\": \"<id:5>\",\n  \"task_id\": \"<id:4>\",\n  \"task_key\": \"WG-1\",\n  \"attempt_id\": null,\n  \"subagent_run_id\": null,\n  \"arm\": \"haiku\",\n  \"requested_model\": \"claude-haiku-5-5\",\n  \"actual_model\": null,\n  \"phase\": \"live\",\n  \"seq\": 1,\n  \"band\": null,\n  \"features\": {\n    \"predicted\": {}\n  },\n  \"base_ref\": null,\n  \"worktree_path\": null,\n  \"status\": \"planned\",\n  \"outcome\": null,\n  \"outcome_detail\": {},\n  \"failure_cause\": null,\n  \"failure_cause_source\": null,\n  \"notes\": null,\n  \"created_at\": \"<ts@15|Z>\",\n  \"started_at\": null,\n  \"graded_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"trial\": {\n    \"id\": \"<id:6>\",\n    \"experiment_id\": \"<id:5>\",\n    \"task_id\": \"<id:4>\",\n    \"task_key\": \"WG-1\",\n    \"attempt_id\": null,\n    \"subagent_run_id\": null,\n    \"arm\": \"haiku\",\n    \"requested_model\": \"claude-haiku-5-5\",\n    \"actual_model\": null,\n    \"phase\": \"live\",\n    \"seq\": 1,\n    \"band\": null,\n    \"features\": {\n      \"predicted\": {}\n    },\n    \"base_ref\": \"<sha:3>\",\n    \"worktree_path\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\c7e5e919\",\n    \"status\": \"running\",\n    \"outcome\": null,\n    \"outcome_detail\": {},\n    \"failure_cause\": null,\n    \"failure_cause_source\": null,\n    \"notes\": null,\n    \"created_at\": \"<ts@15|Z>\",\n    \"started_at\": \"<ts@16|Z>\",\n    \"graded_at\": null\n  },\n  \"worktree\": \"<home>\\\\data\\\\worktrees\\\\trials\\\\c7e5e919\",\n  \"branch\": \"wg/trial/c7e5e919\",\n  \"base_sha\": \"<sha:3>\",\n  \"brief\": \"Task-ID: WG-1\\nTrial-ID: <id:6>\\n\\nYou are working alone in the git worktree <home>\\\\data\\\\worktrees\\\\trials\\\\c7e5e919 (repository rhofeat), on branch wg/trial/c7e5e919. Work only there. Do not push or merge.\\n\\n## Task\\nAdd two with a rho test program\\n\\n## Tests that must pass\\nThese test files were added or changed for this task and fail now:\\n- crates/foo/tests/bar.rs\\n- libraries/gpu/tests/two_is_two.rho\\n\\nMake them pass by changing the code, not the tests. Do not modify, delete or skip these test files.\\n\\nRun them with:\\n    python -c 'import sys; sys.exit(0 if open('\\\"'\\\"'flag.txt'\\\"'\\\"').read().strip() == '\\\"'\\\"'1'\\\"'\\\"' else 1)'\\n\\n## Checks that must also pass\\n    (none)\\n\\n## Rules\\nFollow the repository's own agent instructions (AGENTS.md or CLAUDE.md) if it has them. Commit your work on wg/trial/c7e5e919 when you are done.\\n\\n## Report\\nReply with what you changed, the output of the test command, and anything you could not finish.\\n\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

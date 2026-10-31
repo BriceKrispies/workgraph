@@ -26,21 +26,21 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"svc\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts:2|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\svc\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts:2|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"svc\",\n  \"description\": \"\",\n  \"identity_fingerprint\": \"<sha:1>\",\n  \"default_branch\": \"main\",\n  \"tracked_branches\": [\n    \"main\"\n  ],\n  \"access_mode\": \"read_write\",\n  \"health_status\": \"ok\",\n  \"health_detail\": {\n    \"skipped_worktrees\": []\n  },\n  \"health_checked_at\": \"<ts@3|Z>\",\n  \"is_shallow\": false,\n  \"last_scanned_at\": null,\n  \"archived_at\": null,\n  \"remotes\": [],\n  \"checkouts\": [\n    {\n      \"id\": \"<id:3>\",\n      \"path\": \"<tmp>/repos\\\\svc\",\n      \"kind\": \"clone\",\n      \"is_primary\": true,\n      \"available\": true,\n      \"access_mode\": null,\n      \"last_seen_at\": \"<ts@3|Z>\"\n    }\n  ],\n  \"project_ids\": [],\n  \"depends_on\": [],\n  \"created_at\": \"<ts@3|Z>\",\n  \"updated_at\": \"<ts@3|Z>\"\n}\n",
       "stderr": ""
     },
     {
       "index": 2,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"id\":\"<id:2>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:1|Z>\",\"archived_at\":null}]",
+      "stdout": "[{\"id\":\"<id:2>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts@2|Z>\",\"updated_at\":\"<ts@2|Z>\",\"archived_at\":null}]",
       "stderr": ""
     },
     {
       "index": 3,
       "kind": "http",
       "exit": 201,
-      "stdout": "{\"id\":\"<id:4>\",\"slug\":\"side\",\"name\":\"Side project\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts:3|Z>\",\"updated_at\":\"<ts:3|Z>\",\"archived_at\":null}",
+      "stdout": "{\"id\":\"<id:4>\",\"slug\":\"side\",\"name\":\"Side project\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts@5|Z>\",\"updated_at\":\"<ts@5|Z>\",\"archived_at\":null}",
       "stderr": ""
     },
     {
@@ -54,7 +54,7 @@
       "index": 5,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"workspace\":{\"id\":\"<id:2>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:1|Z>\",\"archived_at\":null},\"projects\":0,\"repositories\":1,\"tasks_by_status\":{},\"ready_tasks\":0,\"running_attempts\":0,\"queued_jobs\":1,\"dead_jobs\":0}",
+      "stdout": "{\"workspace\":{\"id\":\"<id:2>\",\"slug\":\"default\",\"name\":\"Default\",\"description\":\"\",\"key_prefix\":\"WG\",\"settings\":{},\"created_at\":\"<ts@2|Z>\",\"updated_at\":\"<ts@2|Z>\",\"archived_at\":null},\"projects\":0,\"repositories\":1,\"tasks_by_status\":{},\"ready_tasks\":0,\"running_attempts\":0,\"queued_jobs\":1,\"dead_jobs\":0}",
       "stderr": ""
     },
     {
@@ -68,7 +68,7 @@
       "index": 7,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:1|Z>\",\n    \"updated_at\": \"<ts:1|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:4>\",\n    \"slug\": \"side\",\n    \"name\": \"Side project\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts:3|Z>\",\n    \"updated_at\": \"<ts:3|Z>\",\n    \"archived_at\": null\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:2>\",\n    \"slug\": \"default\",\n    \"name\": \"Default\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@2|Z>\",\n    \"updated_at\": \"<ts@2|Z>\",\n    \"archived_at\": null\n  },\n  {\n    \"id\": \"<id:4>\",\n    \"slug\": \"side\",\n    \"name\": \"Side project\",\n    \"description\": \"\",\n    \"key_prefix\": \"WG\",\n    \"settings\": {},\n    \"created_at\": \"<ts@5|Z>\",\n    \"updated_at\": \"<ts@5|Z>\",\n    \"archived_at\": null\n  }\n]\n",
       "stderr": ""
     },
     {
@@ -82,7 +82,7 @@
       "index": 9,
       "kind": "http",
       "exit": 201,
-      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts:4|Z>\",\"updated_at\":\"<ts:4|Z>\"}",
+      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts@11|Z>\",\"updated_at\":\"<ts@11|Z>\"}",
       "stderr": ""
     },
     {
@@ -96,14 +96,14 @@
       "index": 11,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts:4|Z>\",\"updated_at\":\"<ts:4|Z>\"}]",
+      "stdout": "[{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts@11|Z>\",\"updated_at\":\"<ts@11|Z>\"}]",
       "stderr": ""
     },
     {
       "index": 12,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"project\":{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts:4|Z>\",\"updated_at\":\"<ts:4|Z>\"},\"repositories\":[{\"id\":\"<id:1>\",\"name\":\"svc\",\"access_mode\":\"read_write\",\"health_status\":\"ok\"}],\"tasks_by_status\":{},\"open_tasks\":0,\"accepted_tasks\":0,\"recent_tasks\":[]}",
+      "stdout": "{\"project\":{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts@11|Z>\",\"updated_at\":\"<ts@11|Z>\"},\"repositories\":[{\"id\":\"<id:1>\",\"name\":\"svc\",\"access_mode\":\"read_write\",\"health_status\":\"ok\"}],\"tasks_by_status\":{},\"open_tasks\":0,\"accepted_tasks\":0,\"recent_tasks\":[]}",
       "stderr": ""
     },
     {
@@ -117,14 +117,14 @@
       "index": 14,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core platform\",\"description\":\"Shared core\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts:4|Z>\",\"updated_at\":\"<ts:5|Z>\"}",
+      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core platform\",\"description\":\"Shared core\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts@11|Z>\",\"updated_at\":\"<ts@16|Z>\"}",
       "stderr": ""
     },
     {
       "index": 15,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"project\": {\n    \"id\": \"<id:5>\",\n    \"workspace_id\": \"<id:2>\",\n    \"slug\": \"core\",\n    \"name\": \"Core platform\",\n    \"description\": \"Shared core\",\n    \"status\": \"active\",\n    \"settings\": {},\n    \"repository_ids\": [\n      \"<id:1>\"\n    ],\n    \"created_at\": \"<ts:4|Z>\",\n    \"updated_at\": \"<ts:5|Z>\"\n  },\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"svc\",\n      \"access_mode\": \"read_write\",\n      \"health_status\": \"ok\"\n    }\n  ],\n  \"tasks_by_status\": {},\n  \"open_tasks\": 0,\n  \"accepted_tasks\": 0,\n  \"recent_tasks\": []\n}\n",
+      "stdout": "{\n  \"project\": {\n    \"id\": \"<id:5>\",\n    \"workspace_id\": \"<id:2>\",\n    \"slug\": \"core\",\n    \"name\": \"Core platform\",\n    \"description\": \"Shared core\",\n    \"status\": \"active\",\n    \"settings\": {},\n    \"repository_ids\": [\n      \"<id:1>\"\n    ],\n    \"created_at\": \"<ts@11|Z>\",\n    \"updated_at\": \"<ts@16|Z>\"\n  },\n  \"repositories\": [\n    {\n      \"id\": \"<id:1>\",\n      \"name\": \"svc\",\n      \"access_mode\": \"read_write\",\n      \"health_status\": \"ok\"\n    }\n  ],\n  \"tasks_by_status\": {},\n  \"open_tasks\": 0,\n  \"accepted_tasks\": 0,\n  \"recent_tasks\": []\n}\n",
       "stderr": ""
     },
     {
@@ -138,28 +138,28 @@
       "index": 17,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"docs\",\n  \"name\": \"Docs\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [],\n  \"created_at\": \"<ts:6|Z>\",\n  \"updated_at\": \"<ts:6|Z>\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:6>\",\n  \"workspace_id\": \"<id:2>\",\n  \"slug\": \"docs\",\n  \"name\": \"Docs\",\n  \"description\": \"\",\n  \"status\": \"active\",\n  \"settings\": {},\n  \"repository_ids\": [],\n  \"created_at\": \"<ts@19|Z>\",\n  \"updated_at\": \"<ts@19|Z>\"\n}\n",
       "stderr": ""
     },
     {
       "index": 18,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:6>\",\"workspace_id\":\"<id:2>\",\"slug\":\"docs\",\"name\":\"Docs\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts:6|Z>\",\"updated_at\":\"<ts:6|Z>\"}",
+      "stdout": "{\"id\":\"<id:6>\",\"workspace_id\":\"<id:2>\",\"slug\":\"docs\",\"name\":\"Docs\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts@19|Z>\",\"updated_at\":\"<ts@19|Z>\"}",
       "stderr": ""
     },
     {
       "index": 19,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:6>\",\"workspace_id\":\"<id:2>\",\"slug\":\"docs\",\"name\":\"Docs\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[],\"created_at\":\"<ts:6|Z>\",\"updated_at\":\"<ts:6|Z>\"}",
+      "stdout": "{\"id\":\"<id:6>\",\"workspace_id\":\"<id:2>\",\"slug\":\"docs\",\"name\":\"Docs\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[],\"created_at\":\"<ts@19|Z>\",\"updated_at\":\"<ts@19|Z>\"}",
       "stderr": ""
     },
     {
       "index": 20,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core platform\",\"description\":\"Shared core\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts:4|Z>\",\"updated_at\":\"<ts:5|Z>\"},{\"id\":\"<id:6>\",\"workspace_id\":\"<id:2>\",\"slug\":\"docs\",\"name\":\"Docs\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[],\"created_at\":\"<ts:6|Z>\",\"updated_at\":\"<ts:6|Z>\"}]",
+      "stdout": "[{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"slug\":\"core\",\"name\":\"Core platform\",\"description\":\"Shared core\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[\"<id:1>\"],\"created_at\":\"<ts@11|Z>\",\"updated_at\":\"<ts@16|Z>\"},{\"id\":\"<id:6>\",\"workspace_id\":\"<id:2>\",\"slug\":\"docs\",\"name\":\"Docs\",\"description\":\"\",\"status\":\"active\",\"settings\":{},\"repository_ids\":[],\"created_at\":\"<ts@19|Z>\",\"updated_at\":\"<ts@19|Z>\"}]",
       "stderr": ""
     }
   ]

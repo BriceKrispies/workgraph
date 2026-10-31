@@ -1,0 +1,40 @@
+{
+  "scenario": "providers-claude-code-stream-json",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[\n  {\n    \"name\": \"claude_code\",\n    \"adapter\": \"claude_code\",\n    \"available\": true,\n    \"detail\": \"2.1.314 (Claude Code)\",\n    \"capabilities\": {\n      \"streaming_progress\": true,\n      \"usage_reporting\": true,\n      \"cost_reporting\": true,\n      \"session_resume\": true,\n      \"isolated_workspace\": true,\n      \"cancellation\": true,\n      \"subagents\": true,\n      \"lifecycle_hooks\": true\n    },\n    \"config\": {\n      \"adapter\": \"claude_code\",\n      \"executable\": \"claude\",\n      \"model\": null,\n      \"permission_mode\": \"acceptEdits\",\n      \"allowed_tools\": [],\n      \"max_turns\": null,\n      \"max_budget_usd\": null,\n      \"extra_args\": []\n    }\n  }\n]\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

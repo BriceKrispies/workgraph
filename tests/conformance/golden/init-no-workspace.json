@@ -26,7 +26,7 @@
       "index": 3,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme\",\n  \"description\": \"\",\n  \"key_prefix\": \"AC\",\n  \"settings\": {},\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\",\n  \"archived_at\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"acme\",\n  \"name\": \"Acme\",\n  \"description\": \"\",\n  \"key_prefix\": \"AC\",\n  \"settings\": {},\n  \"created_at\": \"<ts@3|Z>\",\n  \"updated_at\": \"<ts@3|Z>\",\n  \"archived_at\": null\n}\n",
       "stderr": ""
     },
     {

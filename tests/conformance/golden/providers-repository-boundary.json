@@ -1,0 +1,96 @@
+{
+  "scenario": "providers-repository-boundary",
+  "steps": [
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": null,
+      "kind": "setup",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"slug\": \"default\",\n  \"name\": \"Default\",\n  \"description\": \"\",\n  \"key_prefix\": \"WG\",\n  \"settings\": {\n    \"allowed_roots\": [\n      \"<tmp>\\\\nowhere\"\n    ]\n  },\n  \"created_at\": \"<ts@2|Z>\",\n  \"updated_at\": \"<ts@3|Z>\",\n  \"archived_at\": null\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"<tmp>/repos\\\\outside is outside the workspace's allowed roots\", \"details\": {\"path\": \"<tmp>/repos\\\\outside\", \"allowed_roots\": [\"<tmp>\\\\nowhere\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"path <tmp>\\\\missing does not exist or is not a directory\", \"details\": {}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

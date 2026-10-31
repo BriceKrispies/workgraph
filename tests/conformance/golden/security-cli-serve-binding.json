@@ -13,7 +13,7 @@
       "kind": "cli",
       "exit": 2,
       "stdout": "",
-      "stderr": "error: refusing to bind to non-loopback address 192.0.2.10; pass --allow-remote \nto opt in\n"
+      "stderr": "error: refusing to bind to non-loopback address 192.0.2.10; pass --allow-remote to opt in\n"
     },
     {
       "index": 2,

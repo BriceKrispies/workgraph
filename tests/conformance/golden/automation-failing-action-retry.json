@@ -12,28 +12,28 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"bad dep\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"type\": \"event\",\n    \"event_types\": [\n      \"task.created\"\n    ]\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"type\": \"create_dependency\",\n      \"depends_on\": \"WG-999\"\n    }\n  ],\n  \"retry_max_attempts\": 2,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:1|Z>\"\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"name\": \"bad dep\",\n  \"description\": \"\",\n  \"enabled\": true,\n  \"trigger\": {\n    \"type\": \"event\",\n    \"event_types\": [\n      \"task.created\"\n    ]\n  },\n  \"conditions\": {},\n  \"actions\": [\n    {\n      \"type\": \"create_dependency\",\n      \"depends_on\": \"WG-999\"\n    }\n  ],\n  \"retry_max_attempts\": 2,\n  \"max_depth\": 3,\n  \"last_scheduled_at\": null,\n  \"next_run_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@1|Z>\"\n}\n",
       "stderr": ""
     },
     {
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"x\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:3>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"x\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"backlog\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 1,\n  \"created_at\": \"<ts@2|Z>\",\n  \"updated_at\": \"<ts@2|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
       "index": 3,
       "kind": "drain",
       "exit": 0,
-      "stdout": "completed=0 failed=0\n",
+      "stdout": "completed=0 failed=6\n",
       "stderr": ""
     },
     {
       "index": 4,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:4>\",\n    \"rule_id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"event\",\n    \"trigger_key\": \"<id:5>\",\n    \"trigger_event_id\": \"<id:5>\",\n    \"depth\": 1,\n    \"dry_run\": false,\n    \"status\": \"failed\",\n    \"matched\": true,\n    \"reason\": \"conditions matched\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"error\": \"task 'WG-999' not found\",\n        \"index\": 0,\n        \"status\": \"failed\",\n        \"type\": \"create_dependency\"\n      }\n    ],\n    \"error\": \"action 0 (create_dependency) failed: task 'WG-999' not found\",\n    \"attempts\": 2,\n    \"created_at\": \"<ts:3|Z>\",\n    \"finished_at\": \"<ts:6|Z>\"\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:4>\",\n    \"rule_id\": \"<id:1>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"event\",\n    \"trigger_key\": \"<id:5>\",\n    \"trigger_event_id\": \"<id:5>\",\n    \"depth\": 1,\n    \"dry_run\": false,\n    \"status\": \"failed\",\n    \"matched\": true,\n    \"reason\": \"conditions matched\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"error\": \"task 'WG-999' not found\",\n        \"index\": 0,\n        \"status\": \"failed\",\n        \"type\": \"create_dependency\"\n      }\n    ],\n    \"error\": \"action 0 (create_dependency) failed: task 'WG-999' not found\",\n    \"attempts\": 2,\n    \"created_at\": \"<ts@3|Z>\",\n    \"finished_at\": \"<ts@3|Z>\"\n  }\n]\n",
       "stderr": ""
     },
     {
@@ -54,7 +54,7 @@
       "index": 7,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"total\": 1,\n  \"items\": [\n    {\n      \"id\": \"<id:6>\",\n      \"kind\": \"automation_action\",\n      \"status\": \"dead\",\n      \"attempts\": 2,\n      \"max_attempts\": 2,\n      \"run_at\": \"<ts:5|db>\",\n      \"last_error\": \"action 0 (create_dependency) failed: task 'WG-999' not found\",\n      \"error_kind\": \"workgraph_error\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:4|db>\"\n    }\n  ]\n}\n",
+      "stdout": "{\n  \"total\": 1,\n  \"items\": [\n    {\n      \"id\": \"<id:6>\",\n      \"kind\": \"automation_action\",\n      \"status\": \"dead\",\n      \"attempts\": 2,\n      \"max_attempts\": 2,\n      \"run_at\": \"<ts@3|db>\",\n      \"last_error\": \"action 0 (create_dependency) failed: task 'WG-999' not found\",\n      \"error_kind\": \"workgraph_error\",\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts@3|db>\"\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {

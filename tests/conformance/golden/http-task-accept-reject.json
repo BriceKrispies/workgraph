@@ -12,21 +12,21 @@
       "index": 1,
       "kind": "http",
       "exit": 201,
-      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"API task\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"ready\",\"priority\":\"medium\",\"category\":null,\"tags\":[\"api\"],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:2|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"API task\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"ready\",\"priority\":\"medium\",\"category\":null,\"tags\":[\"api\"],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@1|Z>\",\"updated_at\":\"<ts@1|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
       "stderr": ""
     },
     {
       "index": 2,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"API task\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"claimed\",\"priority\":\"medium\",\"category\":null,\"tags\":[\"api\"],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":\"human:Brice\",\"claim_expires_at\":\"<ts:11|Z>\",\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":3,\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:3|Z>\",\"started_at\":\"<ts:3|Z>\",\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"API task\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"claimed\",\"priority\":\"medium\",\"category\":null,\"tags\":[\"api\"],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":\"human:Brice\",\"claim_expires_at\":\"<ts:1|Z>\",\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":3,\"created_at\":\"<ts@1|Z>\",\"updated_at\":\"<ts@2|Z>\",\"started_at\":\"<ts@2|Z>\",\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
       "stderr": ""
     },
     {
       "index": 3,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"API task\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"awaiting_review\",\"priority\":\"medium\",\"category\":null,\"tags\":[\"api\"],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":4,\"created_at\":\"<ts:1|Z>\",\"updated_at\":\"<ts:4|Z>\",\"started_at\":\"<ts:3|Z>\",\"completed_at\":\"<ts:4|Z>\",\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stdout": "{\"id\":\"<id:1>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-1\",\"number\":1,\"title\":\"API task\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"awaiting_review\",\"priority\":\"medium\",\"category\":null,\"tags\":[\"api\"],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":4,\"created_at\":\"<ts@1|Z>\",\"updated_at\":\"<ts@3|Z>\",\"started_at\":\"<ts@2|Z>\",\"completed_at\":\"<ts@3|Z>\",\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
       "stderr": ""
     },
     {
@@ -40,14 +40,14 @@
       "index": 5,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:3>\",\"task_id\":\"<id:1>\",\"attempt_id\":null,\"verification_run_id\":null,\"decision\":\"accepted\",\"mode\":\"manual\",\"reason\":\"looks good\",\"actor\":\"human:Brice\",\"manifest_id\":null,\"created_at\":\"<ts:5|Z>\"}",
+      "stdout": "{\"id\":\"<id:3>\",\"task_id\":\"<id:1>\",\"attempt_id\":null,\"verification_run_id\":null,\"decision\":\"accepted\",\"mode\":\"manual\",\"reason\":\"looks good\",\"actor\":\"human:Brice\",\"manifest_id\":null,\"created_at\":\"<ts@5|Z>\"}",
       "stderr": ""
     },
     {
       "index": 6,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"API task\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"accepted\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [\n    \"api\"\n  ],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 5,\n  \"created_at\": \"<ts:1|Z>\",\n  \"updated_at\": \"<ts:5|Z>\",\n  \"started_at\": \"<ts:3|Z>\",\n  \"completed_at\": \"<ts:4|Z>\",\n  \"accepted_at\": \"<ts:5|Z>\",\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [\n    {\n      \"id\": \"<id:4>\",\n      \"task_id\": \"<id:1>\",\n      \"attempt_id\": null,\n      \"author\": \"human:Brice\",\n      \"kind\": \"result\",\n      \"body\": \"done\",\n      \"data\": {},\n      \"created_at\": \"<ts:4|Z>\"\n    }\n  ],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"API task\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"accepted\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [\n    \"api\"\n  ],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 5,\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@5|Z>\",\n  \"started_at\": \"<ts@2|Z>\",\n  \"completed_at\": \"<ts@3|Z>\",\n  \"accepted_at\": \"<ts@5|Z>\",\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [\n    {\n      \"id\": \"<id:4>\",\n      \"task_id\": \"<id:1>\",\n      \"attempt_id\": null,\n      \"author\": \"human:Brice\",\n      \"kind\": \"result\",\n      \"body\": \"done\",\n      \"data\": {},\n      \"created_at\": \"<ts@3|Z>\"\n    }\n  ],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
       "stderr": ""
     },
     {
@@ -61,28 +61,28 @@
       "index": 8,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"id\":\"<id:3>\",\"task_id\":\"<id:1>\",\"attempt_id\":null,\"verification_run_id\":null,\"decision\":\"accepted\",\"mode\":\"manual\",\"reason\":\"looks good\",\"actor\":\"human:Brice\",\"manifest_id\":null,\"created_at\":\"<ts:5|Z>\"}]",
+      "stdout": "[{\"id\":\"<id:3>\",\"task_id\":\"<id:1>\",\"attempt_id\":null,\"verification_run_id\":null,\"decision\":\"accepted\",\"mode\":\"manual\",\"reason\":\"looks good\",\"actor\":\"human:Brice\",\"manifest_id\":null,\"created_at\":\"<ts@5|Z>\"}]",
       "stderr": ""
     },
     {
       "index": 9,
       "kind": "http",
       "exit": 201,
-      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Needs work\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"ready\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts:6|Z>\",\"updated_at\":\"<ts:6|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Needs work\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"ready\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":null,\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@9|Z>\",\"updated_at\":\"<ts@9|Z>\",\"started_at\":null,\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
       "stderr": ""
     },
     {
       "index": 10,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Needs work\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"claimed\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":\"human:Brice\",\"claim_expires_at\":\"<ts:12|Z>\",\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":3,\"created_at\":\"<ts:6|Z>\",\"updated_at\":\"<ts:7|Z>\",\"started_at\":\"<ts:7|Z>\",\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Needs work\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"claimed\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":\"human:Brice\",\"claim_expires_at\":\"<ts:2|Z>\",\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":3,\"created_at\":\"<ts@9|Z>\",\"updated_at\":\"<ts@10|Z>\",\"started_at\":\"<ts@10|Z>\",\"completed_at\":null,\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
       "stderr": ""
     },
     {
       "index": 11,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Needs work\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"awaiting_review\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":4,\"created_at\":\"<ts:6|Z>\",\"updated_at\":\"<ts:8|Z>\",\"started_at\":\"<ts:7|Z>\",\"completed_at\":\"<ts:8|Z>\",\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
+      "stdout": "{\"id\":\"<id:5>\",\"workspace_id\":\"<id:2>\",\"key\":\"WG-2\",\"number\":2,\"title\":\"Needs work\",\"description\":\"\",\"acceptance_criteria\":[],\"status\":\"awaiting_review\",\"priority\":\"medium\",\"category\":null,\"tags\":[],\"files\":[],\"project_ids\":[],\"repository_ids\":[],\"parent_id\":null,\"child_ids\":[],\"depends_on\":[],\"blocks\":[],\"assignee\":\"human:Brice\",\"assigned_agent\":null,\"claimed_by\":null,\"claim_expires_at\":null,\"auto_execute\":false,\"estimated_effort\":null,\"links\":[],\"metadata\":{},\"due_at\":null,\"scheduled_at\":null,\"created_by\":\"human:Brice\",\"version\":4,\"created_at\":\"<ts@9|Z>\",\"updated_at\":\"<ts@11|Z>\",\"started_at\":\"<ts@10|Z>\",\"completed_at\":\"<ts@11|Z>\",\"accepted_at\":null,\"archived_at\":null,\"current_classification_id\":null}",
       "stderr": ""
     },
     {
@@ -96,14 +96,14 @@
       "index": 13,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:6>\",\"task_id\":\"<id:5>\",\"attempt_id\":null,\"verification_run_id\":null,\"decision\":\"rejected\",\"mode\":\"manual\",\"reason\":\"missing tests\",\"actor\":\"human:Brice\",\"manifest_id\":null,\"created_at\":\"<ts:10|Z>\"}",
+      "stdout": "{\"id\":\"<id:6>\",\"task_id\":\"<id:5>\",\"attempt_id\":null,\"verification_run_id\":null,\"decision\":\"rejected\",\"mode\":\"manual\",\"reason\":\"missing tests\",\"actor\":\"human:Brice\",\"manifest_id\":null,\"created_at\":\"<ts@13|Z>\"}",
       "stderr": ""
     },
     {
       "index": 14,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Needs work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 5,\n  \"created_at\": \"<ts:6|Z>\",\n  \"updated_at\": \"<ts:10|Z>\",\n  \"started_at\": \"<ts:7|Z>\",\n  \"completed_at\": \"<ts:8|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [\n    {\n      \"id\": \"<id:7>\",\n      \"task_id\": \"<id:5>\",\n      \"attempt_id\": null,\n      \"author\": \"human:Brice\",\n      \"kind\": \"result\",\n      \"body\": \"first try\",\n      \"data\": {},\n      \"created_at\": \"<ts:9|Z>\"\n    }\n  ],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
+      "stdout": "{\n  \"id\": \"<id:5>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-2\",\n  \"number\": 2,\n  \"title\": \"Needs work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": \"human:Brice\",\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 5,\n  \"created_at\": \"<ts@9|Z>\",\n  \"updated_at\": \"<ts@13|Z>\",\n  \"started_at\": \"<ts@10|Z>\",\n  \"completed_at\": \"<ts@11|Z>\",\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null,\n  \"relations\": [],\n  \"comments\": [\n    {\n      \"id\": \"<id:7>\",\n      \"task_id\": \"<id:5>\",\n      \"attempt_id\": null,\n      \"author\": \"human:Brice\",\n      \"kind\": \"result\",\n      \"body\": \"first try\",\n      \"data\": {},\n      \"created_at\": \"<ts@11|Z>\"\n    }\n  ],\n  \"rollup\": null,\n  \"dependency_state\": {\n    \"satisfied\": true,\n    \"unsatisfied\": []\n  }\n}\n",
       "stderr": ""
     },
     {

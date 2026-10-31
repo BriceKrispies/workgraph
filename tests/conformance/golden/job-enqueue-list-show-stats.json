@@ -61,7 +61,7 @@
       "index": 6,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:2>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:2|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:3|db>\"\n    },\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:1|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:1|db>\"\n    }\n  ]\n}\n",
+      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:2>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts@7|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts@7|db>\"\n    },\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts@3|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts@3|db>\"\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -89,7 +89,7 @@
       "index": 10,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts:1|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts:1|db>\"\n    }\n  ]\n}\n",
+      "stdout": "{\n  \"total\": 2,\n  \"items\": [\n    {\n      \"id\": \"<id:1>\",\n      \"kind\": \"noop\",\n      \"status\": \"queued\",\n      \"attempts\": 0,\n      \"max_attempts\": 5,\n      \"run_at\": \"<ts@3|db>\",\n      \"last_error\": null,\n      \"error_kind\": null,\n      \"task_id\": null,\n      \"attempt_id\": null,\n      \"created_at\": \"<ts@3|db>\"\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -110,7 +110,7 @@
       "index": 13,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {\n    \"n\": 1\n  },\n  \"result\": null,\n  \"attempts\": 0,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts:1|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": null,\n  \"error_kind\": null,\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts:1|db>\",\n  \"finished_at\": null,\n  \"runs\": []\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"kind\": \"noop\",\n  \"status\": \"queued\",\n  \"payload\": {\n    \"n\": 1\n  },\n  \"result\": null,\n  \"attempts\": 0,\n  \"max_attempts\": 5,\n  \"run_at\": \"<ts@3|db>\",\n  \"lease_owner\": null,\n  \"lease_expires_at\": null,\n  \"last_error\": null,\n  \"error_kind\": null,\n  \"resource_keys\": [],\n  \"cancel_requested\": false,\n  \"created_at\": \"<ts@3|db>\",\n  \"finished_at\": null,\n  \"runs\": []\n}\n",
       "stderr": ""
     },
     {

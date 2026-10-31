@@ -12,7 +12,7 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Timed work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts:2|Z>\",\n  \"updated_at\": \"<ts:3|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
+      "stdout": "{\n  \"id\": \"<id:1>\",\n  \"workspace_id\": \"<id:2>\",\n  \"key\": \"WG-1\",\n  \"number\": 1,\n  \"title\": \"Timed work\",\n  \"description\": \"\",\n  \"acceptance_criteria\": [],\n  \"status\": \"ready\",\n  \"priority\": \"medium\",\n  \"category\": null,\n  \"tags\": [],\n  \"files\": [],\n  \"project_ids\": [],\n  \"repository_ids\": [],\n  \"parent_id\": null,\n  \"child_ids\": [],\n  \"depends_on\": [],\n  \"blocks\": [],\n  \"assignee\": null,\n  \"assigned_agent\": null,\n  \"claimed_by\": null,\n  \"claim_expires_at\": null,\n  \"auto_execute\": false,\n  \"estimated_effort\": null,\n  \"links\": [],\n  \"metadata\": {},\n  \"due_at\": null,\n  \"scheduled_at\": null,\n  \"created_by\": \"human:Brice\",\n  \"version\": 2,\n  \"created_at\": \"<ts@1|Z>\",\n  \"updated_at\": \"<ts@1|Z>\",\n  \"started_at\": null,\n  \"completed_at\": null,\n  \"accepted_at\": null,\n  \"archived_at\": null,\n  \"current_classification_id\": null\n}\n",
       "stderr": ""
     },
     {
@@ -40,7 +40,7 @@
       "index": 5,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"period\": \"week\",\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:4|+00:00>\"\n  },\n  \"model\": null,\n  \"by_period\": [],\n  \"by_size\": [],\n  \"totals\": [],\n  \"unlinked_runs\": 0,\n  \"notes\": [\n    \"A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending\"\n  ]\n}\n",
+      "stdout": "{\n  \"period\": \"week\",\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:2|+00:00>\"\n  },\n  \"model\": null,\n  \"by_period\": [],\n  \"by_size\": [],\n  \"totals\": [],\n  \"unlinked_runs\": 0,\n  \"notes\": [\n    \"A task's outcome is its current status: accepted, rejected (a non-accepted acceptance decision), failed or cancelled; anything else is pending\"\n  ]\n}\n",
       "stderr": ""
     },
     {
@@ -89,7 +89,7 @@
       "index": 12,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"by\": \"class\",\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:4|+00:00>\"\n  },\n  \"model\": \"claude-sonnet-5-5\",\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ],\n  \"rows\": []\n}\n",
+      "stdout": "{\n  \"by\": \"class\",\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:2|+00:00>\"\n  },\n  \"model\": \"claude-sonnet-5-5\",\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ],\n  \"rows\": []\n}\n",
       "stderr": ""
     },
     {
@@ -124,7 +124,7 @@
       "index": 17,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:4|+00:00>\"\n  },\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"classes\": [],\n  \"slowest_calls\": [],\n  \"concurrency\": {\n    \"peak_during_window\": 0,\n    \"median_at_slowest_calls\": null,\n    \"scope\": \"stopped subagent runs in every workspace on this machine\"\n  },\n  \"by_task\": [],\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ]\n}\n",
+      "stdout": "{\n  \"window\": {\n    \"since\": \"<ts:1|+00:00>\",\n    \"until\": \"<ts:2|+00:00>\"\n  },\n  \"totals\": {\n    \"runs\": 0,\n    \"span_seconds\": 0,\n    \"accounted_seconds\": 0,\n    \"tool_seconds\": 0,\n    \"model_seconds\": 0,\n    \"waiting_seconds\": 0,\n    \"polling_seconds\": 0,\n    \"model_share\": null,\n    \"waiting_share\": null,\n    \"polling_share\": null\n  },\n  \"classes\": [],\n  \"slowest_calls\": [],\n  \"concurrency\": {\n    \"peak_during_window\": 0,\n    \"median_at_slowest_calls\": null,\n    \"scope\": \"stopped subagent runs in every workspace on this machine\"\n  },\n  \"by_task\": [],\n  \"notes\": [\n    \"Waiting is the time an agent sat idle after ending a turn until a notification resumed it; model time is the gap before each assistant message. Shares are of accounted time (tool + model + waiting).\"\n  ]\n}\n",
       "stderr": ""
     },
     {

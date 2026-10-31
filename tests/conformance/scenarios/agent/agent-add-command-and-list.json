@@ -4,9 +4,9 @@
   "setup": [],
   "steps": [
     {"cli": ["init"], "json": true},
-    {"cli": ["agent", "add-command", "scripted", "workgraph-demo-agent", "--arg=--mode", "--arg=success", "--arg={manifest}", "--timeout", "60", "--supports-usage"], "json": true},
+    {"cli": ["agent", "add-command", "scripted", "conformance-absent-agent-xyz", "--arg=--mode", "--arg=success", "--arg={manifest}", "--timeout", "60", "--supports-usage"], "json": true},
     {"assert": {"json": {"path": "/name", "equals": "scripted"}}},
-    {"assert": {"json": {"path": "/executable", "equals": "workgraph-demo-agent"}}},
+    {"assert": {"json": {"path": "/executable", "equals": "conformance-absent-agent-xyz"}}},
     {"assert": {"json": {"path": "/args/0", "equals": "--mode"}}},
     {"assert": {"json": {"path": "/args/2", "equals": "{manifest}"}}},
     {"cli": ["agent", "add-command", "ghost", "definitely-not-installed-agent", "--arg=--flag", "--no-supports-usage"], "json": true},
@@ -20,7 +20,7 @@
     {"cli": ["agent", "list"], "json": true, "env": {"PATH": "/nonexistent-conformance-path"}},
     {"assert": {"json": {"path": "/1/name", "equals": "scripted"}}},
     {"assert": {"json": {"path": "/1/available", "equals": false}}},
-    {"assert": {"json": {"path": "/1/detail", "equals": "executable 'workgraph-demo-agent' was not found on PATH"}}},
+    {"assert": {"json": {"path": "/1/detail", "equals": "executable 'conformance-absent-agent-xyz' was not found on PATH"}}},
     {"assert": {"json": {"path": "/2/name", "equals": "ghost"}}},
     {"assert": {"json": {"path": "/2/capabilities/usage_reporting", "equals": false}}}
   ],

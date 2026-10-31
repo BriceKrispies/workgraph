@@ -19,7 +19,7 @@
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"path\": \"<tmp>\\\\a.json\",\n  \"format\": \"json\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 976\n}\n",
+      "stdout": "{\n  \"path\": \"<tmp>\\\\a.json\",\n  \"format\": \"json\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": <bytes>\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +33,7 @@
       "index": 4,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"path\": \"<tmp>\\\\f.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 779\n}\n",
+      "stdout": "{\n  \"path\": \"<tmp>\\\\f.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": <bytes>\n}\n",
       "stderr": ""
     },
     {

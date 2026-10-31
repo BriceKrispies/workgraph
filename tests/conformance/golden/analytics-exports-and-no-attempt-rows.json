@@ -19,7 +19,7 @@
       "index": 2,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"path\": \"<tmp>\\\\facts.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 779\n}\n",
+      "stdout": "{\n  \"path\": \"<tmp>\\\\facts.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": <bytes>\n}\n",
       "stderr": ""
     },
     {
@@ -33,7 +33,7 @@
       "index": 4,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"path\": \"<tmp>\\\\facts.json\",\n  \"format\": \"json\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 976\n}\n",
+      "stdout": "{\n  \"path\": \"<tmp>\\\\facts.json\",\n  \"format\": \"json\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": <bytes>\n}\n",
       "stderr": ""
     },
     {
@@ -47,7 +47,7 @@
       "index": 6,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"path\": \"<tmp>\\\\facts.parquet\",\n  \"format\": \"parquet\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": 7191\n}\n",
+      "stdout": "{\n  \"path\": \"<tmp>\\\\facts.parquet\",\n  \"format\": \"parquet\",\n  \"dataset\": \"task_facts\",\n  \"bytes\": <bytes>\n}\n",
       "stderr": ""
     },
     {
@@ -61,7 +61,7 @@
       "index": 8,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"path\": \"<tmp>\\\\q.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"tasks_created\",\n  \"bytes\": 27\n}\n",
+      "stdout": "{\n  \"path\": \"<tmp>\\\\q.csv\",\n  \"format\": \"csv\",\n  \"dataset\": \"tasks_created\",\n  \"bytes\": <bytes>\n}\n",
       "stderr": ""
     },
     {

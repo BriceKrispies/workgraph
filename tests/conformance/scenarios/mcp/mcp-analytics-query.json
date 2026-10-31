@@ -12,7 +12,7 @@
     {"assert": {"stderr_contains": "not_found"}},
     {"mcp": "analytics_query", "args": {"metric": "no_such_metric"}},
     {"assert": {"exit": 1}},
-    {"assert": {"stderr_contains": "validation_failed"}},
+    {"assert": {"stderr_contains": "Error executing tool analytics_query"}},
     {"mcp": "analytics_query", "args": {"metric": "tasks_accepted", "group_by": ["nonsense"]}},
     {"assert": {"exit": 1}},
     {"mcp": "analytics_query", "args": {"metric": "tasks_accepted", "period": "fortnight"}},

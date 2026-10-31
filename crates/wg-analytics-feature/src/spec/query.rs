@@ -58,20 +58,10 @@ pub fn definitions() -> Value {
     )
 }
 
-/// The registry's metric ids, sorted (the list of Python's `known metrics` message).
-fn known_metrics() -> String {
-    let ids: BTreeSet<&str> = registry().iter().map(|metric| metric.id).collect();
-    ids.into_iter().collect::<Vec<_>>().join(", ")
-}
-
 /// The pydantic error of the `metric` validator: `ValueError` text, which `--json` prints as the
 /// `ctx.error` string (`json.dumps(default=str)`).
 fn unknown_metric(metric: &str) -> ValidationError {
-    let reason = format!(
-        "unknown metric {}; known metrics: {}",
-        wg_types::py_repr_str(metric),
-        known_metrics()
-    );
+    let reason = format!("unknown metric {}", wg_types::py_repr_str(metric));
     ValidationError {
         kind: "value_error".to_owned(),
         loc: vec![Loc::Key("metric".to_owned())],

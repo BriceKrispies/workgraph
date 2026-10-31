@@ -23,7 +23,17 @@ def _anchor() -> tuple[int, int]:
 _WALL_NS, _PERF_NS = _anchor()
 
 
-class _Datetime(_dt.datetime):
+_REAL = _dt.datetime
+
+
+class _Meta(type(_REAL)):
+    # Values built by C code (DuckDB rows, `fromisoformat`) are plain datetimes; they must still
+    # satisfy `isinstance(value, datetime.datetime)` for the patched class.
+    def __instancecheck__(cls, obj):
+        return isinstance(obj, _REAL)
+
+
+class _Datetime(_REAL, metaclass=_Meta):
     @classmethod
     def now(cls, tz=None):
         ns = _WALL_NS + (_time.perf_counter_ns() - _PERF_NS)

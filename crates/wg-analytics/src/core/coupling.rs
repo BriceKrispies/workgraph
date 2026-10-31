@@ -93,12 +93,18 @@ pub fn coupling_report(
     );
     // Python walks `task_repos` in insertion order: the order in which the join first returns each
     // task. Pairs and the tasks of a pair keep that order, which ranks edges of equal support.
-    let task_order: Vec<&String> = touches.iter().fold(Vec::new(), |mut order, (task, _, _)| {
-        if !order.contains(&task) {
-            order.push(task);
-        }
-        order
-    });
+    let task_order: Vec<&String> = touches
+        .iter()
+        .fold(VectorSync::<&String>::new_sync(), |order, (task, _, _)| {
+            if order.iter().any(|seen| *seen == task) {
+                order
+            } else {
+                order.push_back(task)
+            }
+        })
+        .iter()
+        .copied()
+        .collect();
     let pair_tasks = task_order.iter().fold(
         RedBlackTreeMapSync::<Pair, VectorSync<String>>::new_sync(),
         |pairs, task| {
@@ -116,18 +122,24 @@ pub fn coupling_report(
             })
         },
     );
-    let pair_position: Vec<Pair> = task_order.iter().fold(Vec::new(), |mut seen, task| {
-        let touched = task_repos
-            .get(*task)
-            .cloned()
-            .unwrap_or_else(RedBlackTreeSetSync::new_sync);
-        for pair in pairs_of(&touched) {
-            if !seen.contains(&pair) {
-                seen.push(pair);
-            }
-        }
-        seen
-    });
+    let pair_position: Vec<Pair> = task_order
+        .iter()
+        .fold(VectorSync::<Pair>::new_sync(), |seen, task| {
+            let touched = task_repos
+                .get(*task)
+                .cloned()
+                .unwrap_or_else(RedBlackTreeSetSync::new_sync);
+            pairs_of(&touched).into_iter().fold(seen, |seen, pair| {
+                if seen.iter().any(|known| *known == pair) {
+                    seen
+                } else {
+                    seen.push_back(pair)
+                }
+            })
+        })
+        .iter()
+        .cloned()
+        .collect();
     let touch_counts = task_repos
         .values()
         .flat_map(|touched| touched.iter().cloned())

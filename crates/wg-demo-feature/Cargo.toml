@@ -22,6 +22,8 @@ wg-tasks-feature = { path = "../wg-tasks-feature" }
 wg-verify-feature = { path = "../wg-verify-feature" }
 wg-automation-feature = { path = "../wg-automation-feature" }
 wg-exec-feature = { path = "../wg-exec-feature" }
+wg-events-feature = { path = "../wg-events-feature" }
+ureq = "3.5"
 wg-intel-feature = { path = "../wg-intel-feature" }
 wg-analytics-feature = { path = "../wg-analytics-feature" }
 wg-runtime = { path = "../wg-runtime" }

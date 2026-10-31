@@ -2,12 +2,12 @@
 //! and call the feature services of the other crates. The decisions (the names, the files, the
 //! checks, the seed table) are in [`crate::spec`].
 //!
-//! Not ported yet, so the commands stop at the first step that needs them and say so: the
-//! verification configs of `demo/scenario.py` step 3 and of `demo seed` (no create service in
-//! `wg-verify-feature`), the classification requests (`wg-intel-feature` has no request service),
-//! the search embeddings and the retrospective report (no service in the analytics feature), and
-//! the MCP and HTTP steps of the demonstration. `demo seed` checks its preconditions and stops
-//! before it writes anything, so a refused run leaves the home as it was.
+//! `demo e2e` is [`e2e`], with its subprocess steps in `net`; `demo seed` is [`seed`].
+
+mod e2e;
+mod net;
+
+pub use e2e::e2e;
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -23,7 +23,6 @@ use wg_exec_feature::service::agents::LiveAgents;
 use wg_exec_feature::service::attempts::{ListQuery, attempt_list};
 use wg_exec_feature::service::run_flow::run_start;
 use wg_exec_feature::spec::runs::StartRequest;
-use wg_git_feature::service::git_sync;
 use wg_git_feature::service::task_commits;
 use wg_iface::cli::CliFailure;
 use wg_iface::cli::args::{get, items, s};
@@ -31,7 +30,7 @@ use wg_intel_feature::service::embed::embed_task;
 use wg_intel_feature::service::llm::Live;
 use wg_json::Value;
 use wg_registry_feature::service::{project_create, repo_depend};
-use wg_registry_feature::service::{repo_list, repo_register, workspace_create, workspace_list};
+use wg_registry_feature::service::{repo_register, workspace_create, workspace_list};
 use wg_registry_feature::spec::registry::workspace_create_body;
 use wg_registry_feature::spec::repos::RegisterInput;
 use wg_runtime::{App, RequestContext, human_context};
@@ -43,7 +42,7 @@ use wg_tasks_feature::service::{
 use wg_types::parse_id;
 use wg_verify_feature::service::api as verification;
 
-use crate::spec::{self, REPOS, RepoSpec, step_line, written};
+use crate::spec::{self, REPOS, RepoSpec, written};
 
 /// A fresh directory for `demo e2e` without `--home` (`tempfile.mkdtemp(prefix="workgraph-demo-")`).
 ///
@@ -302,77 +301,24 @@ fn create_tasks(
 /// `_drain`: a worker with three threads runs the queue until nothing is runnable. The worker
 /// opens its own application over the same home, as `worker run` does.
 fn drain(env: &SeedEnv<'_>) -> Result<(), CliFailure> {
+    drain_home(env.home.clone(), env.features)
+}
+
+/// [`drain`] over `home` with the jobs of `features`.
+fn drain_home(
+    home: Option<PathBuf>,
+    features: &'static [&'static Feature],
+) -> Result<(), CliFailure> {
     let options = WorkerOptions {
-        home: env.home.clone(),
+        home,
         concurrency: Some(3),
         poll_interval: Some(Duration::from_millis(50)),
         maintenance_interval: Some(Duration::from_millis(200)),
         ..WorkerOptions::default()
     };
-    let mut worker = Worker::open(options, HandlerRegistry::from_features(env.features))?;
+    let mut worker = Worker::open(options, HandlerRegistry::from_features(features))?;
     worker.run_until_idle(Duration::from_secs(300))?;
     Ok(())
-}
-
-/// `demo e2e` in `home`: steps 1 and 2 of `demo/scenario.py` (the workspace and the three Git
-/// repositories), each recorded in `lines` as `[ n] ok  title`. Step 3 needs verification
-/// configs, which are not ported, so the demonstration fails there and the home is kept.
-///
-/// # Errors
-///
-/// Returns the first step that fails, and always fails at step 3 for now.
-pub fn e2e(home: &Path, lines: &mut Vec<String>) -> Result<(), CliFailure> {
-    let mut app = App::open(Some(home))?;
-    let operator = human_context(Some("demo-operator"))?;
-
-    configure_demo(
-        &mut app,
-        &[("scripted", "success"), ("scripted-buggy", "buggy")],
-        false,
-    )?;
-    workspace_create(
-        &mut app,
-        &operator,
-        &workspace_create_body("demo", Some("Demo"), "WG", ""),
-        true,
-    )?;
-    app.api_token(true)?;
-    lines.push(step_line(1, spec::STEP_WORKSPACE));
-
-    let paths = create_repositories(&home.join("repos"))?;
-    for (_, path) in &paths {
-        let input = RegisterInput {
-            path: path.display().to_string(),
-            ..RegisterInput::default()
-        };
-        repo_register(&mut app, &operator, Some("demo"), &input)?;
-    }
-    let mut names: Vec<String> = repo_list(&mut app, &operator, Some("demo"), false, None)?
-        .iter()
-        .map(|row| s(get(row, "name")))
-        .collect();
-    names.sort();
-    let mut expected: Vec<&str> = REPOS.iter().map(|repo| repo.name).collect();
-    expected.sort_unstable();
-    if names != expected {
-        return Err(CliFailure::fail(
-            format!("demonstration failed: registered {names:?}"),
-            1,
-        ));
-    }
-    for repo in &REPOS {
-        git_sync(&mut app, &operator, Some("demo"), Some(repo.name), false)?;
-    }
-    lines.push(step_line(2, spec::STEP_REPOSITORIES));
-
-    Err(CliFailure::fail(
-        format!(
-            "demonstration failed: step 3 ({}) needs verification configs, which are not ported yet (home kept at {})",
-            spec::STEP_PROJECT,
-            home.display()
-        ),
-        1,
-    ))
 }
 
 /// The demo's configuration (step 1): heuristic inference, the execution switch, the scripted

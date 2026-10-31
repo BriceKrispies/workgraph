@@ -3,6 +3,8 @@
 //! carry, the seed table, the scripted agent modes and the human view of `demo seed`. Nothing here
 //! touches the file system, Git or the store; [`crate::service`] does, and [`crate::cli`] prints.
 
+pub mod e2e;
+
 use std::path::PathBuf;
 
 use clap::{ArgMatches, Command};
@@ -66,9 +68,6 @@ pub const STEP_WORKSPACE: &str = "Initialize a Workgraph workspace";
 
 /// The step title of `demo e2e` step 2.
 pub const STEP_REPOSITORIES: &str = "Register all three Git repositories";
-
-/// The title of `demo e2e` step 3, the first step that needs a service not ported yet.
-pub const STEP_PROJECT: &str = "Create a project spanning the repositories";
 
 /// One of the three demo repositories: its name, the file it seeds, the planned file and the
 /// plan's content (`REPOS` of `demo/scenario.py`).

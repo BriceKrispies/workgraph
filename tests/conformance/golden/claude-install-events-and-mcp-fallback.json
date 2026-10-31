@@ -19,7 +19,7 @@
       "index": 1,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json\",\n  \"added\": [\n    \"PreToolUse\",\n    \"Stop\"\n  ],\n  \"backup\": null,\n  \"command\": \"workgraph\",\n  \"mcp\": \"claude CLI not found; add manually: {\\\"mcpServers\\\": {\\\"workgraph\\\": {\\\"type\\\": \\\"stdio\\\", \\\"command\\\": \\\"workgraph\\\", \\\"args\\\": [\\\"mcp\\\"]}}}\"\n}\n",
+      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json\",\n  \"added\": [\n    \"PreToolUse\",\n    \"Stop\"\n  ],\n  \"backup\": null,\n  \"command\": \"workgraph\",\n  \"mcp\": \"Added stdio MCP server workgraph with command: workgraph mcp to local config\\nFile modified: <home>\\\\.claude.json [project: <tmp>/repos]\"\n}\n",
       "stderr": ""
     },
     {
@@ -61,7 +61,7 @@
       "index": 7,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json\",\n  \"removed\": [\n    \"PreToolUse\",\n    \"Stop\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json.workgraph-backup-20261026T152405Z\"\n}\n",
+      "stdout": "{\n  \"settings\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json\",\n  \"removed\": [\n    \"PreToolUse\",\n    \"Stop\"\n  ],\n  \"backup\": \"<tmp>/repos\\\\local\\\\.claude\\\\settings.local.json.workgraph-backup-<ts@8|compact>\"\n}\n",
       "stderr": ""
     },
     {

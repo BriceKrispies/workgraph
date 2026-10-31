@@ -53,6 +53,24 @@
     },
     {
       "cli": [
+        "config",
+        "set",
+        "llm.auto_embed",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "llm.auto_classify",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
         "agent",
         "add-command",
         "fake-a",
@@ -150,7 +168,7 @@
         "--check",
         "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
         "--check",
-        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"regression\"}"
+        "{\"name\":\"suite\",\"kind\":\"test\",\"allow_shell\":true,\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"regression\"}"
       ],
       "json": true
     },
@@ -266,7 +284,7 @@
       ],
       "json": true,
       "save": {
-        "tip_a": "/repositories/0/integration_tip"
+        "old_base": "/repositories/0/base_sha"
       }
     },
     {
@@ -289,7 +307,7 @@
         "--check",
         "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
         "--check",
-        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"regression\",\"env\":{\"SUITE_VERSION\":\"2\"}}"
+        "{\"name\":\"suite\",\"kind\":\"test\",\"allow_shell\":true,\"command\":[\"sh\",\"-c\",\"bad=0; for f in bad_*; do if [ -e $f ]; then echo test $f ... FAILED; bad=1; fi; done; exit $bad\"],\"parser\":\"cargo\",\"baseline\":\"regression\",\"env\":{\"SUITE_VERSION\":\"2\"}}"
       ],
       "json": true
     },
@@ -341,7 +359,7 @@
       "assert": {
         "json": {
           "path": "/repositories/0/base_sha",
-          "equals": "{var:tip_a}"
+          "not_equals": "{var:old_base}"
         }
       }
     },

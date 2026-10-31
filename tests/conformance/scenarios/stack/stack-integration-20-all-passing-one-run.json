@@ -48,6 +48,24 @@
     },
     {
       "cli": [
+        "config",
+        "set",
+        "llm.auto_embed",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "llm.auto_classify",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
         "agent",
         "add-command",
         "fake-a",
@@ -115,7 +133,7 @@
         "--check",
         "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
         "--check",
-        "{\"name\":\"suite\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"echo 1 passed\"]}"
+        "{\"name\":\"suite\",\"kind\":\"test\",\"allow_shell\":true,\"command\":[\"sh\",\"-c\",\"echo 1 passed\"]}"
       ],
       "json": true
     },

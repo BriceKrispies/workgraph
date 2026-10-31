@@ -40,7 +40,7 @@
       "index": 3,
       "kind": "cli",
       "exit": 0,
-      "stdout": "{\n  \"name\": \"fake\",\n  \"executable\": \"python\",\n  \"args\": [\n    \"C:/dev/workgraph/.claude/worktrees/agent-adbe51c0d630f1176/src/workgraph/demo/scripted_agent.py\",\n    \"--mode\",\n    \"success\",\n    \"{manifest}\"\n  ]\n}\n",
+      "stdout": "{\n  \"name\": \"fake\",\n  \"executable\": \"workgraph-demo-agent\",\n  \"args\": [\n    \"--mode\",\n    \"success\",\n    \"{manifest}\"\n  ]\n}\n",
       "stderr": ""
     },
     {

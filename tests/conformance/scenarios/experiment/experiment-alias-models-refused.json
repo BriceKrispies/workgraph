@@ -21,7 +21,7 @@
     {"assert": {"stdout_contains": "alias"}},
     {"cli": ["experiment", "create", "exp-alias", "--title", "Alias", "--protocol", "{\"arms\":[{\"name\":\"arm\",\"model\":\"claude-haiku\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true, "expect_exit": 2},
     {"assert": {"exit": 2}},
-    {"assert": {"stdout_contains": "alias"}},
+    {"assert": {"stdout_contains": "not a pinned model id"}},
     {"cli": ["experiment", "create", "exp-alias", "--title", "Alias", "--protocol", "{\"arms\":[{\"name\":\"arm\",\"model\":\"haiku\"}],\"brief_template\":\"replay-v1\",\"primary_size\":\"src_lines\",\"bands\":{\"min\":1,\"max\":5},\"staircase\":{\"per_visit\":2,\"up\":1,\"down\":2,\"max_reversals\":6,\"max_trials\":24},\"budget\":{\"trials\":40}}"], "json": true, "expect_exit": 2},
     {"assert": {"exit": 2}},
     {"assert": {"stdout_contains": "alias"}},

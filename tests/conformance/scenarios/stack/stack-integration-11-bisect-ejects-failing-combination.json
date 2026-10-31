@@ -47,6 +47,24 @@
     },
     {
       "cli": [
+        "config",
+        "set",
+        "llm.auto_embed",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
+        "config",
+        "set",
+        "llm.auto_classify",
+        "false"
+      ],
+      "json": true
+    },
+    {
+      "cli": [
         "agent",
         "add-command",
         "fake-a",
@@ -129,7 +147,7 @@
         "--check",
         "{\"name\":\"types\",\"kind\":\"typecheck\",\"tier\":\"fast\",\"command\":[\"git\",\"rev-parse\",\"--is-inside-work-tree\"]}",
         "--check",
-        "{\"name\":\"combined\",\"kind\":\"test\",\"command\":[\"sh\",\"-c\",\"if [ -e a.txt ] && [ -e c.txt ]; then echo FAILED combined::a_and_c - a.txt and c.txt both exist; exit 1; fi\"]}"
+        "{\"name\":\"combined\",\"kind\":\"test\",\"allow_shell\":true,\"command\":[\"sh\",\"-c\",\"if [ -e a.txt ] && [ -e c.txt ]; then echo FAILED combined::a_and_c - a.txt and c.txt both exist; exit 1; fi\"]}"
       ],
       "json": true
     },

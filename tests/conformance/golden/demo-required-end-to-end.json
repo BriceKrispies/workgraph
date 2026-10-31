@@ -1,0 +1,236 @@
+{
+  "scenario": "demo-required-end-to-end",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"ok\": true,\n  \"home\": \"<tmp>\\\\demo-home\",\n  \"steps\": [\n    {\n      \"step\": 1,\n      \"title\": \"Initialize a Workgraph workspace\",\n      \"ok\": true,\n      \"seconds\": 0.11,\n      \"workspace\": \"demo\",\n      \"database\": \"<tmp>\\\\demo-home\\\\data\\\\workgraph.db\"\n    },\n    {\n      \"step\": 2,\n      \"title\": \"Register all three Git repositories\",\n      \"ok\": true,\n      \"seconds\": 2.0,\n      \"repositories\": [\n        \"auth-service\",\n        \"shared-sdk\",\n        \"web-client\"\n      ]\n    },\n    {\n      \"step\": 3,\n      \"title\": \"Create a project spanning the repositories\",\n      \"ok\": true,\n      \"seconds\": 0.11,\n      \"project\": \"session-refresh\"\n    },\n    {\n      \"step\": 4,\n      \"title\": \"Create a cross-repository parent task\",\n      \"ok\": true,\n      \"seconds\": 0.06,\n      \"parent\": \"WG-1\"\n    },\n    {\n      \"step\": 5,\n      \"title\": \"Create dependent child tasks\",\n      \"ok\": true,\n      \"seconds\": 0.12,\n      \"children\": [\n        \"WG-2\",\n        \"WG-3\",\n        \"WG-4\"\n      ]\n    },\n    {\n      \"step\": 6,\n      \"title\": \"Classify the tasks with the deterministic provider\",\n      \"ok\": true,\n      \"seconds\": 2.22,\n      \"WG-2\": \"feature\",\n      \"WG-3\": \"feature\"\n    },\n    {\n      \"step\": 7,\n      \"title\": \"Query ready tasks through MCP (stdio server subprocess)\",\n      \"ok\": true,\n      \"seconds\": 4.94,\n      \"mcp_tools\": 69,\n      \"ready\": [\n        \"WG-2\"\n      ],\n      \"claimed_by\": \"agent:demo-mcp-agent\"\n    },\n    {\n      \"step\": 8,\n      \"title\": \"Claim work through MCP\",\n      \"ok\": true,\n      \"seconds\": 0.0,\n      \"task\": \"WG-2\",\n      \"status\": \"claimed\"\n    },\n    {\n      \"step\": 9,\n      \"title\": \"Create an agent attempt\",\n      \"ok\": true,\n      \"seconds\": 0.05,\n      \"attempt\": \"<id:1>\",\n      \"provider\": \"scripted\"\n    },\n    {\n      \"step\": 10,\n      \"title\": \"Prepare managed worktrees\",\n      \"ok\": true,\n      \"seconds\": 2.05,\n      \"manifests\": [\n        \"baseline\",\n        \"outcome\",\n        \"verification\"\n      ],\n      \"commits\": [\n        \"724a1f51d1\"\n      ],\n      \"usage\": {\n        \"input_tokens\": 1200,\n        \"output_tokens\": 340\n      },\n      \"duration_ms\": <dur>\n    },\n    {\n      \"step\": 11,\n      \"title\": \"Simulate implementation with the local command adapter\",\n      \"ok\": true,\n      \"seconds\": 0.0,\n      \"adapter\": \"command\"\n    },\n    {\n      \"step\": 12,\n      \"title\": \"Generate real Git commits\",\n      \"ok\": true,\n      \"seconds\": 0.0,\n      \"commits\": [\n        \"724a1f51d1\"\n      ]\n    },\n    {\n      \"step\": 13,\n      \"title\": \"Ingest and associate commits across repositories\",\n      \"ok\": true,\n      \"seconds\": 2.08,\n      \"sdk\": \"accepted\",\n      \"auth_attempt\": \"<id:2>\"\n    },\n    {\n      \"step\": 14,\n      \"title\": \"Capture execution telemetry\",\n      \"ok\": true,\n      \"seconds\": 0.01,\n      \"progress_events\": 2,\n      \"queue_wait_ms\": <dur>\n    },\n    {\n      \"step\": 15,\n      \"title\": \"Run configured verification checks\",\n      \"ok\": true,\n      \"seconds\": 0.02,\n      \"passing_run\": \"<id:3>\",\n      \"failing_run_signatures\": [\n        \"test:tests/test_contract.py::test_refresh_contract\"\n      ]\n    },\n    {\n      \"step\": 16,\n      \"title\": \"Record passing and failing verification scenarios\",\n      \"ok\": true,\n      \"seconds\": 0.0,\n      \"recorded\": true\n    },\n    {\n      \"step\": 17,\n      \"title\": \"Retry the failed attempt\",\n      \"ok\": true,\n      \"seconds\": 4.64,\n      \"retry_attempt\": \"<id:4>\"\n    },\n    {\n      \"step\": 18,\n      \"title\": \"Accept the successfully verified tasks\",\n      \"ok\": true,\n      \"seconds\": 0.58,\n      \"accepted\": [\n        \"WG-2\",\n        \"WG-3\",\n        \"WG-4\",\n        \"WG-1\"\n      ]\n    },\n    {\n      \"step\": 19,\n      \"title\": \"Calculate cumulative churn and final diff separately\",\n      \"ok\": true,\n      \"seconds\": 0.0,\n      \"cumulative_churn\": {\n        \"commits\": 2,\n        \"insertions\": 20,\n        \"deletions\": 0\n      },\n      \"final_change_surface\": {\n        \"insertions\": 10,\n        \"deletions\": 0,\n        \"files_changed\": 1,\n        \"functions_affected\": 1\n      }\n    },\n    {\n      \"step\": 20,\n      \"title\": \"Calculate cross-repository analytics\",\n      \"ok\": true,\n      \"seconds\": 0.31,\n      \"edges\": [\n        \"shared-sdk+web-client\"\n      ],\n      \"summary\": {\n        \"tasks_with_code\": 3,\n        \"cross_repository_tasks\": 1,\n        \"average_repositories_per_task\": 1.333,\n        \"median_elapsed_ms_cross_repo\": <dur>,\n        \"median_elapsed_ms_single_repo\": <dur>,\n        \"integration_checks\": 4,\n        \"integration_failure_rate\": 0.0\n      }\n    },\n    {\n      \"step\": 21,\n      \"title\": \"Query historical task results\",\n      \"ok\": true,\n      \"seconds\": 0.05,\n      \"accepted_tasks\": 4,\n      \"attempts_per_task_median\": 1.0\n    },\n    {\n      \"step\": 22,\n      \"title\": \"Generate a retrospective report\",\n      \"ok\": true,\n      \"seconds\": 0.38,\n      \"report_id\": \"<id:5>\",\n      \"narrative_source\": \"model:heuristic/heuristic-v1\"\n    },\n    {\n      \"step\": 23,\n      \"title\": \"Confirm the results through the local HTTP API\",\n      \"ok\": true,\n      \"seconds\": 1.56,\n      \"api_tasks\": 4,\n      \"graph_edges\": 6\n    },\n    {\n      \"step\": 24,\n      \"title\": \"Verify the web frontend serves the persisted data\",\n      \"ok\": true,\n      \"seconds\": 0.41,\n      \"ui_built\": false,\n      \"ui_status\": 200,\n      \"note\": \"web UI not built; run bun run --cwd web build to serve it\"\n    },\n    {\n      \"step\": 25,\n      \"title\": \"Restart the application and confirm persistence and recovery\",\n      \"ok\": true,\n      \"seconds\": 0.14,\n      \"before\": {\n        \"tasks\": 4,\n        \"attempts\": 4,\n        \"events\": 144\n      },\n      \"after\": {\n        \"tasks\": 4,\n        \"attempts\": 4,\n        \"events\": 144\n      },\n      \"recovered_jobs\": 0,\n      \"orphaned_worktrees\": 0,\n      \"event_projection\": \"consistent\"\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 24,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 25,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 26,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 27,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 28,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 29,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 30,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 31,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 32,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

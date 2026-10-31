@@ -1,0 +1,173 @@
+{
+  "scenario": "experiment-alias-models-refused",
+  "steps": [
+    {
+      "index": 0,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "{\n  \"config_dir\": \"<home>\\\\config\",\n  \"data_dir\": \"<home>\\\\data\",\n  \"database\": \"<home>\\\\data\\\\workgraph.db\",\n  \"schema_revision\": \"0011\",\n  \"workspace_created\": \"default\",\n  \"default_workspace\": \"default\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "index": 1,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'sonnet'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'sonnet'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 2,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 3,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 4,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'opus'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'opus'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 5,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 6,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 7,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'fable'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'fable'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 8,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 9,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 10,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'inherit'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'inherit'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 11,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 12,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 13,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'Haiku'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'Haiku'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 14,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 15,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 16,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is not a pinned model id (expected a full id such as 'claude-haiku-5-5')\", \"details\": {\"problems\": [\"arms[0].model is not a pinned model id (expected a full id such as 'claude-haiku-5-5')\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 17,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 18,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 19,
+      "kind": "cli",
+      "exit": 2,
+      "stdout": "{\"error\": {\"code\": \"validation_failed\", \"message\": \"invalid experiment protocol: arms[0].model is the alias 'haiku'; pin a full model id such as 'claude-haiku-5-5'\", \"details\": {\"problems\": [\"arms[0].model is the alias 'haiku'; pin a full model id such as 'claude-haiku-5-5'\"]}}}\n",
+      "stderr": ""
+    },
+    {
+      "index": 20,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 21,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "index": 22,
+      "kind": "cli",
+      "exit": 0,
+      "stdout": "[]\n",
+      "stderr": ""
+    },
+    {
+      "index": 23,
+      "kind": "assert",
+      "exit": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

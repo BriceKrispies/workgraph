@@ -2490,14 +2490,20 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "serde_json",
+ "wg-analytics-feature",
+ "wg-automation-feature",
  "wg-config",
+ "wg-exec-feature",
  "wg-git-feature",
  "wg-iface",
+ "wg-intel-feature",
  "wg-json",
  "wg-registry-feature",
  "wg-render",
  "wg-runtime",
+ "wg-tasks-feature",
  "wg-types",
+ "wg-verify-feature",
 ]
 
 [[package]]

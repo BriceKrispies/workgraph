@@ -11,6 +11,7 @@ use wg_iface::cli::args::{flag, get, one, s};
 use wg_iface::cli::tree::snapshot_command;
 use wg_json::Value;
 use wg_render::Console;
+use wg_verify_feature::spec::config_write::ConfigBody;
 
 /// The `demo` group, from the snapshot so help and parameters match `contracts/cli.json`.
 #[must_use]
@@ -296,6 +297,126 @@ pub fn seed_view(_console: &Console, summary: &Value) -> String {
         s(get(summary, "attempts")),
         s(get(summary, "commits")),
     )
+}
+
+/// `str.title()` for a slug: the first letter of each run of letters upper-cased, the rest lower.
+#[must_use]
+pub fn title_case(text: &str) -> String {
+    let mut out = String::new();
+    let mut start = true;
+    for ch in text.chars() {
+        if ch.is_alphabetic() {
+            if start {
+                out.extend(ch.to_uppercase());
+            } else {
+                out.extend(ch.to_lowercase());
+            }
+            start = false;
+        } else {
+            out.push(ch);
+            start = true;
+        }
+    }
+    out
+}
+
+/// The automation rule of `demo seed`.
+#[must_use]
+pub fn seed_rule() -> serde_json::Value {
+    serde_json::json!({
+        "name": "triage critical bugs",
+        "trigger": {"type": "event", "event_types": ["task.created"]},
+        "conditions": {"field": "task.priority", "op": "eq", "value": "critical"},
+        "actions": [
+            {"type": "add_tags", "tags": ["triage"]},
+            {"type": "notify", "level": "warning", "title": "Critical task {{task.key}}: {{task.title}}"},
+        ],
+    })
+}
+
+/// The two projects of `demo seed`, as `ProjectCreate` bodies.
+#[must_use]
+pub fn seed_projects() -> [serde_json::Value; 2] {
+    let all: Vec<&str> = REPOS.iter().map(|repo| repo.name).collect();
+    [
+        serde_json::json!({"slug": "platform", "name": "Platform", "repositories": all}),
+        serde_json::json!({"slug": "frontend", "name": "Frontend", "repositories": ["web-client", "shared-sdk"]}),
+    ]
+}
+
+/// The verification configs of `demo seed` (a contract check per repository, then the optional
+/// integration check of `platform`), as `VerificationConfigBody`s running the demo binary `agent`.
+#[must_use]
+pub fn seed_verification(agent: &str) -> Vec<ConfigBody> {
+    let command = |args: &[&str]| {
+        let mut command = vec![agent.to_owned()];
+        command.extend(args.iter().map(|arg| (*arg).to_owned()));
+        command
+    };
+    let mut bodies: Vec<ConfigBody> = REPOS
+        .iter()
+        .map(|repo| ConfigBody {
+            scope_type: "repository".to_owned(),
+            scope: Some(repo.name.to_owned()),
+            name: "contract".to_owned(),
+            checks: vec![serde_json::json!({
+                "name": format!("{} contract tests", repo.name),
+                "kind": "test",
+                "command": command(&CONTRACT_CHECK_ARGS),
+            })],
+        })
+        .collect();
+    bodies.push(ConfigBody {
+        scope_type: "project".to_owned(),
+        scope: Some("platform".to_owned()),
+        name: "integration".to_owned(),
+        checks: vec![serde_json::json!({
+            "name": "cross-repo integration",
+            "kind": "integration",
+            "command": command(&INTEGRATION_CHECK_ARGS),
+            "required": false,
+        })],
+    });
+    bodies
+}
+
+/// The `TaskCreate` body of a seed task.
+#[must_use]
+pub fn task_body(task: &SeedTask) -> serde_json::Value {
+    serde_json::json!({
+        "title": task.title,
+        "description": task.description,
+        "repositories": task.repos,
+        "projects": [seed_project(task.repos)],
+        "priority": task.priority,
+        "status": "ready",
+        "acceptance_criteria": ["Contract tests pass"],
+    })
+}
+
+/// The umbrella task `demo seed` parents the first four tasks under.
+#[must_use]
+pub fn umbrella_body() -> serde_json::Value {
+    serde_json::json!({
+        "title": "Session reliability initiative",
+        "description": "Umbrella for session-related improvements.",
+        "projects": ["platform"],
+        "repositories": REPOS.iter().map(|repo| repo.name).collect::<Vec<_>>(),
+        "priority": "high",
+    })
+}
+
+/// The follow-up task, which depends on the first two seed tasks.
+#[must_use]
+pub fn follow_body(first: &str, second: &str) -> serde_json::Value {
+    serde_json::json!({
+        "title": "Handle refresh failures gracefully",
+        "description": "Show a re-login prompt when refresh fails.",
+        "repositories": ["web-client"],
+        "projects": ["frontend"],
+        "status": "ready",
+        "depends_on": [first, second],
+    })
 }
 
 #[cfg(test)]

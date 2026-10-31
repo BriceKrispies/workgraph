@@ -13,20 +13,37 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use std::time::Duration;
+
+use serde_json::json;
+use wg_analytics_feature::service::retrospective::retrospective;
+use wg_automation_feature::service as automation;
 use wg_config::set_path;
+use wg_exec_feature::service::agents::LiveAgents;
+use wg_exec_feature::service::attempts::{ListQuery, attempt_list};
+use wg_exec_feature::service::run_flow::run_start;
+use wg_exec_feature::spec::runs::StartRequest;
 use wg_git_feature::service::git_sync;
+use wg_git_feature::service::task_commits;
 use wg_iface::cli::CliFailure;
 use wg_iface::cli::args::{get, items, s};
+use wg_intel_feature::service::embed::embed_task;
+use wg_intel_feature::service::llm::Live;
 use wg_json::Value;
+use wg_registry_feature::service::{project_create, repo_depend};
 use wg_registry_feature::service::{repo_list, repo_register, workspace_create, workspace_list};
 use wg_registry_feature::spec::registry::workspace_create_body;
 use wg_registry_feature::spec::repos::RegisterInput;
-use wg_runtime::{App, human_context};
+use wg_runtime::{App, RequestContext, human_context};
+use wg_runtime::{Feature, HandlerRegistry, Worker, WorkerOptions};
+use wg_tasks_feature::service::acceptance::task_accept;
+use wg_tasks_feature::service::{
+    task_add_relation, task_comment, task_create, task_list, task_show, task_update,
+};
+use wg_types::parse_id;
+use wg_verify_feature::service::api as verification;
 
 use crate::spec::{self, REPOS, RepoSpec, step_line, written};
-
-/// What `demo seed` fails with once its preconditions hold: the seeding services are not ported.
-const SEED_NOT_PORTED: &str = "demo seed stops before it writes anything: verification configs, classification requests, search embeddings and the retrospective report are not ported yet";
 
 /// A fresh directory for `demo e2e` without `--home` (`tempfile.mkdtemp(prefix="workgraph-demo-")`).
 ///
@@ -43,13 +60,28 @@ pub fn fresh_temp_home() -> Result<PathBuf, CliFailure> {
     Ok(path)
 }
 
-/// `demo seed`: the preconditions of `demo/seed.py`'s command (exit 3 on a workspace that exists,
-/// or on data without `--force`), then the refusal that the seeding services are not ported.
+/// Where `demo seed` runs: the home, the features whose jobs the drain runs, and the progress
+/// lines it collects (Python's `log`).
+pub struct SeedEnv<'a> {
+    pub home: Option<PathBuf>,
+    pub features: &'static [&'static Feature],
+    pub log: &'a mut dyn FnMut(&str),
+}
+
+/// `demo seed` (`seed_demo`): the preconditions of the command (exit 3 on a workspace that
+/// exists, or on data without `--force`), then the workspace, the repositories, the projects, the
+/// verification configs, the automation rule, the seven tasks and their runs, the embeddings and
+/// the retrospective, each through the service the matching command calls.
 ///
 /// # Errors
 ///
-/// Always an error for now: the precondition failures, or [`SEED_NOT_PORTED`].
-pub fn seed(app: &mut App, workspace: &str, force: bool) -> Result<Value, CliFailure> {
+/// Returns the precondition failures, or the first service that fails.
+pub fn seed(
+    app: &mut App,
+    env: &mut SeedEnv<'_>,
+    workspace: &str,
+    force: bool,
+) -> Result<Value, CliFailure> {
     let context = human_context(Some("demo"))?;
     let listing = workspace_list(app, &context, false)?;
     let existing: Vec<String> = items(Some(&listing))
@@ -65,7 +97,221 @@ pub fn seed(app: &mut App, workspace: &str, force: bool) -> Result<Value, CliFai
     if !existing.is_empty() && !force {
         return Err(CliFailure::fail(spec::SEED_HAS_DATA, 3));
     }
-    Err(CliFailure::fail(SEED_NOT_PORTED, 1))
+    configure_demo(app, &spec::SEED_AGENT_MODES, true)?;
+    (env.log)("configured heuristic inference and scripted demo agents");
+    workspace_create(
+        app,
+        &context,
+        &workspace_create_body(workspace, Some(&spec::title_case(workspace)), "DEMO", ""),
+        true,
+    )?;
+    let data_dir = PathBuf::from(app.paths.data_dir().as_str());
+    let repos_root = data_dir.join("demo-repos").join(workspace);
+    let paths = create_repositories(&repos_root)?;
+    for (_, path) in &paths {
+        let input = RegisterInput {
+            path: path.display().to_string(),
+            ..RegisterInput::default()
+        };
+        repo_register(app, &context, Some(workspace), &input)?;
+    }
+    repo_depend(
+        app,
+        &context,
+        Some(workspace),
+        "web-client",
+        "shared-sdk",
+        "web client consumes the SDK",
+        false,
+    )?;
+    for body in spec::seed_projects() {
+        project_create(app, &context, Some(workspace), &body)?;
+    }
+    create_verification(app, &context, workspace)?;
+    let rule = spec::seed_rule();
+    automation::create(app, &context, Some(workspace), &rule)?;
+    (env.log)("created repositories, projects, verification and automation");
+
+    let keys = create_tasks(app, &context, workspace)?;
+    drain(env)?;
+    (env.log)("created tasks and classified them");
+
+    for (position, (task, key)) in spec::SEED_TASKS.iter().zip(&keys).enumerate() {
+        let request = StartRequest {
+            agent: Some(task.agent.to_owned()),
+            ..StartRequest::default()
+        };
+        let attempt = run_start(
+            app,
+            &context,
+            &mut LiveAgents,
+            Some(workspace),
+            key,
+            &request,
+        )?;
+        drain(env)?;
+        if task.retry {
+            let request = StartRequest {
+                agent: Some("scripted".to_owned()),
+                retry_of: Some(parse_id(&s(get(&attempt, "id")))?),
+                ..StartRequest::default()
+            };
+            run_start(
+                app,
+                &context,
+                &mut LiveAgents,
+                Some(workspace),
+                key,
+                &request,
+            )?;
+            drain(env)?;
+        }
+        // The last two tasks (the failing agent and the research task) are left for review.
+        if task_status(app, &context, workspace, key)? == "awaiting_review" && position < 5 {
+            task_accept(app, &context, Some(workspace), key, "")?;
+        }
+        let status = task_status(app, &context, workspace, key)?;
+        (env.log)(&format!("{key}: {status}"));
+    }
+    drain(env)?;
+    for key in &keys {
+        let shown = task_show(app, &context, Some(workspace), std::slice::from_ref(key))?;
+        let Some(id) = shown.items.first().map(|item| s(get(item, "id"))) else {
+            continue;
+        };
+        let embedded =
+            parse_id(&id).and_then(|id| embed_task(app, &context, &mut Live, id, None, None));
+        if let Err(error) = embedded {
+            // Embeddings are optional enrichment.
+            (env.log)(&format!("embedding skipped for {key}: {}", error.message));
+        }
+    }
+    retrospective(
+        app,
+        &context,
+        Some(workspace),
+        &(14, None, None, true, None),
+    )?;
+
+    let mut commits = 0;
+    for key in &keys {
+        let linked = task_commits(app, &context, Some(workspace), key, 0.0)?;
+        commits += items(Some(&linked)).len();
+    }
+    let tasks = task_list(app, &context, Some(workspace), &json!({}))?;
+    let query = ListQuery {
+        workspace: Some(workspace),
+        task: None,
+        statuses: &[],
+        provider: None,
+        limit: 1,
+        offset: 0,
+    };
+    let attempts = attempt_list(app, &context, &query)?;
+    let total = |page: &Value| s(get(page, "total")).parse::<i128>().unwrap_or(0);
+    Ok(wg_json::dict(vec![
+        ("workspace", Value::Str(workspace.into())),
+        ("tasks", Value::Int(total(&tasks))),
+        ("attempts", Value::Int(total(&attempts))),
+        ("commits", Value::Int(i128::try_from(commits).unwrap_or(0))),
+        (
+            "repositories",
+            Value::Str(repos_root.display().to_string().into()),
+        ),
+    ]))
+}
+
+fn task_status(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: &str,
+    key: &str,
+) -> Result<String, CliFailure> {
+    let shown = task_show(app, context, Some(workspace), &[key.to_owned()])?;
+    Ok(shown
+        .items
+        .first()
+        .map(|item| s(get(item, "status")))
+        .unwrap_or_default())
+}
+
+/// The verification configs of `seed_demo`: a contract check per repository and the optional
+/// cross-repository integration check of the `platform` project.
+fn create_verification(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: &str,
+) -> Result<(), CliFailure> {
+    let agent = demo_agent_path()?;
+    for body in spec::seed_verification(&agent) {
+        verification::create_config(app, context, workspace, &body)?;
+    }
+    Ok(())
+}
+
+/// The seven seed tasks, the umbrella task and the follow-up; the keys of the seven, in order.
+fn create_tasks(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: &str,
+) -> Result<Vec<String>, CliFailure> {
+    let mut keys = Vec::new();
+    for task in &spec::SEED_TASKS {
+        let created = task_create(app, context, Some(workspace), &spec::task_body(task))?;
+        keys.push(s(get(&created, "key")));
+    }
+    let parent = s(get(
+        &task_create(app, context, Some(workspace), &spec::umbrella_body())?,
+        "key",
+    ));
+    for key in &keys[..4] {
+        task_update(
+            app,
+            context,
+            Some(workspace),
+            key,
+            &json!({"parent": parent}),
+        )?;
+    }
+    let follow = s(get(
+        &task_create(
+            app,
+            context,
+            Some(workspace),
+            &spec::follow_body(&keys[0], &keys[1]),
+        )?,
+        "key",
+    ));
+    task_add_relation(
+        app,
+        context,
+        Some(workspace),
+        &follow,
+        &json!({"target": keys[0], "relation_type": "follows_up"}),
+    )?;
+    task_comment(
+        app,
+        context,
+        Some(workspace),
+        &keys[0],
+        &json!({"body": "Reproduced locally: token expiry at 60 min."}),
+    )?;
+    Ok(keys)
+}
+
+/// `_drain`: a worker with three threads runs the queue until nothing is runnable. The worker
+/// opens its own application over the same home, as `worker run` does.
+fn drain(env: &SeedEnv<'_>) -> Result<(), CliFailure> {
+    let options = WorkerOptions {
+        home: env.home.clone(),
+        concurrency: Some(3),
+        poll_interval: Some(Duration::from_millis(50)),
+        maintenance_interval: Some(Duration::from_millis(200)),
+        ..WorkerOptions::default()
+    };
+    let mut worker = Worker::open(options, HandlerRegistry::from_features(env.features))?;
+    worker.run_until_idle(Duration::from_secs(300))?;
+    Ok(())
 }
 
 /// `demo e2e` in `home`: steps 1 and 2 of `demo/scenario.py` (the workspace and the three Git
@@ -82,6 +328,7 @@ pub fn e2e(home: &Path, lines: &mut Vec<String>) -> Result<(), CliFailure> {
     configure_demo(
         &mut app,
         &[("scripted", "success"), ("scripted-buggy", "buggy")],
+        false,
     )?;
     workspace_create(
         &mut app,
@@ -130,9 +377,9 @@ pub fn e2e(home: &Path, lines: &mut Vec<String>) -> Result<(), CliFailure> {
 
 /// The demo's configuration (step 1): heuristic inference, the execution switch, the scripted
 /// agents with the demo binary (DV4) and manual acceptance.
-fn configure_demo(app: &mut App, agents: &[(&str, &str)]) -> Result<(), CliFailure> {
+fn configure_demo(app: &mut App, agents: &[(&str, &str)], seeding: bool) -> Result<(), CliFailure> {
     let mut config = app.config()?;
-    let settings: [(&str, serde_json::Value); 6] = [
+    let mut settings: Vec<(&str, serde_json::Value)> = vec![
         (
             "llm.classification",
             serde_json::json!({"provider": "heuristic", "model": "heuristic-v1"}),
@@ -147,8 +394,10 @@ fn configure_demo(app: &mut App, agents: &[(&str, &str)]) -> Result<(), CliFailu
         ),
         ("execution.enabled", serde_json::json!(true)),
         ("execution.default_agent", serde_json::json!("scripted")),
-        ("verification.auto_accept", serde_json::json!(false)),
     ];
+    if !seeding {
+        settings.push(("verification.auto_accept", serde_json::json!(false)));
+    }
     for (key, value) in settings {
         config = set_path(&config, key, value).ok_or_else(|| {
             CliFailure::fail(format!("cannot set {key}: not a table in config.toml"), 1)
@@ -157,6 +406,7 @@ fn configure_demo(app: &mut App, agents: &[(&str, &str)]) -> Result<(), CliFailu
     let executable = demo_agent_path()?;
     for (name, mode) in agents {
         let value = serde_json::json!({
+            "type": "command",
             "executable": executable,
             "args": spec::agent_args(mode),
             "supports_usage": true,

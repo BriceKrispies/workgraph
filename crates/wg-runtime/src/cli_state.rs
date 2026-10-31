@@ -9,7 +9,7 @@ use wg_iface::cli::CliFailure;
 use wg_json::{Value, cli_json};
 use wg_render::Console;
 
-use crate::{App, Level, LogSettings, configure_logging};
+use crate::{App, Feature, Level, LogSettings, configure_logging};
 
 /// What one `workgraph` invocation knows: `--json`, `--home`, `--workspace`, the open
 /// application and where output goes. A plain record: the front end builds it with a literal
@@ -25,6 +25,8 @@ pub struct CliState {
     pub console: Console,
     /// The console for standard error.
     pub err_console: Console,
+    /// The features of the binary, for the commands that run jobs in process (`demo seed`).
+    pub features: &'static [&'static Feature],
 }
 
 impl CliState {

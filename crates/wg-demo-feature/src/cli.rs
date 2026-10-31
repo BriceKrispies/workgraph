@@ -50,6 +50,36 @@ fn e2e(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
 /// `demo seed [--workspace SLUG] [--force]`: the demo data for the web UI.
 fn seed(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
     let (workspace, force) = spec::seed_args(m);
-    let summary = service::seed(state.app()?, &workspace, force)?;
+    let home = state.home.clone();
+    let features = state.features;
+    let json = state.json;
+    // The application is taken out of the state so the progress lines can be written as they
+    // happen, which keeps a long seed from looking stalled.
+    let mut app = match state.app.take() {
+        Some(app) => app,
+        None => {
+            state.app()?;
+            state
+                .app
+                .take()
+                .ok_or_else(|| CliFailure::fail("the application did not open", 1))?
+        }
+    };
+    let mut log = |line: &str| {
+        if !json {
+            state.print(&format!(
+                "{line}
+"
+            ));
+        }
+    };
+    let mut env = service::SeedEnv {
+        home,
+        features,
+        log: &mut log,
+    };
+    let result = service::seed(&mut app, &mut env, &workspace, force);
+    state.app = Some(app);
+    let summary = result?;
     state.emit(&summary, Some(&|c| spec::seed_view(c, &summary)))
 }

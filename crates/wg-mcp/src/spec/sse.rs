@@ -6,6 +6,8 @@
 //! `retry`, and no priming event is sent. [`frame_events`] rewrites the complete events of the
 //! Rust SDK's byte stream to that framing; the transport calls it as the bytes arrive.
 
+use serde_json::{Map, Value};
+
 /// The complete events at the front of `pending`, rewritten to the Python framing, and how many
 /// bytes of `pending` they used. A trailing partial event is left for the next call.
 #[must_use]
@@ -49,7 +51,7 @@ fn frame_block(block: &[u8]) -> Vec<u8> {
     if data.iter().any(|value| !value.is_empty()) {
         let data_lines: String = data
             .iter()
-            .map(|value| format!("data: {value}\r\n"))
+            .map(|value| format!("data: {}\r\n", python_order(value)))
             .collect();
         format!("event: message\r\n{data_lines}\r\n").into_bytes()
     } else if comments.is_empty() {
@@ -64,9 +66,59 @@ fn frame_block(block: &[u8]) -> Vec<u8> {
     }
 }
 
+/// The data of one event with an `initialize` result's keys in the Python SDK's order, which is
+/// alphabetical at every level of that result. Any other data is returned as it is.
+fn python_order(data: &str) -> String {
+    match serde_json::from_str::<Value>(data) {
+        Ok(Value::Object(mut message)) if is_initialize_result(&message) => {
+            if let Some(result) = message.remove("result") {
+                message.insert("result".to_owned(), alphabetical(result));
+            }
+            Value::Object(message).to_string()
+        }
+        _ => data.to_owned(),
+    }
+}
+
+fn is_initialize_result(message: &Map<String, Value>) -> bool {
+    message
+        .get("result")
+        .and_then(Value::as_object)
+        .is_some_and(|result| {
+            result.contains_key("protocolVersion") && result.contains_key("serverInfo")
+        })
+}
+
+/// `value` with the keys of every object in it sorted.
+fn alphabetical(value: Value) -> Value {
+    match value {
+        Value::Object(map) => {
+            let mut entries: Vec<(String, Value)> = map.into_iter().collect();
+            entries.sort_by(|a, b| a.0.cmp(&b.0));
+            Value::Object(
+                entries
+                    .into_iter()
+                    .map(|(key, inner)| (key, alphabetical(inner)))
+                    .collect(),
+            )
+        }
+        other => other,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn an_initialize_result_is_written_in_the_python_key_order() {
+        let input = b"data: {\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"protocolVersion\":\"v\",\"capabilities\":{\"resources\":{\"subscribe\":false,\"listChanged\":false}},\"serverInfo\":{\"name\":\"n\"},\"instructions\":\"i\"}}\n\n";
+        let (out, _) = frame_events(input);
+        assert_eq!(
+            String::from_utf8(out).unwrap(),
+            "event: message\r\ndata: {\"jsonrpc\":\"2.0\",\"id\":1,\"result\":{\"capabilities\":{\"resources\":{\"listChanged\":false,\"subscribe\":false}},\"instructions\":\"i\",\"protocolVersion\":\"v\",\"serverInfo\":{\"name\":\"n\"}}}\r\n\r\n"
+        );
+    }
 
     #[test]
     fn a_message_event_is_written_with_the_python_framing() {

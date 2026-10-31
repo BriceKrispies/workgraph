@@ -9,9 +9,8 @@ use crate::http;
 use crate::scenario::{Assertion, HeaderExpect, JsonExpect, Scenario, Setup, Step};
 use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
-use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 /// An implementation under test: `program args...` is prefixed to every command line.
@@ -24,13 +23,16 @@ pub struct Implementation {
 }
 
 impl Implementation {
-    /// Build from a command line such as `uv run workgraph` (split on whitespace).
+    /// Build from a command line such as `uv run workgraph` or
+    /// `"C:/My Repo/.venv/Scripts/python.exe" -m workgraph`. See [`split_command`].
     pub fn from_command(
         name: &str,
         command: &str,
         env: Vec<(String, String)>,
     ) -> Result<Self, String> {
-        let mut parts = command.split_whitespace().map(str::to_owned);
+        let mut parts = split_command(command)
+            .map_err(|e| format!("{name}: {e}"))?
+            .into_iter();
         let program = parts
             .next()
             .ok_or_else(|| format!("{name}: empty command"))?;
@@ -41,6 +43,44 @@ impl Implementation {
             env,
         })
     }
+}
+
+/// Split a command line into words on whitespace. A word may be wrapped in double or single quotes
+/// to keep spaces inside it (`"C:/My Repo/python.exe" -m workgraph`); the quotes are removed. A
+/// backslash is an ordinary character, so Windows paths need no escaping. An unclosed quote is an
+/// error.
+pub fn split_command(command: &str) -> Result<Vec<String>, String> {
+    let mut words = Vec::new();
+    let mut word = String::new();
+    let mut in_word = false;
+    let mut quote: Option<char> = None;
+    for c in command.chars() {
+        match (quote, c) {
+            (Some(q), c) if c == q => quote = None,
+            (Some(_), c) => word.push(c),
+            (None, '"' | '\'') => {
+                quote = Some(c);
+                in_word = true;
+            }
+            (None, c) if c.is_whitespace() => {
+                if in_word {
+                    words.push(std::mem::take(&mut word));
+                    in_word = false;
+                }
+            }
+            (None, c) => {
+                word.push(c);
+                in_word = true;
+            }
+        }
+    }
+    if let Some(q) = quote {
+        return Err(format!("unclosed quote {q} in the command line"));
+    }
+    if in_word {
+        words.push(word);
+    }
+    Ok(words)
 }
 
 /// How a step ended.
@@ -247,25 +287,14 @@ fn path_prefix_dirs(value: &str) -> Vec<String> {
         .collect()
 }
 
+/// Run a process to completion. It gives up as a stall when it prints nothing for the
+/// no-progress window (see [`crate::wait`]).
 pub(crate) fn run_process(cmd: &mut Command, stdin: Option<&str>) -> Result<Outcome, String> {
-    cmd.stdin(if stdin.is_some() {
-        Stdio::piped()
-    } else {
-        Stdio::null()
-    })
-    .stdout(Stdio::piped())
-    .stderr(Stdio::piped());
-    let mut child = cmd.spawn().map_err(|e| format!("spawn failed: {e}"))?;
-    if let (Some(text), Some(mut pipe)) = (stdin, child.stdin.take()) {
-        let _ = pipe.write_all(text.as_bytes());
-    }
-    let out = child
-        .wait_with_output()
-        .map_err(|e| format!("wait failed: {e}"))?;
+    let (code, stdout, stderr) = crate::wait::run_bounded(cmd, stdin)?;
     Ok(Outcome {
-        exit: i64::from(out.status.code().unwrap_or(-1)),
-        stdout: String::from_utf8_lossy(&out.stdout).replace("\r\n", "\n"),
-        stderr: String::from_utf8_lossy(&out.stderr).replace("\r\n", "\n"),
+        exit: i64::from(code),
+        stdout: String::from_utf8_lossy(&stdout).replace("\r\n", "\n"),
+        stderr: String::from_utf8_lossy(&stderr).replace("\r\n", "\n"),
     })
 }
 
@@ -1320,6 +1349,29 @@ mod tests {
             path_dirs: Vec::new(),
             last_headers: None,
         }
+    }
+
+    #[test]
+    fn command_lines_split_on_whitespace_and_keep_quoted_spaces() {
+        assert_eq!(
+            split_command("uv run --project C:/dev/wt workgraph").unwrap(),
+            ["uv", "run", "--project", "C:/dev/wt", "workgraph"]
+        );
+        assert_eq!(
+            split_command(r#""C:\My Repo\.venv\Scripts\python.exe" -m workgraph"#).unwrap(),
+            [r"C:\My Repo\.venv\Scripts\python.exe", "-m", "workgraph"]
+        );
+        assert_eq!(split_command("  a   'b c'  ").unwrap(), ["a", "b c"]);
+        assert_eq!(split_command("x \"\"").unwrap(), ["x", ""]);
+        assert!(split_command("python \"unclosed").is_err());
+        let imp = Implementation::from_command(
+            "py",
+            r#""/w/my dir/python.exe" -m workgraph"#,
+            Vec::new(),
+        )
+        .unwrap();
+        assert_eq!(imp.program, "/w/my dir/python.exe");
+        assert_eq!(imp.args, ["-m", "workgraph"]);
     }
 
     #[test]

@@ -18,13 +18,9 @@ use std::path::{Path, PathBuf};
 use std::process::{Child, ChildStdin, Command, ExitCode, Stdio};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError};
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 
 /// The protocol version the recorder negotiated (`contracts/mcp/stdio.jsonl`).
 pub const PROTOCOL_VERSION: &str = "2025-06-18";
-
-/// How long to wait for one reply before the exchange counts as missing.
-const REPLY_TIMEOUT: Duration = Duration::from_secs(60);
 
 /// Which way a message travelled.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -161,13 +157,14 @@ impl StdioClient {
     /// first are recorded and skipped.
     pub fn await_response(&mut self, id: &Value) -> Result<Value, String> {
         loop {
-            let line = match self.lines.recv_timeout(REPLY_TIMEOUT) {
+            let window = crate::wait::stall_timeout();
+            let line = match self.lines.recv_timeout(window) {
                 Ok(Ok(line)) => line,
                 Ok(Err(e)) => return Err(format!("read from server: {e}")),
                 Err(RecvTimeoutError::Timeout) => {
                     return Err(format!(
-                        "no reply within {}s{}",
-                        REPLY_TIMEOUT.as_secs(),
+                        "stalled: no reply for {:.1} s{}",
+                        window.as_secs_f64(),
                         self.stderr_note()
                     ));
                 }

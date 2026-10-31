@@ -31,11 +31,6 @@ pub const RECORDED_HEADERS: [&str; 11] = [
     "x-frame-options",
 ];
 
-/// Socket timeout for every read and write, so a stalled server fails a step instead of hanging.
-const IO_TIMEOUT: Duration = Duration::from_secs(20);
-/// How long `serve` may take to answer its health check.
-const READY_TIMEOUT: Duration = Duration::from_secs(90);
-
 /// One request to send. Header names are sent as given; `Host` is added unless given.
 #[derive(Debug, Clone, Copy)]
 pub struct Request<'a> {
@@ -103,9 +98,10 @@ pub fn request_bytes(port: u16, req: &Request<'_>) -> Vec<u8> {
 pub fn send(port: u16, req: &Request<'_>, max_events: Option<usize>) -> Result<Exchange, String> {
     let mut stream = TcpStream::connect(("127.0.0.1", port))
         .map_err(|e| format!("connect 127.0.0.1:{port}: {e}"))?;
+    let window = crate::wait::stall_timeout();
     stream
-        .set_read_timeout(Some(IO_TIMEOUT))
-        .and_then(|()| stream.set_write_timeout(Some(IO_TIMEOUT)))
+        .set_read_timeout(Some(window))
+        .and_then(|()| stream.set_write_timeout(Some(window)))
         .map_err(|e| format!("socket timeout: {e}"))?;
     stream
         .write_all(&request_bytes(port, req))
@@ -179,7 +175,7 @@ fn read_some(stream: &mut impl Read, buf: &mut [u8]) -> Result<usize, String> {
                 std::io::ErrorKind::WouldBlock | std::io::ErrorKind::TimedOut
             ) =>
         {
-            Err(format!("read timed out: {e}"))
+            Err(format!("stalled: no response bytes: {e}"))
         }
         Err(_) => Ok(0),
     }
@@ -494,7 +490,7 @@ impl Server {
             port,
             token: String::new(),
         };
-        let deadline = Instant::now() + READY_TIMEOUT;
+        let deadline = Instant::now() + crate::wait::STARTUP_TIMEOUT;
         loop {
             if let Some(status) = server
                 .child
@@ -518,7 +514,7 @@ impl Server {
             if Instant::now() >= deadline {
                 return Err(format!(
                     "serve on port {port} was not ready after {} s; see {}",
-                    READY_TIMEOUT.as_secs(),
+                    crate::wait::STARTUP_TIMEOUT.as_secs(),
                     log_path.display()
                 ));
             }

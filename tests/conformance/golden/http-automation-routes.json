@@ -33,7 +33,7 @@
       "index": 4,
       "kind": "http",
       "exit": 201,
-      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"type\":\"manual\",\"event_types\":[]},\"conditions\":{},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"x\"]}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts@3|Z>\",\"updated_at\":\"<ts@3|Z>\"}",
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"type\":\"manual\",\"event_types\":[]},\"conditions\":{},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"x\"]}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts@4|Z>\",\"updated_at\":\"<ts@4|Z>\"}",
       "stderr": ""
     },
     {
@@ -54,7 +54,7 @@
       "index": 7,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"x\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts@3|Z>\",\"updated_at\":\"<ts@3|Z>\"}",
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"x\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":1,\"created_at\":\"<ts@4|Z>\",\"updated_at\":\"<ts@4|Z>\"}",
       "stderr": ""
     },
     {
@@ -68,7 +68,7 @@
       "index": 9,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"type\":\"manual\",\"event_types\":[]},\"conditions\":{},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"y\"]}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@3|Z>\",\"updated_at\":\"<ts@8|Z>\"}",
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"type\":\"manual\",\"event_types\":[]},\"conditions\":{},\"actions\":[{\"type\":\"add_tags\",\"tags\":[\"y\"]}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@4|Z>\",\"updated_at\":\"<ts@9|Z>\"}",
       "stderr": ""
     },
     {
@@ -82,14 +82,14 @@
       "index": 11,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":false,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"y\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@3|Z>\",\"updated_at\":\"<ts@10|Z>\"}",
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":false,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"y\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@4|Z>\",\"updated_at\":\"<ts@11|Z>\"}",
       "stderr": ""
     },
     {
       "index": 12,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"y\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@3|Z>\",\"updated_at\":\"<ts@11|Z>\"}",
+      "stdout": "{\"id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"name\":\"tagger\",\"description\":\"\",\"enabled\":true,\"trigger\":{\"event_types\":[],\"type\":\"manual\"},\"conditions\":{},\"actions\":[{\"tags\":[\"y\"],\"type\":\"add_tags\"}],\"retry_max_attempts\":3,\"max_depth\":3,\"last_scheduled_at\":null,\"next_run_at\":null,\"created_by\":\"human:Brice\",\"version\":2,\"created_at\":\"<ts@4|Z>\",\"updated_at\":\"<ts@12|Z>\"}",
       "stderr": ""
     },
     {
@@ -110,21 +110,21 @@
       "index": 15,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:6>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:7>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to WG-1\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@14|Z>\",\"finished_at\":null}",
+      "stdout": "{\"id\":\"<id:6>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:7>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to WG-1\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@15|Z>\",\"finished_at\":null}",
       "stderr": ""
     },
     {
       "index": 16,
       "kind": "http",
       "exit": 200,
-      "stdout": "{\"id\":\"<id:8>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:9>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to the triggering task\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@15|Z>\",\"finished_at\":null}",
+      "stdout": "{\"id\":\"<id:8>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:9>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to the triggering task\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@16|Z>\",\"finished_at\":null}",
       "stderr": ""
     },
     {
       "index": 17,
       "kind": "http",
       "exit": 200,
-      "stdout": "[{\"id\":\"<id:8>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:9>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to the triggering task\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@15|Z>\",\"finished_at\":null},{\"id\":\"<id:6>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:7>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to WG-1\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@14|Z>\",\"finished_at\":null},{\"id\":\"<id:4>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"manual\",\"trigger_key\":\"manual:<id:5>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":false,\"status\":\"queued\",\"matched\":true,\"reason\":\"conditions matched\",\"condition_trace\":[],\"action_results\":[],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@13|Z>\",\"finished_at\":null}]",
+      "stdout": "[{\"id\":\"<id:8>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:9>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to the triggering task\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@16|Z>\",\"finished_at\":null},{\"id\":\"<id:6>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"preview\",\"trigger_key\":\"dry:<id:7>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":true,\"status\":\"previewed\",\"matched\":true,\"reason\":\"dry run: actions not executed\",\"condition_trace\":[],\"action_results\":[{\"action\":{\"tags\":[\"y\"],\"type\":\"add_tags\"},\"planned\":\"add tags ['y'] to WG-1\"}],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@15|Z>\",\"finished_at\":null},{\"id\":\"<id:4>\",\"rule_id\":\"<id:3>\",\"workspace_id\":\"<id:2>\",\"trigger_type\":\"manual\",\"trigger_key\":\"manual:<id:5>\",\"trigger_event_id\":null,\"depth\":1,\"dry_run\":false,\"status\":\"queued\",\"matched\":true,\"reason\":\"conditions matched\",\"condition_trace\":[],\"action_results\":[],\"error\":null,\"attempts\":0,\"created_at\":\"<ts@13|Z>\",\"finished_at\":null}]",
       "stderr": ""
     },
     {
@@ -138,7 +138,7 @@
       "index": 19,
       "kind": "cli",
       "exit": 0,
-      "stdout": "[\n  {\n    \"id\": \"<id:8>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"preview\",\n    \"trigger_key\": \"dry:<id:9>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": true,\n    \"status\": \"previewed\",\n    \"matched\": true,\n    \"reason\": \"dry run: actions not executed\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"action\": {\n          \"tags\": [\n            \"y\"\n          ],\n          \"type\": \"add_tags\"\n        },\n        \"planned\": \"add tags ['y'] to the triggering task\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts@15|Z>\",\n    \"finished_at\": null\n  },\n  {\n    \"id\": \"<id:6>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"preview\",\n    \"trigger_key\": \"dry:<id:7>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": true,\n    \"status\": \"previewed\",\n    \"matched\": true,\n    \"reason\": \"dry run: actions not executed\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"action\": {\n          \"tags\": [\n            \"y\"\n          ],\n          \"type\": \"add_tags\"\n        },\n        \"planned\": \"add tags ['y'] to WG-1\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts@14|Z>\",\n    \"finished_at\": null\n  },\n  {\n    \"id\": \"<id:4>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"manual\",\n    \"trigger_key\": \"manual:<id:5>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": false,\n    \"status\": \"queued\",\n    \"matched\": true,\n    \"reason\": \"conditions matched\",\n    \"condition_trace\": [],\n    \"action_results\": [],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts@13|Z>\",\n    \"finished_at\": null\n  }\n]\n",
+      "stdout": "[\n  {\n    \"id\": \"<id:8>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"preview\",\n    \"trigger_key\": \"dry:<id:9>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": true,\n    \"status\": \"previewed\",\n    \"matched\": true,\n    \"reason\": \"dry run: actions not executed\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"action\": {\n          \"tags\": [\n            \"y\"\n          ],\n          \"type\": \"add_tags\"\n        },\n        \"planned\": \"add tags ['y'] to the triggering task\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts@16|Z>\",\n    \"finished_at\": null\n  },\n  {\n    \"id\": \"<id:6>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"preview\",\n    \"trigger_key\": \"dry:<id:7>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": true,\n    \"status\": \"previewed\",\n    \"matched\": true,\n    \"reason\": \"dry run: actions not executed\",\n    \"condition_trace\": [],\n    \"action_results\": [\n      {\n        \"action\": {\n          \"tags\": [\n            \"y\"\n          ],\n          \"type\": \"add_tags\"\n        },\n        \"planned\": \"add tags ['y'] to WG-1\"\n      }\n    ],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts@15|Z>\",\n    \"finished_at\": null\n  },\n  {\n    \"id\": \"<id:4>\",\n    \"rule_id\": \"<id:3>\",\n    \"workspace_id\": \"<id:2>\",\n    \"trigger_type\": \"manual\",\n    \"trigger_key\": \"manual:<id:5>\",\n    \"trigger_event_id\": null,\n    \"depth\": 1,\n    \"dry_run\": false,\n    \"status\": \"queued\",\n    \"matched\": true,\n    \"reason\": \"conditions matched\",\n    \"condition_trace\": [],\n    \"action_results\": [],\n    \"error\": null,\n    \"attempts\": 0,\n    \"created_at\": \"<ts@13|Z>\",\n    \"finished_at\": null\n  }\n]\n",
       "stderr": ""
     },
     {

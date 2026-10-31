@@ -28,7 +28,7 @@ use wg_runtime::App;
 use wg_runtime::spec::RequestContext;
 use wg_store::Session;
 use wg_types::pyval::{prefix, text};
-use wg_types::{Correlation, Id, Permission, WgError};
+use wg_types::{Correlation, Id, Permission, Timestamp, WgError};
 
 use crate::service::classify as classify_reads;
 use crate::service::llm::Providers;
@@ -339,6 +339,7 @@ fn record_success(
                 decision = decision.write(Write::update(Row::Classification(previous)));
             }
             if let Some(updated) = plan.task.clone() {
+                let updated = touched(task, updated, stamp.at);
                 decision = decision.write(Write::update(Row::Task(updated)));
             }
             let mut payloads = Vec::new();
@@ -414,7 +415,11 @@ pub fn promote(
             if let Some(previous) = plan.previous.clone() {
                 decision = decision.write(Write::update(Row::Classification(previous)));
             }
-            let decision = decision.write(Write::update(Row::Task(plan.task.clone())));
+            let decision = decision.write(Write::update(Row::Task(touched(
+                task,
+                plan.task.clone(),
+                stamp.at,
+            ))));
             let payload = ClassificationPromoted {
                 classification_id: plan.row.id,
                 previous_id: plan.previous_id,
@@ -496,7 +501,11 @@ pub fn confirm(
             if let Some(previous) = plan.previous.clone() {
                 decision = decision.write(Write::update(Row::Classification(previous)));
             }
-            let decision = decision.write(Write::update(Row::Task(plan.task.clone())));
+            let decision = decision.write(Write::update(Row::Task(touched(
+                task,
+                plan.task.clone(),
+                stamp.at,
+            ))));
             let decision = if request.add_to_gold {
                 let label = gold_label(
                     ids[1],
@@ -775,4 +784,17 @@ pub fn evaluate(
         },
     )?;
     Ok(outcome.reply)
+}
+
+/// `after` with `updated_at` stamped when it differs from `before`: the ORM's `onupdate` runs
+/// for a row whose columns changed, and not otherwise.
+fn touched(before: &Task, after: Task, at: Timestamp) -> Task {
+    if &after == before {
+        after
+    } else {
+        Task {
+            updated_at: at,
+            ..after
+        }
+    }
 }

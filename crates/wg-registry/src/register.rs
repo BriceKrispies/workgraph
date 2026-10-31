@@ -291,8 +291,17 @@ pub fn register(request: &Request, facts: &Facts, stamp: &Stamp) -> Result<Decis
             base.tracked_branches.clone()
         },
         health_detail: health_detail(&base.health_detail, skipped),
-        updated_at: at,
-        ..base
+        ..base.clone()
+    };
+    // The ORM only stamps `updated_at` when a column changed: joining an existing repository
+    // without touching its columns leaves the stamp as it was.
+    let repository = if repository == base {
+        repository
+    } else {
+        Repository {
+            updated_at: at,
+            ..repository
+        }
     };
     let repository_write = if created {
         Write::insert(Row::Repository(repository.clone()))

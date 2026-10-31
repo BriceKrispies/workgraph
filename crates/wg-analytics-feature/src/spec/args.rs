@@ -295,7 +295,7 @@ pub fn export_options(m: &ArgMatches) -> ExportOptions {
         limit: None,
     });
     ExportOptions {
-        target: std::path::PathBuf::from(one(m, "target").unwrap_or_default()),
+        target: wg_archivespec::native_path(&one(m, "target").unwrap_or_default()),
         format: one(m, "--format").unwrap_or_else(|| "csv".to_owned()),
         dataset: option_text(m, "--dataset"),
         request,

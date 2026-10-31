@@ -290,17 +290,10 @@ def pending(home: Path) -> int:
         conn.close()
 
 
-# Job kinds the Rust worker has handlers for. A Rust worker without --kind claims every kind and
-# dead-letters the unported ones ("handler not ported"), which is itself a finding reported by this
-# check's author; the mixed run restricts it so the queue can be shared.
-RUST_WIRED_KINDS = ("git_sync", "agent_run", "verify", "stack_integrate", "stack_verify")
-
-
 def drain(home: Path, workers: list[Impl], tmp: Path, label: str) -> str:
     procs = []
     for w in workers:
-        kinds = [x for k in RUST_WIRED_KINDS for x in ("--kind", k)] if w.name == "rust" and len(workers) > 1 else []
-        procs.append(w.popen(home, "worker", "run", "--max-idle", "2", "--concurrency", "2", *kinds))
+        procs.append(w.popen(home, "worker", "run", "--max-idle", "2", "--concurrency", "2"))
     deadline = time.time() + 70
     logs = []
     for w, p in zip(workers, procs):

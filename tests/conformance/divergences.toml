@@ -4,7 +4,7 @@
 # `scenario` is a scenario id or "*"; `fields` limits the entry to stdout, stderr or exit
 # (all of them when absent). `contains` lists substrings, one of which must occur in the left or
 # right text of a difference before the entry allows it, and `non_ascii = true` allows only
-# differences where one side holds a non-ASCII character. With `both = true`, the substring must
+# differences where one side holds a non-ASCII character. `relative_tolerance` allows only differences in float tokens within that relative tolerance. An entry with `scenario = "*"` must have `contains`, `non_ascii` or `relative_tolerance`; the runner rejects it otherwise. With `both = true`, the substring must
 # occur on both sides. An entry therefore allows the cases it names and nothing else.
 
 [[divergence]]
@@ -53,6 +53,7 @@ id = "DV6"
 decision = "3.6"
 scenario = "*"
 fields = ["file"]
+contains = [".parquet"]
 description = "Parquet export bytes (compared by reading both files back; not a text comparison). A file, not output text: no stdout, stderr or exit difference is allowed by this entry"
 
 [[divergence]]
@@ -60,4 +61,5 @@ id = "DV7"
 decision = "Q9"
 scenario = "*"
 fields = ["stdout"]
-description = "last-ulp differences in exp/log statistics; relative tolerance 1e-12 on the listed fields only (the runner compares text, so the tolerance itself is not applied yet)"
+relative_tolerance = 1e-12
+description = "last-ulp differences in exp/log statistics: the two stdout texts must be identical after tokenising numbers, and every differing number must be a float within relative tolerance 1e-12 (differing integers, words or token counts are not allowed)"

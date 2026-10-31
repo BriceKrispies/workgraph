@@ -260,5 +260,5 @@ fn resource_text(
 ) -> Result<String, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
     let dto = read(app, &context)?;
-    wg_json::log_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
+    wg_json::resource_json(&dto).map_err(|err| WgError::workgraph(err.to_string()))
 }

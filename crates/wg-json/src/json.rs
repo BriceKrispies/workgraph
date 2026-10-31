@@ -93,6 +93,23 @@ pub fn db_json(value: &Value) -> Result<Option<String>, DumpError> {
     .map(Some)
 }
 
+/// The MCP resource text: `json.dumps(_dump(v))` of `mcp/server.py`. `_dump` turns a model into its
+/// JSON-mode dict, so a model is written as its fields (the CLI dialect), with Python's default
+/// separators and no `default=`.
+pub fn resource_json(value: &Value) -> Result<String, DumpError> {
+    let node = to_node(value, Dialect::Cli, false)?;
+    render(
+        &node,
+        Layout {
+            pretty: false,
+            sort_keys: false,
+            ensure_ascii: true,
+            allow_nan: true,
+            spaced: true,
+        },
+    )
+}
+
 /// O14: one log line's JSON, `json.dumps(payload, default=str)` (the `JsonFormatter` of
 /// `core/logging.py`): Python's default separators, `ensure_ascii`, NaN allowed, keys in order.
 pub fn log_json(value: &Value) -> Result<String, DumpError> {

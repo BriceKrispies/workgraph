@@ -21,6 +21,6 @@ mod text;
 mod value;
 
 pub use bridge::{BridgeError, dict_field, to_dict, to_value, try_to_value};
-pub use json::{cli_json, db_json, http_json, log_json};
+pub use json::{cli_json, db_json, http_json, log_json, resource_json};
 pub use text::{isoformat, py_float_repr, py_splitlines, when};
 pub use value::{Date, DumpError, LocalDateTime, PyStr, Value, dict};

@@ -120,7 +120,7 @@ pub struct StepRecord {
 }
 
 /// Now, in microseconds since the epoch.
-fn now_micros() -> i64 {
+pub fn now_micros() -> i64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map_or(0, |d| i64::try_from(d.as_micros()).unwrap_or(i64::MAX))
@@ -153,6 +153,10 @@ pub struct RunResult {
     /// Directories to replace with placeholders when comparing: `(path, placeholder)`.
     pub roots: Vec<(String, &'static str)>,
     pub steps: Vec<StepRecord>,
+    /// Wall-clock instant the run started, in microseconds since the epoch. The normaliser takes
+    /// the UTC day of this instant as "today" for the `<today...>` placeholders. `None` when the
+    /// run has no clock, and then no date rule applies.
+    pub started: Option<i64>,
 }
 
 impl RunResult {
@@ -1245,6 +1249,7 @@ fn skipped(index: usize, kind: &'static str, label: String, why: &str) -> StepRe
 
 /// Run `scenario` against `imp` in a fresh sandbox, which is removed afterwards.
 pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResult, String> {
+    let started = now_micros();
     let sb = Sandbox::create()?;
     let mut ctx = Ctx {
         imp,
@@ -1333,6 +1338,7 @@ pub fn run_scenario(scenario: &Scenario, imp: &Implementation) -> Result<RunResu
         implementation: imp.name.clone(),
         roots,
         steps,
+        started: Some(started),
     })
 }
 

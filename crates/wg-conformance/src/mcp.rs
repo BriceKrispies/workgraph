@@ -528,6 +528,7 @@ pub fn replay(client: &mut StdioClient, transcript: &[Exchange], implementation:
         implementation: implementation.to_owned(),
         roots: Vec::new(),
         steps: Vec::new(),
+        started: Some(crate::runner::now_micros()),
     };
     let normalised = FullNormaliser::default().normalise(&run, &text);
     let lines: Vec<&str> = normalised.lines().collect();

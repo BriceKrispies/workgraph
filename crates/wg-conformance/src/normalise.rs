@@ -82,8 +82,139 @@ impl Normaliser for FullNormaliser {
         for (s, e, ()) in scan(bytes, local_port_at) {
             spans.push((s, e, "<port>".to_owned()));
         }
+        // Bare calendar dates near the run day. Added last, so a timestamp span found above keeps
+        // its overlap: `splice` drops the later of two overlapping spans. A `period` value is
+        // claimed first, since it names a week or a month rather than a day.
+        if let Some(today) = run.started.map(|micros| micros.div_euclid(MICROS_PER_DAY)) {
+            spans.extend(scan(bytes, |b, i| period_date_at(b, i, today)));
+            for (s, e, day) in scan(bytes, date_at) {
+                if let Some(placeholder) = today_placeholder(day.days, today) {
+                    spans.push((s, e, placeholder));
+                }
+            }
+        }
         sort_set_lists(&splice(&out, spans))
     }
+}
+
+const MICROS_PER_DAY: i64 = 86_400_000_000;
+
+/// How far from the run day a bare date may fall and still be rewritten to a `<today...>`
+/// placeholder. Beyond it the date is kept, so a scenario's fixture dates stay as written.
+const TODAY_WINDOW_DAYS: i64 = 400;
+
+/// A calendar day: days since 1970-01-01, and its year, month and day of the month.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Civil {
+    days: i64,
+    year: i64,
+    month: i64,
+    day: i64,
+}
+
+/// A bare calendar date `YYYY-MM-DD`, and the day it names. Neither neighbour may be a word
+/// character, so a date glued to more text is not one: a timestamp's `T` (a naive
+/// `2026-10-30T22:16:45` is left as written), or a digit run.
+fn date_at(bytes: &[u8], i: usize) -> Option<Span<Civil>> {
+    let end = i + 10;
+    if end > bytes.len() || !bounded(bytes, i, end) || bytes[i + 4] != b'-' || bytes[i + 7] != b'-'
+    {
+        return None;
+    }
+    let digits = |from: usize, n: usize| -> Option<i64> {
+        let part = bytes.get(from..from + n)?;
+        part.iter().all(u8::is_ascii_digit).then(|| {
+            part.iter()
+                .fold(0_i64, |acc, d| acc * 10 + i64::from(d - b'0'))
+        })
+    };
+    let year = digits(i, 4)?;
+    let month = digits(i + 5, 2)?;
+    let day = digits(i + 8, 2)?;
+    ((1..=12).contains(&month) && (1..=31).contains(&day)).then(|| {
+        (
+            i,
+            end,
+            Civil {
+                days: days_from_civil(year, month, day),
+                year,
+                month,
+                day,
+            },
+        )
+    })
+}
+
+/// The `period` value at `i`: a date that is the value of a JSON key named `period`, plain or
+/// escaped inside an embedded JSON string. The analytics `period` buckets, and the `period` field
+/// of a `*_by_period` item, are such values. Returns `None` for any other date.
+fn period_date_at(bytes: &[u8], i: usize, today: i64) -> Option<Span<String>> {
+    let (key, value) = key_value_at(bytes, i)?;
+    if key != "period" {
+        return None;
+    }
+    let quoted = if bytes.get(value) == Some(&b'"') {
+        value + 1
+    } else if bytes.get(value..)?.starts_with(b"\\\"") {
+        value + 2
+    } else {
+        return None;
+    };
+    let (s, e, day) = date_at(bytes, quoted)?;
+    Some((s, e, period_placeholder(day, today)?))
+}
+
+/// The placeholder of a `period` value on a run whose day is `today`. A Monday is a week bucket,
+/// named `<week>` counted in weeks from the Monday of the run's ISO week. The 1st of a month is a
+/// month bucket, `<month>` counted in months from the run's month. A date that is both is a week.
+/// Any other date is `None`, and the plain `<today...>` rule applies. Both are subject to
+/// `TODAY_WINDOW_DAYS`.
+fn period_placeholder(day: Civil, today: i64) -> Option<String> {
+    if (day.days - today).abs() > TODAY_WINDOW_DAYS {
+        return None;
+    }
+    // 1970-01-01 was a Thursday, so with Monday as index 0 a day's weekday is `(days + 3) % 7`.
+    if (day.days + 3).rem_euclid(7) == 0 {
+        let run_monday = today - (today + 3).rem_euclid(7);
+        return Some(offset_placeholder("week", (day.days - run_monday) / 7));
+    }
+    if day.day == 1 {
+        let (run_year, run_month, _) = civil_from_days(today);
+        let months = (day.year * 12 + day.month) - (run_year * 12 + run_month);
+        return Some(offset_placeholder("month", months));
+    }
+    None
+}
+
+/// The `<today...>` placeholder of a date `days` since the epoch on a run whose day is `today`:
+/// `<today>`, `<today-N>` for N days before, `<today+N>` for N days after. `None` outside
+/// `TODAY_WINDOW_DAYS` either side.
+fn today_placeholder(days: i64, today: i64) -> Option<String> {
+    let delta = days - today;
+    (delta.abs() <= TODAY_WINDOW_DAYS).then(|| offset_placeholder("today", delta))
+}
+
+/// `<unit>` for zero, `<unit-N>` for N units before, `<unit+N>` for N units after.
+fn offset_placeholder(unit: &str, delta: i64) -> String {
+    match delta {
+        0 => format!("<{unit}>"),
+        d if d < 0 => format!("<{unit}-{}>", -d),
+        d => format!("<{unit}+{d}>"),
+    }
+}
+
+/// Year, month and day of the month of a day since 1970-01-01 (the inverse of `days_from_civil`).
+fn civil_from_days(days: i64) -> (i64, i64, i64) {
+    let z = days + 719_468;
+    let era = z.div_euclid(146_097);
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1460 + doe / 36_524 - doe / 146_096) / 365;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = yoe + era * 400 + i64::from(month <= 2);
+    (year, month, day)
 }
 
 /// Byte span `(start, end)` with a payload.
@@ -787,6 +918,7 @@ mod tests {
                     window: None,
                 })
                 .collect(),
+            started: None,
         }
     }
 
@@ -800,6 +932,11 @@ mod tests {
             rec.window = Some(*w);
         }
         r
+    }
+
+    /// Microseconds since the epoch of noon UTC on the given date: a run that started that day.
+    fn run_day(year: i64, month: i64, day: i64) -> i64 {
+        (days_from_civil(year, month, day) * 86_400 + 12 * 3600) * 1_000_000
     }
 
     /// Microseconds since the epoch of `2026-10-26T06:34:<sec>.<ms>Z`.
@@ -1186,5 +1323,106 @@ mod tests {
             n.normalise(&r, text),
             r#"{"pair": ["auth-service", "shared-sdk"], "evidence": [{"task_key": "WG-2"}, {"task_key": "WG-4"}], "other": ["b", "a"]}"#
         );
+    }
+
+    #[test]
+    fn bare_dates_near_the_run_day_are_today_placeholders() {
+        let n = FullNormaliser::default();
+        let mut r = run("py", &[("", "")]);
+        r.started = Some(run_day(2026, 10, 31));
+        let text = "Retrospective 2026-10-17 - 2026-10-31, period 2026-10-31, next 2026-11-05, \
+                    old 2025-03-26, far 2027-12-31, stamp 2026-10-30T22:16:45Z, naive 2026-10-30T22:16:45";
+        assert_eq!(
+            n.normalise(&r, text),
+            "Retrospective <today-14> - <today>, period <today>, next <today+5>, \
+             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive 2026-10-30T22:16:45"
+        );
+        // The same golden text on another day compares equal once both sides are normalised.
+        let mut later = run("rs", &[("", "")]);
+        later.started = Some(run_day(2026, 11, 1));
+        let shifted = "Retrospective 2026-10-18 - 2026-11-01, period 2026-11-01, next 2026-11-06, \
+                       old 2025-03-26, far 2027-12-31, stamp 2026-10-31T22:16:45Z, naive 2026-10-30T22:16:45";
+        assert_eq!(
+            n.normalise(&later, shifted),
+            "Retrospective <today-14> - <today>, period <today>, next <today+5>, \
+             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive 2026-10-30T22:16:45"
+        );
+    }
+
+    #[test]
+    fn today_window_is_400_days_either_side() {
+        let today = days_from_civil(2026, 10, 31);
+        assert_eq!(today_placeholder(today, today).as_deref(), Some("<today>"));
+        assert_eq!(
+            today_placeholder(today - 400, today).as_deref(),
+            Some("<today-400>")
+        );
+        assert_eq!(
+            today_placeholder(today + 400, today).as_deref(),
+            Some("<today+400>")
+        );
+        assert_eq!(today_placeholder(today - 401, today), None);
+        assert_eq!(today_placeholder(today + 401, today), None);
+    }
+
+    #[test]
+    fn dates_are_left_alone_without_a_run_clock_or_inside_other_text() {
+        let n = FullNormaliser::default();
+        let text = "2026-10-30 x20261030 2026-10-301 2026-10-30_v2";
+        let no_clock = run("py", &[("", "")]);
+        assert_eq!(n.normalise(&no_clock, text), text);
+        let mut r = run("py", &[("", "")]);
+        r.started = Some(run_day(2026, 10, 31));
+        assert_eq!(
+            n.normalise(&r, text),
+            "<today-1> x20261030 2026-10-301 2026-10-30_v2"
+        );
+    }
+
+    #[test]
+    fn period_values_name_weeks_and_months_of_the_run() {
+        // 2026-10-31 is a Saturday, so the run's week starts on Monday 2026-10-26.
+        let n = FullNormaliser::default();
+        let mut r = run("py", &[("", "")]);
+        r.started = Some(run_day(2026, 10, 31));
+        let text = r#"[{"period": "2026-10-19"}, {"period": "2026-10-26"}, {"period": "2026-11-02"}, {"period": "2026-09-01"}, {"period": "2026-10-01"}, {"period": "2026-10-30"}, {"period": "2020-01-06"}, {"created": "2026-10-26"}]"#;
+        assert_eq!(
+            n.normalise(&r, text),
+            r#"[{"period": "<week-1>"}, {"period": "<week>"}, {"period": "<week+1>"}, {"period": "<month-1>"}, {"period": "<month>"}, {"period": "<today-1>"}, {"period": "2020-01-06"}, {"created": "<today-5>"}]"#
+        );
+        // The same stored golden holds on the next Monday: the week is counted from the run's.
+        let mut monday = run("rs", &[("", "")]);
+        monday.started = Some(run_day(2026, 11, 2));
+        assert_eq!(
+            n.normalise(&monday, r#"{"period":"2026-11-02"}"#),
+            r#"{"period":"<week>"}"#
+        );
+    }
+
+    #[test]
+    fn escaped_period_values_are_week_placeholders_too() {
+        let n = FullNormaliser::default();
+        let mut r = run("py", &[("", "")]);
+        r.started = Some(run_day(2026, 10, 31));
+        let text = r#"{"stats": "{\"period\": \"2026-10-26\", \"n\": 1}"}"#;
+        assert_eq!(
+            n.normalise(&r, text),
+            r#"{"stats": "{\"period\": \"<week>\", \"n\": 1}"}"#
+        );
+    }
+
+    #[test]
+    fn a_monday_on_the_first_of_a_month_is_a_week() {
+        // 2026-06-01 is a Monday and the 1st: the week rule claims it, 21 weeks before the run's.
+        let day = date_at(b"2026-06-01", 0).expect("a date").2;
+        let today = days_from_civil(2026, 10, 31);
+        assert_eq!(period_placeholder(day, today).as_deref(), Some("<week-21>"));
+    }
+
+    #[test]
+    fn civil_days_round_trip() {
+        for (y, m, d) in [(1970, 1, 1), (2024, 2, 29), (2026, 10, 31), (1999, 12, 31)] {
+            assert_eq!(civil_from_days(days_from_civil(y, m, d)), (y, m, d));
+        }
     }
 }

@@ -46,7 +46,10 @@ impl Normaliser for FullNormaliser {
         let bytes = out.as_bytes();
         // The archive size of a backup is a zip byte count that differs between two Python runs,
         // so it is masked only in output that names a backup format. Other `bytes` keys stay.
-        let archive = out.contains("\"format\": \"workgraph-backup-");
+        // The size of an analytics export drifts with the digit counts of the measured durations
+        // and timestamps in its rows, so it is masked in export output too.
+        let archive = out.contains("\"format\": \"workgraph-backup-")
+            || (out.contains("\"dataset\":") && out.contains("\"path\":"));
 
         let mut spans: Vec<(usize, usize, String)> = Vec::new();
         for (s, e, key) in scan(bytes, uuid_at) {
@@ -770,6 +773,18 @@ fn step_windows(run: &RunResult) -> Vec<Window> {
 /// commit dates), which keep their rank.
 fn step_of(windows: &[Window], stamp: &Stamp) -> Option<usize> {
     let (lo, hi) = (stamp.micros, stamp.micros + stamp.span);
+    // A second-resolution stamp is a truncated instant: any step overlapping that whole second may
+    // have written it, and the latest of them is the one taken.
+    if stamp.span > 1 {
+        let overlapping = windows
+            .iter()
+            .filter(|&&(_, start, end)| start < hi && end >= lo)
+            .map(|&(k, _, _)| k)
+            .max();
+        if overlapping.is_some() {
+            return overlapping;
+        }
+    }
     windows
         .iter()
         .filter_map(|&(k, start, end)| {
@@ -1248,6 +1263,22 @@ mod tests {
     }
 
     #[test]
+    fn whole_second_stamps_take_the_latest_step_overlapping_that_second() {
+        let n = FullNormaliser::default();
+        let text = "20261026T063441Z";
+        let r = run_w(
+            "py",
+            &[
+                ("", (at(40, 900), at(41, 100))),
+                ("", (at(41, 300), at(41, 400))),
+                (text, (at(41, 600), at(41, 700))),
+                ("", (at(42, 100), at(42, 200))),
+            ],
+        );
+        assert_eq!(n.normalise(&r, text), "<ts@2|compact>");
+    }
+
+    #[test]
     fn overlapping_margins_prefer_the_window_that_holds_the_stamp() {
         let n = FullNormaliser::default();
         let text = "2026-10-26T06:34:41.010000Z 2026-10-26T06:34:41.035000Z";
@@ -1460,6 +1491,27 @@ mod tests {
     }
 
     #[test]
+    fn export_byte_counts_are_masked() {
+        let n = FullNormaliser::default();
+        let r = run("py", &[("", "")]);
+        let text = "{
+  \"path\": \"a.csv\",
+  \"format\": \"csv\",
+  \"dataset\": \"task_facts\",
+  \"bytes\": 779
+}";
+        assert_eq!(
+            n.normalise(&r, text),
+            "{
+  \"path\": \"a.csv\",
+  \"format\": \"csv\",
+  \"dataset\": \"task_facts\",
+  \"bytes\": <bytes>
+}"
+        );
+    }
+
+    #[test]
     fn archive_byte_counts_are_masked_only_in_backup_output() {
         let n = FullNormaliser::default();
         let backup = "{\n  \"path\": \"<tmp>/b.zip\",\n  \"bytes\": 27069,\n  \"format\": \"workgraph-backup-v1\"\n}";
@@ -1519,21 +1571,21 @@ mod tests {
         let mut r = run("py", &[("", "")]);
         r.started = Some(run_day(2026, 10, 31));
         let text = "Retrospective 2026-10-17 - 2026-10-31, period 2026-10-31, next 2026-11-05, \
-                    old 2025-03-26, far 2027-12-31, stamp 2026-10-30T22:16:45Z, naive 2026-10-30T22:16:45";
+                    old 2025-03-26, far 2027-12-31, stamp 2026-10-30T22:16:45Z, naive <ts:1|naive>";
         assert_eq!(
             n.normalise(&r, text),
             "Retrospective <today-14> - <today>, period <today>, next <today+5>, \
-             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive 2026-10-30T22:16:45"
+             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive <ts:1|naive>"
         );
         // The same golden text on another day compares equal once both sides are normalised.
         let mut later = run("rs", &[("", "")]);
         later.started = Some(run_day(2026, 11, 1));
         let shifted = "Retrospective 2026-10-18 - 2026-11-01, period 2026-11-01, next 2026-11-06, \
-                       old 2025-03-26, far 2027-12-31, stamp 2026-10-31T22:16:45Z, naive 2026-10-30T22:16:45";
+                       old 2025-03-26, far 2027-12-31, stamp 2026-10-31T22:16:45Z, naive <ts:1|naive>";
         assert_eq!(
             n.normalise(&later, shifted),
             "Retrospective <today-14> - <today>, period <today>, next <today+5>, \
-             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive 2026-10-30T22:16:45"
+             old 2025-03-26, far 2027-12-31, stamp <ts:1|Z>, naive <ts:1|naive>"
         );
     }
 

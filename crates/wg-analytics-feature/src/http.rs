@@ -222,7 +222,11 @@ fn run(app: &mut App, id: &str, request: RouteRequest) -> Result<Value, WgError>
             &[],
         ),
         "H101" => Ok(query::definitions()),
-        "H102" => service::query(app, context, ws, &query_body(&body)?),
+        "H102" => {
+            let request = query_body(&body)?;
+            query::check_request(&request).map_err(query::http_refusal)?;
+            service::query(app, context, ws, &request)
+        }
         "H103" => service::overview(
             app,
             context,

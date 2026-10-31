@@ -63,6 +63,7 @@ fn query_tool(app: &mut App, agent: &Agent, a: &Value) -> Result<Value, WgError>
         until: None,
         limit: None,
     };
+    query::check_request(&request).map_err(query::tool_refusal)?;
     let dto = service::query(app, &context, text_argument(a, "workspace"), &request)?;
     structured_output(&dto)
 }

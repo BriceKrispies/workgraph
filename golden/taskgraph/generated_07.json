@@ -325,7 +325,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAN-10>",
               "key": "TAN-10",
@@ -333,7 +333,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "backlog",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -539,7 +539,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "backlog",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -797,7 +797,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAN-10>",
               "key": "TAN-10",
@@ -805,7 +805,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "backlog",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -1187,7 +1187,8 @@
       },
       "ready": [
         "TAN-1",
-        "TAN-4"
+        "TAN-4",
+        "TAN-10"
       ],
       "rollup": {
         "TAN-1": null,
@@ -1237,7 +1238,7 @@
         [
           "TAN-10",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-3",
@@ -1247,7 +1248,7 @@
         [
           "TAN-3",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-3",
@@ -1267,7 +1268,7 @@
         [
           "TAN-6",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-6",
@@ -1282,7 +1283,7 @@
         [
           "TAN-7",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-7",
@@ -1327,7 +1328,7 @@
         "TAN-10": {
           "archived": false,
           "parent": null,
-          "status": "backlog",
+          "status": "ready",
           "tags": [
             "area:x"
           ]
@@ -1401,25 +1402,20 @@
       },
       "unsatisfied_blockers": {
         "TAN-1": [],
-        "TAN-10": [
-          "TAN-2"
-        ],
+        "TAN-10": [],
         "TAN-11": [],
         "TAN-2": [],
         "TAN-3": [
           "TAN-1",
-          "TAN-2",
           "TAN-4"
         ],
         "TAN-4": [],
         "TAN-5": [],
         "TAN-6": [
           "TAN-1",
-          "TAN-2",
           "TAN-3"
         ],
         "TAN-7": [
-          "TAN-2",
           "TAN-4",
           "TAN-6"
         ],
@@ -1757,7 +1753,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAN-10>",
               "key": "TAN-10",
@@ -2229,7 +2225,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAN-10>",
               "key": "TAN-10",
@@ -2666,7 +2662,7 @@
         [
           "TAN-10",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-3",
@@ -2676,7 +2672,7 @@
         [
           "TAN-3",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-3",
@@ -2696,7 +2692,7 @@
         [
           "TAN-6",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-6",
@@ -2711,7 +2707,7 @@
         [
           "TAN-7",
           "TAN-2",
-          false
+          true
         ],
         [
           "TAN-7",
@@ -2830,25 +2826,20 @@
       },
       "unsatisfied_blockers": {
         "TAN-1": [],
-        "TAN-10": [
-          "TAN-2"
-        ],
+        "TAN-10": [],
         "TAN-11": [],
         "TAN-2": [],
         "TAN-3": [
           "TAN-1",
-          "TAN-2",
           "TAN-4"
         ],
         "TAN-4": [],
         "TAN-5": [],
         "TAN-6": [
           "TAN-1",
-          "TAN-2",
           "TAN-3"
         ],
         "TAN-7": [
-          "TAN-2",
           "TAN-4",
           "TAN-6"
         ],
@@ -2864,11 +2855,13 @@
     },
     "dry_run": [
       "TAN-1",
-      "TAN-4"
+      "TAN-4",
+      "TAN-10"
     ],
     "promoted": [
       "TAN-1",
-      "TAN-4"
+      "TAN-4",
+      "TAN-10"
     ]
   },
   "seed": 7,

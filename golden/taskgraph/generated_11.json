@@ -298,7 +298,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-5>",
               "key": "TAR-5",
@@ -306,7 +306,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -341,7 +341,7 @@
               "title": "Task 6"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-8>",
               "key": "TAR-8",
@@ -403,7 +403,7 @@
               "title": "Task 10"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-12>",
               "key": "TAR-12",
@@ -540,7 +540,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-5>",
               "key": "TAR-5",
@@ -548,7 +548,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -861,7 +861,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-5>",
               "key": "TAR-5",
@@ -869,7 +869,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -904,7 +904,7 @@
               "title": "Task 6"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-8>",
               "key": "TAR-8",
@@ -966,7 +966,7 @@
               "title": "Task 10"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-12>",
               "key": "TAR-12",
@@ -1478,7 +1478,8 @@
         ]
       },
       "ready": [
-        "TAR-2"
+        "TAR-2",
+        "TAR-5"
       ],
       "rollup": {
         "TAR-1": {
@@ -1558,7 +1559,7 @@
         [
           "TAR-10",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-10",
@@ -1573,7 +1574,7 @@
         [
           "TAR-12",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-2",
@@ -1598,7 +1599,7 @@
         [
           "TAR-5",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-6",
@@ -1613,7 +1614,7 @@
         [
           "TAR-6",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-7",
@@ -1628,7 +1629,7 @@
         [
           "TAR-8",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-9",
@@ -1703,7 +1704,7 @@
         "TAR-5": {
           "archived": false,
           "parent": null,
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "area:x"
           ]
@@ -1745,35 +1746,27 @@
         "TAR-10": [
           "TAR-2",
           "TAR-3",
-          "TAR-4",
           "TAR-8"
         ],
         "TAR-11": [
           "TAR-3"
         ],
-        "TAR-12": [
-          "TAR-4"
-        ],
+        "TAR-12": [],
         "TAR-13": [],
         "TAR-2": [],
         "TAR-3": [
           "TAR-2"
         ],
         "TAR-4": [],
-        "TAR-5": [
-          "TAR-4"
-        ],
+        "TAR-5": [],
         "TAR-6": [
-          "TAR-3",
-          "TAR-4"
+          "TAR-3"
         ],
         "TAR-7": [
           "TAR-2",
           "TAR-3"
         ],
-        "TAR-8": [
-          "TAR-4"
-        ],
+        "TAR-8": [],
         "TAR-9": [
           "TAR-7"
         ]
@@ -2076,7 +2069,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-5>",
               "key": "TAR-5",
@@ -2084,7 +2077,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -2119,7 +2112,7 @@
               "title": "Task 6"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-8>",
               "key": "TAR-8",
@@ -2181,7 +2174,7 @@
               "title": "Task 10"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-12>",
               "key": "TAR-12",
@@ -2318,7 +2311,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-5>",
               "key": "TAR-5",
@@ -2326,7 +2319,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -2639,7 +2632,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-5>",
               "key": "TAR-5",
@@ -2647,7 +2640,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -2682,7 +2675,7 @@
               "title": "Task 6"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-8>",
               "key": "TAR-8",
@@ -2744,7 +2737,7 @@
               "title": "Task 10"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAR-12>",
               "key": "TAR-12",
@@ -3256,7 +3249,8 @@
         ]
       },
       "ready": [
-        "TAR-2"
+        "TAR-2",
+        "TAR-5"
       ],
       "rollup": {
         "TAR-1": {
@@ -3336,7 +3330,7 @@
         [
           "TAR-10",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-10",
@@ -3351,7 +3345,7 @@
         [
           "TAR-12",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-2",
@@ -3376,7 +3370,7 @@
         [
           "TAR-5",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-6",
@@ -3391,7 +3385,7 @@
         [
           "TAR-6",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-7",
@@ -3406,7 +3400,7 @@
         [
           "TAR-8",
           "TAR-4",
-          false
+          true
         ],
         [
           "TAR-9",
@@ -3481,7 +3475,7 @@
         "TAR-5": {
           "archived": false,
           "parent": null,
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "area:x"
           ]
@@ -3523,35 +3517,27 @@
         "TAR-10": [
           "TAR-2",
           "TAR-3",
-          "TAR-4",
           "TAR-8"
         ],
         "TAR-11": [
           "TAR-3"
         ],
-        "TAR-12": [
-          "TAR-4"
-        ],
+        "TAR-12": [],
         "TAR-13": [],
         "TAR-2": [],
         "TAR-3": [
           "TAR-2"
         ],
         "TAR-4": [],
-        "TAR-5": [
-          "TAR-4"
-        ],
+        "TAR-5": [],
         "TAR-6": [
-          "TAR-3",
-          "TAR-4"
+          "TAR-3"
         ],
         "TAR-7": [
           "TAR-2",
           "TAR-3"
         ],
-        "TAR-8": [
-          "TAR-4"
-        ],
+        "TAR-8": [],
         "TAR-9": [
           "TAR-7"
         ]

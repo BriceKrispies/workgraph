@@ -227,7 +227,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAP-4>",
               "key": "TAP-4",
@@ -595,7 +595,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAP-4>",
               "key": "TAP-4",
@@ -1305,7 +1305,7 @@
         [
           "TAP-13",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-13",
@@ -1335,7 +1335,7 @@
         [
           "TAP-3",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-4",
@@ -1345,7 +1345,7 @@
         [
           "TAP-4",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-5",
@@ -1355,7 +1355,7 @@
         [
           "TAP-5",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-5",
@@ -1494,7 +1494,6 @@
           "TAP-4"
         ],
         "TAP-13": [
-          "TAP-2",
           "TAP-7",
           "TAP-9"
         ],
@@ -1503,16 +1502,13 @@
           "TAP-7"
         ],
         "TAP-3": [
-          "TAP-1",
-          "TAP-2"
+          "TAP-1"
         ],
         "TAP-4": [
-          "TAP-1",
-          "TAP-2"
+          "TAP-1"
         ],
         "TAP-5": [
           "TAP-1",
-          "TAP-2",
           "TAP-4"
         ],
         "TAP-6": [
@@ -1754,7 +1750,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAP-4>",
               "key": "TAP-4",
@@ -2122,7 +2118,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAP-4>",
               "key": "TAP-4",
@@ -2832,7 +2828,7 @@
         [
           "TAP-13",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-13",
@@ -2862,7 +2858,7 @@
         [
           "TAP-3",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-4",
@@ -2872,7 +2868,7 @@
         [
           "TAP-4",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-5",
@@ -2882,7 +2878,7 @@
         [
           "TAP-5",
           "TAP-2",
-          false
+          true
         ],
         [
           "TAP-5",
@@ -3021,7 +3017,6 @@
           "TAP-4"
         ],
         "TAP-13": [
-          "TAP-2",
           "TAP-7",
           "TAP-9"
         ],
@@ -3030,16 +3025,13 @@
           "TAP-7"
         ],
         "TAP-3": [
-          "TAP-1",
-          "TAP-2"
+          "TAP-1"
         ],
         "TAP-4": [
-          "TAP-1",
-          "TAP-2"
+          "TAP-1"
         ],
         "TAP-5": [
           "TAP-1",
-          "TAP-2",
           "TAP-4"
         ],
         "TAP-6": [

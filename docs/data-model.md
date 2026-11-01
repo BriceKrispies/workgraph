@@ -122,7 +122,7 @@ then one indicator per entry of `repositories`. `samples` holds the converged bo
 
 ## Migrations
 
-Schema changes are Alembic revisions in `src/workgraph/persistence/migrations/versions`.
+Schema changes are numbered migrations in `crates/wg-store`.
 `workgraph init` (and every process start) upgrades the database; `workgraph doctor` reports the
 revision. The FTS5 table and event-immutability triggers are created by raw SQL in `0001`.
 

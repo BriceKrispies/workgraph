@@ -20,8 +20,8 @@ Repositories without remotes or without commits are supported.
 ## Ingestion
 
 ```sh
-uv run workgraph git sync
-uv run workgraph git sync api --full
+workgraph git sync
+workgraph git sync api --full
 ```
 
 - **Incremental** (default): new commits are found with `git rev-list --all --not <previous tips>`.

@@ -3,14 +3,14 @@
 Start with:
 
 ```sh
-uv run workgraph doctor
-uv run workgraph doctor --verify-events
+workgraph doctor
+workgraph doctor --verify-events
 ```
 
 | Symptom | Cause and fix |
 | --- | --- |
-| `no default workspace configured` | `uv run workgraph workspace use <slug>` or pass `-w <slug>`. |
-| `agent code execution is disabled` | Execution is opt-in: `uv run workgraph config set execution.enabled true`. |
+| `no default workspace configured` | `workgraph workspace use <slug>` or pass `-w <slug>`. |
+| `agent code execution is disabled` | Execution is opt-in: `workgraph config set execution.enabled true`. |
 | `agent adapter 'claude_code' is unavailable` | Install Claude Code or set `agents.claude_code.executable` to its absolute path. Nothing changed in the task. |
 | Runs stay `queued` | No worker is running. Use `workgraph serve` (starts one) or `workgraph worker run`. Check `workgraph worker list` and resource limits (`execution.max_concurrent_runs`, `jobs.per_agent_concurrency`). |
 | Classification jobs end in `dead` with `provider_unavailable` | Ollama is not running or the model is not pulled (`ollama pull <model>`). Retry with `workgraph job retry <id>`, or switch to the heuristic provider. Tracking is unaffected. |
@@ -23,9 +23,9 @@ uv run workgraph doctor --verify-events
 | History rewritten (rebase/force-push) | `workgraph git sync <repo> --full` reconciles reachability and carries links to rewritten commits. |
 | Final change surface missing | It is computed after acceptance by a background job; `workgraph git surface KEY` computes it now. |
 | Hooks not recorded | `workgraph claude status` shows installation and ingestion counts; `workgraph claude replay` ingests spooled events; inspect `<data>/spool/claude-hooks/*.failed`. |
-| Web UI shows "API is running" | The UI is not built: `bun install --cwd web` then `bun run --cwd web build`. |
+| Web UI shows "API is running" | The UI is not built: `bun install --cwd web` then `bun run --cwd web build`, then rebuild `wg-cli` (the UI is embedded at build time). |
 | `401 unauthorized` from scripts | Send `Authorization: Bearer $(cat <config>/api-token)` (path from `workgraph config path`). |
-| Phone cannot reach the UI | Use the address `serve` prints, on the same network. Windows: allow Python through the firewall on *Private* networks and check the network profile is Private. `forbidden_client` means the phone's address is outside `server.lan_networks`. A `429` on the pairing page means too many wrong codes; restart `serve`. |
+| Phone cannot reach the UI | Use the address `serve` prints, on the same network. Windows: allow `workgraph.exe` through the firewall on *Private* networks and check the network profile is Private. `forbidden_client` means the phone's address is outside `server.lan_networks`. A `429` on the pairing page means too many wrong codes; restart `serve`. |
 | `421` / `403` from the API | Host or Origin not allowed. Use `http://127.0.0.1:<port>`; for development set `WORKGRAPH_ALLOWED_ORIGINS`. |
 | `database is locked` warnings | Another process held a write transaction longer than 15 s; check for stuck external tools. Workgraph never holds write transactions during external calls. |
 | Worktree left behind after a crash | `workgraph worker recover` then `workgraph git cleanup-worktrees --apply` (only clean, Workgraph-owned worktrees are removed; branches are kept). |

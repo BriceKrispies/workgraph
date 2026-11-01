@@ -1,6 +1,6 @@
 # Workgraph in Rust: design and task breakdown
 
-> Status: design, for decision. Task: WG-3362. Measured at `5aecab8` (`main`, 2026-10-25).
+> Status: the Rust implementation is installed as `workgraph`; the Python implementation is removed from this line (it remains in `main`). Task: WG-3362. Measured at `5aecab8` (`main`, 2026-10-25).
 >
 > Direction from the user (2026-10-25): convert Workgraph to Rust "in the Rust way, properly", as a
 > ground-up rewrite in purely functional Rust (a pure core of immutable values and pure state

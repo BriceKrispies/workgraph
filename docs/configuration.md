@@ -1,6 +1,6 @@
 # Configuration
 
-Configuration is TOML, validated by Pydantic schemas in `src/workgraph/config/settings.py`.
+Configuration is TOML, validated by `crates/wg-config`.
 Unknown keys are rejected.
 
 - `config.toml` - global settings.
@@ -8,13 +8,13 @@ Unknown keys are rejected.
   deep-merged over the global file.
 
 ```sh
-uv run workgraph config path
-uv run workgraph config show
-uv run workgraph config validate
-uv run workgraph config migrate
-uv run workgraph config set execution.max_concurrent_runs 3
-uv run workgraph config set llm.classification.model qwen2.5:14b-instruct
-uv run workgraph config set execution.enabled true --workspace acme
+workgraph config path
+workgraph config show
+workgraph config validate
+workgraph config migrate
+workgraph config set execution.max_concurrent_runs 3
+workgraph config set llm.classification.model qwen2.5:14b-instruct
+workgraph config set execution.enabled true --workspace acme
 ```
 
 `config set` parses the value as JSON when possible and validates the whole document before

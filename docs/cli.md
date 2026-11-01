@@ -98,8 +98,8 @@ The MCP tool `task_import_breakdown` takes the document text (`markdown`), `sect
 metadata, `parent`, optional `tags`, `project`, `repository` and `dry_run`.
 
 ```sh
-uv run workgraph task import-breakdown docs/rust-rewrite.md --section "9. Task breakdown" --parent WG-3362 --dry-run
-uv run workgraph --json task import-breakdown docs/rust-rewrite.md --section "9. Task breakdown" --parent WG-3362
+workgraph task import-breakdown docs/rust-rewrite.md --section "9. Task breakdown" --parent WG-3362 --dry-run
+workgraph --json task import-breakdown docs/rust-rewrite.md --section "9. Task breakdown" --parent WG-3362
 ```
 
 ## Triage verdicts
@@ -135,26 +135,26 @@ uv run workgraph --json task import-breakdown docs/rust-rewrite.md --section "9.
 ## Examples
 
 ```sh
-uv run workgraph task create "Fix crash" --description @notes.md -c "no crash on expiry" -P high --ready -r api -t bug
-uv run workgraph task list --status ready --priority high --repo api --search "token" --sort priority --asc
-uv run workgraph --json task show WG-12
-uv run workgraph --json task show WG-12 WG-13 WG-14
-uv run workgraph task update WG-12 --status blocked --reason "waiting for infra" --expected-version 4
-uv run workgraph task create "Add token expiry" --file src/auth/token.rs:refresh --file docs/auth.md
-uv run workgraph task update WG-12 --add-file src/auth/session.rs --expected-version 5
-uv run workgraph task list --file src/auth/token.rs
-uv run workgraph task depend WG-13 WG-12
-uv run workgraph task promote-ready --tag sprint-42 --dry-run
-uv run workgraph task promote-ready --all --dry-run
-uv run workgraph task accept WG-12 --manual --reason "reviewed" --promote-dependents
-uv run workgraph task bulk-update WG-1 WG-2 WG-3 --add-tag sprint-42
-uv run workgraph git sync --full
-uv run workgraph git changes WG-12
-uv run workgraph analytics query execution_duration --by provider --by model --since 2026-09-01
-uv run workgraph analytics export facts.parquet --format parquet --dataset task_facts
-uv run workgraph automation preview --rule "tag bugs" --task WG-12
-uv run workgraph classify evaluate --provider ollama --model qwen2.5:7b-instruct
-uv run workgraph verify run WG-12 --tier fast
+workgraph task create "Fix crash" --description @notes.md -c "no crash on expiry" -P high --ready -r api -t bug
+workgraph task list --status ready --priority high --repo api --search "token" --sort priority --asc
+workgraph --json task show WG-12
+workgraph --json task show WG-12 WG-13 WG-14
+workgraph task update WG-12 --status blocked --reason "waiting for infra" --expected-version 4
+workgraph task create "Add token expiry" --file src/auth/token.rs:refresh --file docs/auth.md
+workgraph task update WG-12 --add-file src/auth/session.rs --expected-version 5
+workgraph task list --file src/auth/token.rs
+workgraph task depend WG-13 WG-12
+workgraph task promote-ready --tag sprint-42 --dry-run
+workgraph task promote-ready --all --dry-run
+workgraph task accept WG-12 --manual --reason "reviewed" --promote-dependents
+workgraph task bulk-update WG-1 WG-2 WG-3 --add-tag sprint-42
+workgraph git sync --full
+workgraph git changes WG-12
+workgraph analytics query execution_duration --by provider --by model --since 2026-09-01
+workgraph analytics export facts.parquet --format parquet --dataset task_facts
+workgraph automation preview --rule "tag bugs" --task WG-12
+workgraph classify evaluate --provider ollama --model qwen2.5:7b-instruct
+workgraph verify run WG-12 --tier fast
 ```
 
 All commands are single-line and work unchanged in PowerShell, bash, zsh and Nushell.

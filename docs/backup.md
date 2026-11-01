@@ -3,8 +3,8 @@
 ## Backups
 
 ```sh
-uv run workgraph backup
-uv run workgraph backup --output D:/backups/workgraph.zip --include-artifacts
+workgraph backup
+workgraph backup --output D:/backups/workgraph.zip --include-artifacts
 ```
 
 Backups use SQLite's online backup API, so they are consistent while Workgraph is running. The zip
@@ -15,8 +15,8 @@ and a `manifest.json` with the schema revision and Workgraph version. Default lo
 ## Restore
 
 ```sh
-uv run workgraph restore D:/backups/workgraph.zip
-uv run workgraph restore D:/backups/workgraph.zip --with-config
+workgraph restore D:/backups/workgraph.zip
+workgraph restore D:/backups/workgraph.zip --with-config
 ```
 
 Restore validates the archive and the database's integrity, refuses to run while a worker is
@@ -27,8 +27,8 @@ forward to the current schema. Configuration files are restored only with `--wit
 ## Export and import
 
 ```sh
-uv run workgraph export workspace acme.jsonl -w acme
-uv run workgraph --home ./other import acme.jsonl
+workgraph export workspace acme.jsonl -w acme
+workgraph --home ./other import acme.jsonl
 ```
 
 Workspace exports contain every record of one workspace (tasks, events, attempts, commits,

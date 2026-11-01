@@ -9,266 +9,126 @@
 # BEGIN conformance_budget (generated)
 
 [[exclusion]]
-id = "B04"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "B05"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "B06"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "B09"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C004"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C003"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C005"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C007"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C006"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C014"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C008"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C015"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C009"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C032"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C010"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C038"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C011"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C039"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C016"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C045"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C017"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C046"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C024"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C051"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C040"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C057"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C041"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C068"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C042"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C072"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C043"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C080"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C044"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C084"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C056"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C085"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C063"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C098"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C064"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C101"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C065"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C106"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C070"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C112"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C073"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C147"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C074"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C154"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C075"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C155"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C076"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C159"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C077"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C160"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C081"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C163"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C083"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "C185"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C086"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "H069"
+reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C088"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C090"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C093"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C094"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C096"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C115"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C117"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C120"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C126"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C127"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C128"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C129"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C130"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C132"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C133"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C135"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C140"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C142"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C151"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C158"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C161"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C164"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C166"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C173"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C174"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C176"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "C177"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "H071"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M11"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M15"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M16"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M43"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M44"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M48"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M64"
-reason = "cut by the 2-minute test budget (2026-10-30)"
-
-[[exclusion]]
-id = "M65"
-reason = "cut by the 2-minute test budget (2026-10-30)"
+id = "H070"
+reason = "cut by the 2-minute test budget"
 # END conformance_budget

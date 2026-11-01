@@ -9,12 +9,12 @@ scenario files and goldens and rewrites the generated block of coverage-allowlis
 
   python tools/conformance_budget.py REPORT.json [--override ID=MS ...] [--apply]
 """
-import argparse, json, pathlib, sys
+import argparse, json, pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent / "tests" / "conformance"
 BEGIN = "# BEGIN conformance_budget (generated)"
 END = "# END conformance_budget"
-REASON = "cut by the 2-minute test budget (2026-10-30)"
+REASON = "cut by the 2-minute test budget"
 
 
 def main():

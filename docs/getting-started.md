@@ -18,8 +18,8 @@ bun run --cwd web build          # writes web/dist
 cargo build --release -p wg-cli
 ```
 
-Copy `targetelease\workgraph.exe` and `targetelease\workgraph-demo-agent.exe` to
-`%USERPROFILE%\.localin`. The MCP registration and the Claude Code hooks store that path, so
+Copy `target\release\workgraph.exe` and `target\release\workgraph-demo-agent.exe` to
+`%USERPROFILE%\.local\bin`. The MCP registration and the Claude Code hooks store that path, so
 replacing the files in place keeps them working. Then create the workspace:
 
 ```sh

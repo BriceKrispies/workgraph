@@ -22,6 +22,14 @@ impl ProviderError {
             | Self::InvalidOutput(message) => message,
         }
     }
+
+    /// The provider's name and attempt count, when it stayed unreachable through its retries
+    /// (the details of Python's `ProviderUnavailableError`).
+    pub fn unreachable_details(&self) -> Option<(&str, u32)> {
+        let (provider, rest) = self.message().split_once(" is unreachable after ")?;
+        let attempts = rest.split_once(" attempt(s)")?.0.parse().ok()?;
+        Some((provider, attempts))
+    }
 }
 
 /// A Jira request failed. The message names the path and the status, never credentials.

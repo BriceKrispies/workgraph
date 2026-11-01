@@ -48,21 +48,12 @@ pub fn is_unavailable(error: &ProviderError) -> bool {
 /// The provider error as the `WgError` the caller raises when the provider is unavailable.
 #[must_use]
 pub fn unavailable_error(error: &ProviderError) -> WgError {
-    let message = error.message();
-    let error = WgError::provider_unavailable(message);
-    // A provider that stayed unreachable names itself and its attempt count, as Python's
-    // `ProviderUnavailableError` details do.
-    let named = message
-        .split_once(" is unreachable after ")
-        .and_then(|(provider, rest)| {
-            let attempts: u32 = rest.split_once(" attempt(s)")?.0.parse().ok()?;
-            Some((provider, attempts))
-        });
-    match named {
-        Some((provider, attempts)) => error
+    let raised = WgError::provider_unavailable(error.message());
+    match error.unreachable_details() {
+        Some((provider, attempts)) => raised
             .with_detail("provider", Json::from(provider))
             .with_detail("attempts", Json::from(attempts)),
-        None => error,
+        None => raised,
     }
 }
 

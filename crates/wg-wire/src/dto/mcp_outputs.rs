@@ -232,40 +232,56 @@ const ANALYTICS_REPORT: Shape = Shape::OneOf(&[
     dto(estimate_out::Insufficient::FIELDS),
 ]);
 
-const TASK_IMPORT: Shape = Shape::Object(&[
-    ("source", Shape::Any),
-    ("dry_run", Shape::Any),
-    (
-        "tasks",
-        list(&Shape::Object(&[
-            ("id", Shape::Any),
-            ("key", Shape::Any),
-            ("title", Shape::Any),
-            ("action", Shape::Any),
-            ("status", Shape::Any),
-            ("depends_on", Shape::Any),
-            ("tags", Shape::Any),
-        ])),
-    ),
-    ("map", Shape::Any),
-    (
-        "unresolved",
-        list(&Shape::Object(&[
-            ("id", Shape::Any),
-            ("dependency", Shape::Any),
-            ("reason", Shape::Any),
-        ])),
-    ),
-    (
-        "counts",
-        Shape::Object(&[
-            ("created", Shape::Any),
-            ("updated", Shape::Any),
-            ("unchanged", Shape::Any),
-            ("ready", Shape::Any),
-            ("backlog", Shape::Any),
-        ]),
-    ),
+const IMPORT_TASKS: Shape = list(&Shape::Object(&[
+    ("id", Shape::Any),
+    ("key", Shape::Any),
+    ("title", Shape::Any),
+    ("action", Shape::Any),
+    ("status", Shape::Any),
+    ("depends_on", Shape::Any),
+    ("tags", Shape::Any),
+]));
+
+const IMPORT_UNRESOLVED: Shape = list(&Shape::Object(&[
+    ("id", Shape::Any),
+    ("dependency", Shape::Any),
+    ("reason", Shape::Any),
+]));
+
+const IMPORT_KEPT: Shape = list(&Shape::Object(&[
+    ("id", Shape::Any),
+    ("key", Shape::Any),
+    ("reason", Shape::Any),
+]));
+
+const IMPORT_COUNTS: Shape = Shape::Object(&[
+    ("created", Shape::Any),
+    ("updated", Shape::Any),
+    ("unchanged", Shape::Any),
+    ("ready", Shape::Any),
+    ("backlog", Shape::Any),
+]);
+
+/// The plan of `task_import_breakdown`. A transcript recorded before the import reported the
+/// descriptions it kept has no `kept_descriptions`.
+const TASK_IMPORT: Shape = Shape::OneOf(&[
+    Shape::Object(&[
+        ("source", Shape::Any),
+        ("dry_run", Shape::Any),
+        ("tasks", IMPORT_TASKS),
+        ("map", Shape::Any),
+        ("unresolved", IMPORT_UNRESOLVED),
+        ("kept_descriptions", IMPORT_KEPT),
+        ("counts", IMPORT_COUNTS),
+    ]),
+    Shape::Object(&[
+        ("source", Shape::Any),
+        ("dry_run", Shape::Any),
+        ("tasks", IMPORT_TASKS),
+        ("map", Shape::Any),
+        ("unresolved", IMPORT_UNRESOLVED),
+        ("counts", IMPORT_COUNTS),
+    ]),
 ]);
 
 const STARTED_REPOSITORY: Shape = Shape::Object(&[
@@ -713,6 +729,15 @@ pub fn breakdown_unresolved(id: &str, dependency: &str, reason: &str) -> Value {
     })
 }
 
+/// A description a `task_import_breakdown` re-run kept because it was edited since the import.
+pub fn breakdown_kept(id: &str, key: &str, reason: &str) -> Value {
+    dict!({
+        "id": text(id),
+        "key": text(key),
+        "reason": text(reason),
+    })
+}
+
 /// `task_import_breakdown`: the plan. `map` is the section id to task key mapping in section
 /// order (`null` for a task a dry run would create).
 #[allow(clippy::too_many_arguments)]
@@ -722,6 +747,7 @@ pub fn import_breakdown(
     rows: Vec<Value>,
     map: &[(&str, Option<&str>)],
     unresolved: Vec<Value>,
+    kept_descriptions: Vec<Value>,
     created: i64,
     updated: i64,
     unchanged: i64,
@@ -738,6 +764,7 @@ pub fn import_breakdown(
                 .collect(),
         ),
         "unresolved": Value::List(unresolved),
+        "kept_descriptions": Value::List(kept_descriptions),
         "counts": dict!({
             "created": int(created),
             "updated": int(updated),

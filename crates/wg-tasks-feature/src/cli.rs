@@ -1,5 +1,5 @@
 //! `workgraph task create, list, show, update, bulk-update, archive, history, graph, ready,
-//! promote-ready` (IF-05) and `claim, release, complete, accept, reject, progress, result, comment, depend,
+//! promote-ready` (IF-05), `import-breakdown` and `claim, release, complete, accept, reject, progress, result, comment, depend,
 //! relate, link-repo`. The other `task` commands are placeholders until their groups land.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match
@@ -8,6 +8,7 @@
 
 use crate::service;
 use crate::spec::args::*;
+use crate::spec::breakdown::import_view;
 use crate::spec::contract::contract_target;
 use crate::spec::reads::GraphRequest;
 use crate::spec::triage::{triage_failed, triage_view};
@@ -185,7 +186,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         Some("triage-apply") => {
             let path = option_text(m, "path").unwrap_or_default();
-            check_triage_path(&path)?;
+            check_path(&TRIAGE_APPLY, &path)?;
             let dry_run = option_flag(m, "--dry-run");
             let source = option_text(m, "--source");
             let out = service::triage::task_triage_apply(
@@ -201,6 +202,30 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 return Err(CliFailure::Exit(1));
             }
             Ok(())
+        }
+        Some("import-breakdown") => {
+            let path = option_text(m, "path").unwrap_or_default();
+            check_path(&IMPORT_BREAKDOWN, &path)?;
+            let markdown = read_file(&path).map_err(|message| CliFailure::fail(message, 1))?;
+            let tags = tag_values(&option_list(m, "--tag"));
+            let section = option_text(m, "--section").unwrap_or_default();
+            let parent = option_text(m, "--parent").unwrap_or_default();
+            let project = option_text(m, "--project");
+            let repository = option_text(m, "--repo");
+            let source = source_name(&path);
+            let request = service::breakdown::ImportRequest {
+                markdown: &markdown,
+                section: &section,
+                source: &source,
+                parent: &parent,
+                tags: &tags,
+                project: project.as_deref(),
+                repository: repository.as_deref(),
+                dry_run: option_flag(m, "--dry-run"),
+            };
+            let out =
+                service::breakdown::task_import_breakdown(state.app()?, &context, ws, &request)?;
+            state.emit(&out, Some(&|c| import_view(c, &out)))
         }
         Some("depend") => {
             let reference = option_text(m, "ref").unwrap_or_default();
@@ -242,17 +267,34 @@ const TRIAGE_APPLY: wg_iface::cli::Usage = wg_iface::cli::Usage {
     command: "workgraph task triage-apply",
 };
 
+/// The usage of `task import-breakdown`, as Click prints it for its `PATH` argument.
+const IMPORT_BREAKDOWN: wg_iface::cli::Usage = wg_iface::cli::Usage {
+    usage: "workgraph task import-breakdown [OPTIONS] PATH",
+    command: "workgraph task import-breakdown",
+};
+
+/// `path.resolve().as_posix()`: the absolute path of the document, with forward slashes. It names
+/// the document in the metadata of every task the import creates.
+fn source_name(path: &str) -> String {
+    let resolved =
+        std::fs::canonicalize(path).map_or_else(|_| path.to_owned(), |p| p.display().to_string());
+    resolved
+        .strip_prefix(r"\\?\")
+        .unwrap_or(&resolved)
+        .replace('\\', "/")
+}
+
 /// Click's `Path(exists=True, dir_okay=False, readable=True)` check of the `PATH` argument, which
 /// runs before the command: a usage error (exit 2) for a missing file, a directory or an
 /// unreadable one.
-fn check_triage_path(path: &str) -> Result<(), CliFailure> {
+fn check_path(usage: &wg_iface::cli::Usage, path: &str) -> Result<(), CliFailure> {
     let problem = match std::fs::metadata(path) {
         Err(_) => PathProblem::Missing,
         Ok(meta) if meta.is_dir() => PathProblem::IsDirectory,
         Ok(_) if std::fs::File::open(path).is_err() => PathProblem::Unreadable,
         Ok(_) => return Ok(()),
     };
-    Err(TRIAGE_APPLY.invalid_path("PATH", path, PathKind::File, problem))
+    Err(usage.invalid_path("PATH", path, PathKind::File, problem))
 }
 
 /// `task show REF...`: one reference prints the task; several print `{items, errors}` and exit

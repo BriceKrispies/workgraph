@@ -162,6 +162,7 @@ wg-store Shell
 wg-tasks Core
 wg-tasks::accept Pure
 wg-tasks::archive Core
+wg-tasks::breakdown Pure
 wg-tasks::bulk Core
 wg-tasks::claims Core
 wg-tasks::comments Core

@@ -410,6 +410,168 @@ pub fn compare(
     diffs
 }
 
+/// Replace bare normaliser placeholders (`<dur>`, `<id:1>`) outside string literals with string
+/// literals, so a numeric field the normaliser masked still parses as JSON.
+fn quote_placeholders(text: &str) -> String {
+    let mut out = String::with_capacity(text.len());
+    let mut in_string = false;
+    let mut escaped = false;
+    let mut chars = text.chars();
+    while let Some(c) = chars.next() {
+        if in_string {
+            out.push(c);
+            if escaped {
+                escaped = false;
+            } else if c == '\\' {
+                escaped = true;
+            } else if c == '"' {
+                in_string = false;
+            }
+        } else if c == '"' {
+            in_string = true;
+            out.push(c);
+        } else if c == '<' {
+            out.push_str("\"<");
+            for d in chars.by_ref() {
+                if d == '"' || d == '\\' {
+                    continue;
+                }
+                out.push(d);
+                if d == '>' {
+                    break;
+                }
+            }
+            out.push('"');
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
+/// Whether a string value holds a normaliser placeholder such as `<id:1>` or `<dur>`.
+fn has_placeholder(s: &str) -> bool {
+    s.find('<').is_some_and(|i| s[i..].contains('>'))
+}
+
+fn kind_name(v: &Value) -> &'static str {
+    match v {
+        Value::Null => "null",
+        Value::Bool(_) => "bool",
+        Value::Number(_) => "number",
+        Value::String(_) => "string",
+        Value::Array(_) => "array",
+        Value::Object(_) => "object",
+    }
+}
+
+/// Describe where two JSON values differ in shape: object keys, value kinds, array lengths.
+/// Scalar values are not compared, and a placeholder string stands for any scalar.
+fn shape_difference(path: &str, l: &Value, r: &Value) -> Option<String> {
+    let placeholder = |v: &Value| v.as_str().is_some_and(has_placeholder);
+    if placeholder(l) || placeholder(r) {
+        return None;
+    }
+    if kind_name(l) != kind_name(r) {
+        return Some(format!("{path}: {} vs {}", kind_name(l), kind_name(r)));
+    }
+    match (l, r) {
+        (Value::Object(a), Value::Object(b)) => {
+            if let Some(k) = a.keys().find(|k| !b.contains_key(*k)) {
+                return Some(format!("{path}.{k}: key only in the golden"));
+            }
+            if let Some(k) = b.keys().find(|k| !a.contains_key(*k)) {
+                return Some(format!("{path}.{k}: key only in the run"));
+            }
+            a.iter()
+                .find_map(|(k, v)| shape_difference(&format!("{path}.{k}"), v, &b[k]))
+        }
+        (Value::Array(a), Value::Array(b)) => {
+            if a.len() != b.len() {
+                return Some(format!("{path}: array length {} vs {}", a.len(), b.len()));
+            }
+            a.iter()
+                .zip(b)
+                .enumerate()
+                .find_map(|(i, (x, y))| shape_difference(&format!("{path}[{i}]"), x, y))
+        }
+        _ => None,
+    }
+}
+
+/// Compare the behaviour of two runs, for `check`: step count, exit code (the HTTP status for
+/// HTTP steps), and the shape of stdout. Scalar values and stderr are not compared.
+///
+/// When both stdouts parse as JSON (placeholders count as wildcards), their shapes are compared:
+/// the same object keys recursively, the same value kinds and the same array lengths. Otherwise
+/// only whether each is empty is compared.
+pub fn compare_behaviour(
+    scenario: &str,
+    left: &[Observed],
+    right: &[Observed],
+    allow: &[Divergence],
+) -> Vec<Diff> {
+    let mut diffs = Vec::new();
+    let mut push = |step: Option<usize>, field: &'static str, l: String, r: String| {
+        let allowed_by = allow
+            .iter()
+            .find(|d| d.covers(scenario, step, field, &l, &r))
+            .map(|d| d.id.clone());
+        diffs.push(Diff {
+            step,
+            field,
+            left: l,
+            right: r,
+            allowed_by,
+        });
+    };
+    if left.len() != right.len() {
+        push(
+            None,
+            "step_count",
+            left.len().to_string(),
+            right.len().to_string(),
+        );
+    }
+    let parse = |t: &str| serde_json::from_str::<Value>(&quote_placeholders(t)).ok();
+    let word = |t: &str| {
+        if t.trim().is_empty() {
+            "empty"
+        } else {
+            "non-empty"
+        }
+        .to_owned()
+    };
+    for (l, r) in left.iter().zip(right) {
+        if l.exit != r.exit {
+            push(
+                l.index,
+                "exit",
+                format!("{:?}", l.exit),
+                format!("{:?}", r.exit),
+            );
+        }
+        match (parse(&l.stdout), parse(&r.stdout)) {
+            (Some(a), Some(b)) => {
+                if let Some(why) = shape_difference("$", &a, &b) {
+                    push(
+                        l.index,
+                        "stdout",
+                        format!("shape differs: {why}"),
+                        "(see left)".to_owned(),
+                    );
+                }
+            }
+            _ => {
+                if word(&l.stdout) != word(&r.stdout) {
+                    push(l.index, "stdout", word(&l.stdout), word(&r.stdout));
+                }
+            }
+        }
+    }
+    diffs
+}
+
 /// The per-file verdict.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Verdict {
@@ -609,6 +771,54 @@ mod tests {
             stdout: stdout.into(),
             stderr: String::new(),
         }]
+    }
+
+    fn obs_exit(exit: i64, stdout: &str) -> Vec<Observed> {
+        let mut o = obs(stdout);
+        o[0].exit = Some(exit);
+        o
+    }
+
+    #[test]
+    fn behaviour_ignores_scalar_values_and_stderr() {
+        let a = obs(r#"{"id":"WG-1","n":3,"tags":["a","b"],"x":null}"#);
+        let mut b = obs(r#"{"id":"WG-9","n":40,"tags":["c","d"],"x":null}"#);
+        b[0].stderr = "noise".into();
+        assert!(compare_behaviour("s", &a, &b, &[]).is_empty());
+    }
+
+    #[test]
+    fn behaviour_compares_keys_kinds_lengths_and_exit() {
+        let base = obs(r#"{"a":1,"l":[1,2]}"#);
+        for other in [
+            r#"{"a":1}"#,
+            r#"{"a":1,"l":[1,2],"z":0}"#,
+            r#"{"a":"1","l":[1,2]}"#,
+            r#"{"a":1,"l":[1]}"#,
+        ] {
+            let d = compare_behaviour("s", &base, &obs(other), &[]);
+            assert_eq!(d.len(), 1, "{other}");
+            assert_eq!(d[0].field, "stdout");
+        }
+        let d = compare_behaviour("s", &base, &obs_exit(2, r#"{"a":1,"l":[1,2]}"#), &[]);
+        assert_eq!(d[0].field, "exit");
+    }
+
+    #[test]
+    fn behaviour_treats_placeholders_as_wildcards() {
+        let a = obs(r#"{"ms": <dur>, "id":"<id:1>", "n": 5}"#);
+        let b = obs(r#"{"ms": 12, "id": 7, "n": 6}"#);
+        assert!(compare_behaviour("s", &a, &b, &[]).is_empty());
+    }
+
+    #[test]
+    fn behaviour_on_text_compares_only_emptiness() {
+        assert!(compare_behaviour("s", &obs("hello\n"), &obs("other text"), &[]).is_empty());
+        assert_eq!(
+            compare_behaviour("s", &obs("hello"), &obs("\n"), &[]).len(),
+            1
+        );
+        assert_eq!(compare_behaviour("s", &obs("{}"), &obs(""), &[]).len(), 1);
     }
 
     #[test]

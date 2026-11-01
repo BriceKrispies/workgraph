@@ -115,6 +115,15 @@ trigger for the matching Rust task (Q3).
 
 ### 3.1 Parity, defined
 
+**Current definition (supersedes the byte-equality rules below).** The port is done when Rust's own
+tests pass, `wg-conformance check` passes, and the data compatibility check
+(`tools/compat_check.py`) passes. `check` compares behaviour with the recorded goldens: each step's
+exit code and HTTP status; for JSON stdout, shape only (same object keys recursively, same value
+kinds, same array lengths; scalar values and normaliser placeholders ignored); for other stdout,
+only empty versus non-empty. Explicit `assert` steps apply exactly, and stderr is not compared. The
+exact comparison remains as `diff` mode, for investigation. It is not a gate. The byte-level rules
+below are kept as the original specification and as a guide to what `diff` reports.
+
 The Rust binary is at parity when, for every scenario in the conformance corpus and every test in
 the Python interface suite, each of the following holds after normalisation (section 3.4), and every
 remaining difference matches an entry in `tests/conformance/divergences.toml` that names a decision
@@ -162,7 +171,8 @@ scenarios (L3).
 **L3, the differential runner.** `crates/wg-conformance` (tooling) runs scenario files against an
 implementation given as an executable path plus environment, in a fresh `WORKGRAPH_HOME` and a fresh
 temporary directory for repositories. It has three modes: `diff` (run Python and Rust, compare),
-`record` (run Python, write goldens), and `check` (run Rust, compare with goldens). After Python is
+`record` (run Python, write goldens), and `check` (run Rust, compare behaviour with goldens: exit
+codes, HTTP statuses and JSON shape; see section 3.1). After Python is
 retired only `check` remains. Scenario format (JSON, validated by `tests/conformance/scenario.schema.json`):
 
 ```json

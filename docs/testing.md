@@ -12,6 +12,22 @@ uv run tools/check.py --tests     # stack verification: the Rust tests run under
 wg-conformance check --rust COMMAND --budget 60   # a conformance run with a shorter budget
 ```
 
+## Definition of done
+
+The port is done when three things hold. It is not measured by byte equality with Python.
+
+1. Rust's own tests pass (`cargo test --workspace`).
+2. `wg-conformance check` passes. It runs each scenario against the Rust binary and compares
+   behaviour with the recorded golden: each step's exit code and HTTP status; when both stdouts are
+   JSON, their shape (the same object keys recursively, the same value kind per value, the same
+   array lengths, ignoring scalar values and the normaliser's placeholders); when stdout is not
+   JSON, only whether both are empty or both non-empty. Explicit `assert` steps in scenarios apply
+   exactly. Stderr is not compared.
+3. The data compatibility check passes (`tools/compat_check.py`).
+
+`wg-conformance diff` keeps the exact byte comparison against a live Python reference. It is for
+investigation, not a gate.
+
 Tests run once per stack, not per change. A per-change agent runs only the cheap checks
 (`cargo check`, `cargo clippy -D warnings`, `cargo fmt`).
 

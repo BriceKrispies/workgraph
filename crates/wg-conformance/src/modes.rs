@@ -2,7 +2,8 @@
 
 use crate::budget::Budget;
 use crate::compare::{
-    Divergence, FileReport, Normaliser, Verdict, compare, golden_json, observe, parse_golden,
+    Divergence, FileReport, Normaliser, Verdict, compare, compare_behaviour, golden_json, observe,
+    parse_golden,
 };
 use crate::runner::{Implementation, RunResult, run_scenario};
 use crate::scenario::{Scenario, parse_scenario};
@@ -221,7 +222,8 @@ pub fn record(
     })
 }
 
-/// `check`: run the candidate implementation and compare it with the goldens.
+/// `check`: run the candidate implementation and compare its behaviour with the goldens: exit
+/// codes, HTTP statuses and the shape of JSON output (see `compare_behaviour`).
 #[allow(clippy::too_many_arguments)]
 pub fn check(
     loaded: &[Loaded],
@@ -256,7 +258,7 @@ pub fn check(
         };
         match run_scenario(s, candidate).and_then(|r| write_log(out, &r).map(|()| r)) {
             Ok(r) => {
-                let diffs = compare(&s.id, &golden, &observe(&r, norm), allow);
+                let diffs = compare_behaviour(&s.id, &golden, &observe(&r, norm), allow);
                 FileReport::judge(&l.file, &s.id, diffs, &[&r])
             }
             Err(e) => FileReport::failed(&l.file, Some(s.id.clone()), e),

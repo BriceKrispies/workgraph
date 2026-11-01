@@ -16,9 +16,11 @@ use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, TaskSlice, Write};
 use wg_types::{Id, TaskStatus, WgError};
 
-use crate::deps::{BLOCKED_BY_DEPENDENCIES, DEPENDENCY_SATISFIED_STATUSES};
+use crate::deps::{
+    BLOCKED_BY_DEPENDENCIES, CLAIMABLE_DEPENDENCY_STATUSES, DEPENDENCY_SATISFIED_STATUSES,
+};
 use crate::lifecycle::check_task_transition;
-use crate::promote::{dependency_gate, dependents, refresh_blocked_state};
+use crate::promote::{dependency_gate_in, dependents, refresh_blocked_state};
 use wg_types::pyval::truthy;
 
 /// How a status change is requested.
@@ -29,6 +31,8 @@ pub struct Change<'a> {
     pub privileged: bool,
     /// A tracker-driven close.
     pub tracker: bool,
+    /// A manual claim: blockers awaiting review or verification satisfy the dependency gate.
+    pub claimable: bool,
     /// The event that caused the change (`ctx.caused_by`).
     pub caused_by: Option<Id>,
     /// The `attempt_id` key of the status event (`extra={"attempt_id": ...}`): absent, or written
@@ -142,7 +146,12 @@ pub fn transition(
 ) -> Result<Applied, WgError> {
     let task = tasks.task(task_id).ok_or_else(|| missing(task_id))?;
     let current = task.status;
-    let gated = dependency_gate(tasks, stacks, task, target, change.reason)?;
+    let statuses = if change.claimable {
+        CLAIMABLE_DEPENDENCY_STATUSES
+    } else {
+        DEPENDENCY_SATISFIED_STATUSES
+    };
+    let gated = dependency_gate_in(tasks, stacks, task, target, change.reason, statuses)?;
     let target = gated.target;
     let metadata = if gated.blocked_by_dependencies {
         with_entry(

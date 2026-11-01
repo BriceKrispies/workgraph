@@ -5,7 +5,7 @@
 //! branches, the integration tips, the fast-forwards) and the order of the steps are the
 //! shell's.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use serde_json::{Map, Value, json};
 use wg_jobs::queue::NewJob;
@@ -18,6 +18,7 @@ use wg_model::slice::QueueSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Decision, Write};
 use wg_rows::task_world_sql::TaskWorld;
+use wg_stacks::landing::blockers_first;
 use wg_stacks::landing::{
     ACCEPTABLE_TASK_STATUSES, LandDecision, LandItem, LandRepo, LandState, Refusal,
     UnverifiedRelease, child_accept_reason, land_decision, landed_reason, release_plan,
@@ -25,6 +26,7 @@ use wg_stacks::landing::{
 };
 use wg_stacks::landing::{Dependent, ReleasePlan};
 use wg_stacks::rebuild::{StackTask, dependents};
+use wg_tasks::deps::unaccepted_dependencies;
 use wg_tasks::transition::Change;
 use wg_types::{ErrorCode, Id, StackItemState, StackStatus, TaskStatus, WgError, parse_id};
 
@@ -557,15 +559,36 @@ pub fn finish_landing(
     let parent = chain.task(stack.parent_task_id)?.clone();
     let parent_key = parent.key.to_string();
     let (chain, released) = release_unverified_children(chain, stack_id, &parent_key)?;
-    let verified: Vec<_> = item_rows(&chain.step.stacks, &chain.step.tasks, stack_id)
+    // Blockers first, so a dependent whose blockers are accepted in this pass is accepted too. A
+    // dependent is skipped only when one of its blockers stays unaccepted.
+    let rows = item_rows(&chain.step.stacks, &chain.step.tasks, stack_id);
+    let in_stack: BTreeSet<Id> = rows.iter().map(|(_, task)| task.id).collect();
+    let mut blockers: BTreeMap<Id, BTreeSet<Id>> = BTreeMap::new();
+    for edge in chain.step.tasks.dependencies.values() {
+        if in_stack.contains(&edge.task_id) && in_stack.contains(&edge.depends_on_id) {
+            blockers
+                .entry(edge.task_id)
+                .or_default()
+                .insert(edge.depends_on_id);
+        }
+    }
+    let verified: Vec<_> = blockers_first(rows, |(_, task)| task.id, &blockers)
         .into_iter()
         .filter(|(item, _)| item.state == StackItemState::Verified)
         .map(|(_, task)| task)
         .collect();
     let child_reason = child_accept_reason(&parent_key);
-    let chain = verified.iter().try_fold(chain, |chain, task| {
-        accept_task(chain, task.id, "automated", &child_reason, facts)
-    })?;
+    let (chain, accepted_keys) =
+        verified
+            .iter()
+            .try_fold((chain, Vec::new()), |(chain, mut accepted), task| {
+                if !unaccepted_dependencies(&chain.step.tasks, task.id).is_empty() {
+                    return Ok::<_, WgError>((chain, accepted));
+                }
+                let chain = accept_task(chain, task.id, "automated", &child_reason, facts)?;
+                accepted.push(task.key.clone());
+                Ok((chain, accepted))
+            })?;
     let chain = accept_task(chain, parent.id, mode, reason, facts)?;
     let acceptance = chain
         .step
@@ -589,8 +612,6 @@ pub fn finish_landing(
         .iter()
         .filter_map(|key| wg_types::TaskKey::parse(key).ok())
         .collect();
-    let accepted_keys: Vec<wg_types::TaskKey> =
-        verified.iter().map(|task| task.key.clone()).collect();
     let chain = chain.stack_status(stack_id, StackStatus::Landed, &landed_reason(&parent_key));
     let current = chain.stack(stack_id)?.clone();
     let chain = chain

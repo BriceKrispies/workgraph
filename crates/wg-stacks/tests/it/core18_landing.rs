@@ -2,7 +2,7 @@
 //! the landing plans of `stack_landing.py`: compare-and-swap moves, rollback, deferral, release of
 //! unverified children and the refusal text.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
 use std::path::PathBuf;
 
@@ -10,9 +10,9 @@ use serde_json::{Value, json};
 use wg_stacks::landing::{
     AfterVerified, Dependent, FfCheck, FfStep, JobRef, LandDecision, LandItem, LandRepo,
     LandRequest, LandState, Refusal, after_verified_outcome, after_verified_request,
-    fast_forward_plan, guard_child, guard_defer, integration_busy, land_decision, move_args,
-    move_bases_event, release_plan, release_unverified, rollback_args, rollback_order, stale_heads,
-    verified_run,
+    blockers_first, fast_forward_plan, guard_child, guard_defer, integration_busy, land_decision,
+    move_args, move_bases_event, release_plan, release_unverified, rollback_args, rollback_order,
+    stale_heads, verified_run,
 };
 use wg_types::{ErrorCode, StackItemState, StackStatus, TaskStatus};
 
@@ -334,4 +334,25 @@ fn releasing_a_merged_child_resets_dependents_and_rebuilds() {
     let off_branch = release_plan("WG-2", "WG-1", StackItemState::Pending, &dependents);
     assert!(!off_branch.rebuild);
     assert!(off_branch.reset.is_empty());
+}
+
+#[test]
+fn blockers_first_lands_each_task_after_the_tasks_it_depends_on() {
+    let id = |n: u128| uuid::Uuid::from_u128(n);
+    // Item order is 1, 2, 3, but 1 depends on 3 and 2 on 1.
+    let blockers = BTreeMap::from([
+        (id(1), BTreeSet::from([id(3)])),
+        (id(2), BTreeSet::from([id(1)])),
+    ]);
+    let ordered = blockers_first(vec![1_u128, 2, 3], |n| id(*n), &blockers);
+    assert_eq!(ordered, [3, 1, 2]);
+    // Without dependencies the given order is kept.
+    let free = blockers_first(vec![2_u128, 1, 3], |n| id(*n), &BTreeMap::new());
+    assert_eq!(free, [2, 1, 3]);
+    // A cycle cannot stall: the first pending row goes next.
+    let cycle = BTreeMap::from([
+        (id(1), BTreeSet::from([id(2)])),
+        (id(2), BTreeSet::from([id(1)])),
+    ]);
+    assert_eq!(blockers_first(vec![1_u128, 2], |n| id(*n), &cycle), [1, 2]);
 }

@@ -11,7 +11,10 @@ use wg_model::slice::StackSlice;
 use wg_model::{Task, TaskSlice};
 use wg_types::{Id, TaskPriority, TaskStatus, WgError};
 
-use crate::deps::{BLOCKED_BY_DEPENDENCIES, satisfied_dependencies, unsatisfied_dependencies};
+use crate::deps::{
+    BLOCKED_BY_DEPENDENCIES, DEPENDENCY_SATISFIED_STATUSES, satisfied_dependencies,
+    unsatisfied_dependencies, unsatisfied_dependencies_in,
+};
 use crate::lifecycle::requires_dependencies;
 
 /// Tasks tagged this are never promoted automatically.
@@ -44,6 +47,26 @@ pub fn dependency_gate(
     target: TaskStatus,
     reason: Option<&str>,
 ) -> Result<Gated, WgError> {
+    dependency_gate_in(
+        tasks,
+        stacks,
+        task,
+        target,
+        reason,
+        DEPENDENCY_SATISFIED_STATUSES,
+    )
+}
+
+/// [`dependency_gate`] with the dependency statuses that count as satisfied: scheduling uses
+/// `DEPENDENCY_SATISFIED_STATUSES`, a manual claim `CLAIMABLE_DEPENDENCY_STATUSES`.
+pub fn dependency_gate_in(
+    tasks: &TaskSlice,
+    stacks: &StackSlice,
+    task: &Task,
+    target: TaskStatus,
+    reason: Option<&str>,
+    statuses: &[TaskStatus],
+) -> Result<Gated, WgError> {
     let reason = reason.filter(|text| !text.is_empty()).map(str::to_owned);
     if !requires_dependencies(target) {
         return Ok(Gated {
@@ -52,7 +75,7 @@ pub fn dependency_gate(
             blocked_by_dependencies: false,
         });
     }
-    let blockers = unsatisfied_dependencies(tasks, stacks, task.id);
+    let blockers = unsatisfied_dependencies_in(tasks, stacks, task.id, statuses);
     if blockers.is_empty() {
         return Ok(Gated {
             target,

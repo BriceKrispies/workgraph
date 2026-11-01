@@ -20,11 +20,22 @@ use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError};
 /// Metadata value of `blocked_reason` for a task parked by unsatisfied dependencies.
 pub const BLOCKED_BY_DEPENDENCIES: &str = "dependencies";
 
-/// Statuses that satisfy a dependency (`DEPENDENCY_SATISFIED_STATUSES`). A cancelled task will
+/// Statuses that satisfy a dependency for automatic scheduling (ready/blocked recomputation,
+/// promotion, the scheduler; `SCHEDULING_DEPENDENCY_STATUSES`). A cancelled task will
 /// never be accepted, so waiting on it would park the dependent forever; cancelling a dependency
 /// releases it the same way accepting one does.
 pub const DEPENDENCY_SATISFIED_STATUSES: &[TaskStatus] =
     &[TaskStatus::Accepted, TaskStatus::Cancelled];
+
+/// Statuses that satisfy a dependency for a manual claim (`CLAIMABLE_DEPENDENCY_STATUSES`): the
+/// scheduling set plus blockers whose work is complete and only awaiting review or verification.
+/// Acceptance of the dependent still needs every blocker accepted (see [`unaccepted_dependencies`]).
+pub const CLAIMABLE_DEPENDENCY_STATUSES: &[TaskStatus] = &[
+    TaskStatus::Accepted,
+    TaskStatus::Cancelled,
+    TaskStatus::AwaitingReview,
+    TaskStatus::AwaitingVerification,
+];
 
 /// Item states that satisfy a sibling dependency inside a stack
 /// (`STACK_DEPENDENCY_SATISFIED_STATES`).
@@ -70,11 +81,21 @@ fn satisfied_in_stack(stacks: &StackSlice, task_id: Id, dep_id: Id) -> bool {
         .is_some_and(|state| STACK_DEPENDENCY_SATISFIED_STATES.contains(&state))
 }
 
-/// Which `(task_id, depends_on_id)` edges are satisfied.
+/// Which `(task_id, depends_on_id)` edges are satisfied for automatic scheduling.
 pub fn satisfied_dependencies(
     tasks: &TaskSlice,
     stacks: &StackSlice,
     edges: &[(Id, Id)],
+) -> BTreeSet<(Id, Id)> {
+    satisfied_dependencies_in(tasks, stacks, edges, DEPENDENCY_SATISFIED_STATUSES)
+}
+
+/// Which edges are satisfied when a dependency's task status is one of `statuses`.
+pub fn satisfied_dependencies_in(
+    tasks: &TaskSlice,
+    stacks: &StackSlice,
+    edges: &[(Id, Id)],
+    statuses: &[TaskStatus],
 ) -> BTreeSet<(Id, Id)> {
     edges
         .iter()
@@ -82,7 +103,7 @@ pub fn satisfied_dependencies(
         .filter(|(task_id, dep_id)| {
             tasks
                 .task(*dep_id)
-                .is_some_and(|t| DEPENDENCY_SATISFIED_STATUSES.contains(&t.status))
+                .is_some_and(|t| statuses.contains(&t.status))
                 || satisfied_in_stack(stacks, *task_id, *dep_id)
         })
         .collect()
@@ -104,15 +125,39 @@ pub fn unsatisfied_dependencies<'a>(
     stacks: &StackSlice,
     task_id: Id,
 ) -> Vec<&'a Task> {
+    unsatisfied_dependencies_in(tasks, stacks, task_id, DEPENDENCY_SATISFIED_STATUSES)
+}
+
+/// The tasks `task_id` still waits for when a dependency counts as satisfied in `statuses`.
+pub fn unsatisfied_dependencies_in<'a>(
+    tasks: &'a TaskSlice,
+    stacks: &StackSlice,
+    task_id: Id,
+    statuses: &[TaskStatus],
+) -> Vec<&'a Task> {
     let edges: Vec<(Id, Id)> = dependency_ids(tasks, task_id)
         .into_iter()
         .map(|dep| (task_id, dep))
         .collect();
-    let satisfied = satisfied_dependencies(tasks, stacks, &edges);
+    let satisfied = satisfied_dependencies_in(tasks, stacks, &edges, statuses);
     edges
         .iter()
         .filter(|edge| !satisfied.contains(edge))
         .filter_map(|(_, dep)| tasks.task(*dep))
+        .map(|task| (task.number, task))
+        .collect::<BTreeMap<_, _>>()
+        .into_values()
+        .collect()
+}
+
+/// The direct dependencies of `task_id` that are not accepted yet, by task number: the
+/// acceptance gate (`unaccepted_dependencies`). Only an accepted task counts: no
+/// cancelled or stack-sibling exception applies.
+pub fn unaccepted_dependencies(tasks: &TaskSlice, task_id: Id) -> Vec<&Task> {
+    dependency_ids(tasks, task_id)
+        .into_iter()
+        .filter_map(|dep| tasks.task(dep))
+        .filter(|task| task.status != TaskStatus::Accepted)
         .map(|task| (task.number, task))
         .collect::<BTreeMap<_, _>>()
         .into_values()

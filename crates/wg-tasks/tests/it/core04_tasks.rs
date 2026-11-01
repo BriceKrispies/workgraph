@@ -46,6 +46,47 @@ fn code_of<T: std::fmt::Debug>(result: Result<T, wg_types::WgError>) -> ErrorCod
 }
 
 #[test]
+fn a_claim_unblocks_a_task_whose_blockers_are_all_complete() {
+    // A blocked task parked by dependencies is claimable once no blocker is left for the claim.
+    let mut parked = task("TAA", 1, TaskStatus::Blocked, None);
+    parked.metadata = Map::from_iter([("blocked_reason".to_owned(), json!("dependencies"))]);
+    let plan = plan_claim(&parked, HUMAN, None, 120, None, stamp(0), &[])
+        .unwrap_or_else(|e| panic!("{e}"));
+    let ClaimPlan::Take { unblock, .. } = plan else {
+        panic!("the claim should take the task");
+    };
+    assert!(unblock);
+    // Still blocked by a blocker the claim does not accept: refused.
+    let blocker = task("TAA", 2, TaskStatus::Claimed, None);
+    assert_eq!(
+        code_of(plan_claim(
+            &parked,
+            HUMAN,
+            None,
+            120,
+            None,
+            stamp(0),
+            &[&blocker]
+        )),
+        ErrorCode::InvalidTransition
+    );
+    // A blocked task not parked by dependencies is not claimable.
+    let other = task("TAA", 3, TaskStatus::Blocked, None);
+    assert_eq!(
+        code_of(plan_claim(&other, HUMAN, None, 120, None, stamp(0), &[])),
+        ErrorCode::InvalidTransition
+    );
+    // A ready task is taken without an unblock step.
+    let ready = task("TAA", 4, TaskStatus::Ready, None);
+    let plan =
+        plan_claim(&ready, HUMAN, None, 120, None, stamp(0), &[]).unwrap_or_else(|e| panic!("{e}"));
+    let ClaimPlan::Take { unblock, .. } = plan else {
+        panic!("take");
+    };
+    assert!(!unblock);
+}
+
+#[test]
 fn claims_are_exclusive_and_only_the_holder_releases() {
     // test_claims_are_exclusive: agent one claims a ready task; agent two is refused.
     let ready = task("TAA", 1, TaskStatus::Ready, None);

@@ -5,6 +5,7 @@
 //! feature's `cli`, `http` and `mcp` tables.
 
 pub mod acceptance;
+pub mod breakdown;
 pub mod contract;
 pub mod rename;
 pub mod triage;

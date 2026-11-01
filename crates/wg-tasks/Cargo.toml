@@ -11,6 +11,7 @@ description = "task lifecycle, dependency graph, task writes, claims, comments"
 workspace = true
 
 [dependencies]
+regex = { version = "1", default-features = false, features = ["std", "unicode-perl", "unicode-case"] }
 rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 time = { version = "0.3", default-features = false }

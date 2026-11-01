@@ -42,6 +42,7 @@ pub fn call(
         "task_complete" => complete(app, agent, arguments),
         "task_get_ready" => get_ready(app, agent, arguments),
         "task_promote_ready" => promote_ready(app, agent, arguments),
+        "task_import_breakdown" => import_breakdown(app, agent, arguments),
         "task_add_dependency" => add_dependency(app, agent, arguments),
         "task_remove_dependency" => remove_dependency(app, agent, arguments),
         "task_add_relation" => add_relation(app, agent, arguments),
@@ -166,6 +167,42 @@ fn promote_ready(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError
         &scope.tags,
         scope.project.as_deref(),
         scope.dry_run,
+    )
+}
+
+/// `breakdown.import_breakdown` for `task_import_breakdown`: the document is given as text.
+fn import_breakdown(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let tags: Vec<String> = a
+        .get("tags")
+        .and_then(Value::as_array)
+        .map(|tags| {
+            tags.iter()
+                .filter_map(|tag| tag.as_str().map(str::to_owned))
+                .collect()
+        })
+        .unwrap_or_default();
+    let (markdown, section, source, parent) = (
+        args::text(a, "markdown"),
+        args::text(a, "section"),
+        args::text(a, "source"),
+        args::text(a, "parent"),
+    );
+    let request = service::breakdown::ImportRequest {
+        markdown: &markdown,
+        section: &section,
+        source: &source,
+        parent: &parent,
+        tags: &tags,
+        project: text_argument(a, "project"),
+        repository: text_argument(a, "repository"),
+        dry_run: a.get("dry_run").and_then(Value::as_bool).unwrap_or(false),
+    };
+    service::breakdown::task_import_breakdown(
+        app,
+        &context,
+        text_argument(a, "workspace"),
+        &request,
     )
 }
 

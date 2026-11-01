@@ -216,6 +216,7 @@ fn wrapper_builders_produce_the_shapes_the_tools_declare() {
                 )],
                 &[("CF-1", None)],
                 vec![mcp_outputs::breakdown_unresolved("CF-1", "X-1", "no task")],
+                vec![mcp_outputs::breakdown_kept("CF-1", "K-1", "edited")],
                 1,
                 0,
                 0,

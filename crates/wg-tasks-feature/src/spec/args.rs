@@ -54,7 +54,7 @@ pub fn command() -> clap::Command {
 
 /// `_tag_values`: each value may hold comma-separated tags; blanks are dropped. `None` when no
 /// option was given.
-fn tag_values(values: &[String]) -> Vec<String> {
+pub fn tag_values(values: &[String]) -> Vec<String> {
     values
         .iter()
         .flat_map(|value| value.split(','))

@@ -3063,6 +3063,7 @@ dependencies = [
 name = "wg-tasks"
 version = "0.1.0"
 dependencies = [
+ "regex",
  "rpds",
  "serde_json",
  "time",

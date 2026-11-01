@@ -2,7 +2,7 @@
 //! `unsatisfied_dependencies`, `depends_on_reachable` and the cycle check of `add_dependency` in
 //! `core/services/tasks.py`.
 //!
-//! A dependency is satisfied once the task it names is accepted. Inside an active stack a
+//! A dependency is satisfied once the task it names is accepted or cancelled. Inside an active stack a
 //! dependency on a sibling that is an item of the same stack is satisfied as soon as that item
 //! is integration-ready (ready, merged or verified). Every dependency check goes through
 //! [`satisfied_dependencies`].
@@ -20,8 +20,11 @@ use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError};
 /// Metadata value of `blocked_reason` for a task parked by unsatisfied dependencies.
 pub const BLOCKED_BY_DEPENDENCIES: &str = "dependencies";
 
-/// Statuses that satisfy a dependency (`DEPENDENCY_SATISFIED_STATUSES`).
-pub const DEPENDENCY_SATISFIED_STATUSES: &[TaskStatus] = &[TaskStatus::Accepted];
+/// Statuses that satisfy a dependency (`DEPENDENCY_SATISFIED_STATUSES`). A cancelled task will
+/// never be accepted, so waiting on it would park the dependent forever; cancelling a dependency
+/// releases it the same way accepting one does.
+pub const DEPENDENCY_SATISFIED_STATUSES: &[TaskStatus] =
+    &[TaskStatus::Accepted, TaskStatus::Cancelled];
 
 /// Item states that satisfy a sibling dependency inside a stack
 /// (`STACK_DEPENDENCY_SATISFIED_STATES`).

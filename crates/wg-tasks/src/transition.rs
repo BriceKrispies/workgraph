@@ -2,7 +2,7 @@
 //! `_refresh_blocked_state` in `core/services/tasks.py`: the dependency gate, the lifecycle
 //! check, the timestamps and claim fields a status sets, the version bump, and the events
 //! (`task.status_changed`, then `task.reopened` and `task.became_ready` caused by it), followed by
-//! the refresh of the tasks that wait on a task that was accepted or reopened.
+//! the refresh of the tasks that wait on a task that was accepted, cancelled or reopened.
 //!
 //! The functions take the slice the change starts from and return a [`Decision`] with the writes
 //! and events, the ids still free, and the slice after the writes, so a caller can chain the next
@@ -16,7 +16,7 @@ use wg_model::stamp::{IdSeq, Stamp};
 use wg_model::{Decision, TaskSlice, Write};
 use wg_types::{Id, TaskStatus, WgError};
 
-use crate::deps::BLOCKED_BY_DEPENDENCIES;
+use crate::deps::{BLOCKED_BY_DEPENDENCIES, DEPENDENCY_SATISFIED_STATUSES};
 use crate::lifecycle::check_task_transition;
 use crate::promote::{dependency_gate, dependents, refresh_blocked_state};
 use wg_types::pyval::truthy;
@@ -241,7 +241,9 @@ pub fn transition(
         decision,
         ids,
     };
-    if current == TaskStatus::Accepted || target == TaskStatus::Accepted {
+    if DEPENDENCY_SATISFIED_STATUSES.contains(&current)
+        || DEPENDENCY_SATISFIED_STATUSES.contains(&target)
+    {
         refresh_dependents(applied, stacks, stamp, task_id, status_id)
     } else {
         Ok(applied)

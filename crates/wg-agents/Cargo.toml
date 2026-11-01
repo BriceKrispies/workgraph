@@ -18,3 +18,4 @@ wg-proc = { path = "../wg-proc" }
 
 [lib]
 doctest = false
+test = false

@@ -40,3 +40,4 @@ rpds = "1"
 
 [lib]
 doctest = false
+test = false

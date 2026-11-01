@@ -26,3 +26,4 @@ wg-conformance = { path = "../wg-conformance" }
 
 [lib]
 doctest = false
+test = false

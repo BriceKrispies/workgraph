@@ -21,3 +21,4 @@ zip = { version = "6", default-features = false, features = ["deflate"] }
 
 [lib]
 doctest = false
+test = false

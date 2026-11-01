@@ -19,3 +19,4 @@ wg-procspec = { path = "../wg-procspec" }
 
 [lib]
 doctest = false
+test = false

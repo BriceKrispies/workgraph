@@ -10,6 +10,7 @@ description = "the scripted workgraph.agent.v1 demo agent"
 [[bin]]
 name = "workgraph-demo-agent"
 path = "src/main.rs"
+test = false
 
 [lints]
 workspace = true

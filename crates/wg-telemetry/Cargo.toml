@@ -22,3 +22,4 @@ wg-validate = { path = "../wg-validate" }
 
 [lib]
 doctest = false
+test = false

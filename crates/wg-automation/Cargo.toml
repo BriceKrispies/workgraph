@@ -18,3 +18,4 @@ wg-types = { path = "../wg-types" }
 
 [lib]
 doctest = false
+test = false

@@ -181,7 +181,7 @@
               "title": "Task 0"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-2>",
               "key": "TAH-2",
@@ -189,7 +189,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x",
                 "rho"
@@ -210,7 +210,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-4>",
               "key": "TAH-4",
@@ -218,7 +218,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "parked",
                 "rho"
@@ -226,7 +226,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-5>",
               "key": "TAH-5",
@@ -332,7 +332,7 @@
           ],
           "nodes": [
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-2>",
               "key": "TAH-2",
@@ -340,7 +340,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x",
                 "rho"
@@ -361,7 +361,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-4>",
               "key": "TAH-4",
@@ -369,7 +369,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "parked",
                 "rho"
@@ -524,7 +524,7 @@
               "title": "Task 0"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-2>",
               "key": "TAH-2",
@@ -532,7 +532,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x",
                 "rho"
@@ -553,7 +553,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-4>",
               "key": "TAH-4",
@@ -561,7 +561,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "parked",
                 "rho"
@@ -569,7 +569,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-5>",
               "key": "TAH-5",
@@ -845,7 +845,10 @@
           "TAH-8"
         ]
       },
-      "ready": [],
+      "ready": [
+        "TAH-2",
+        "TAH-4"
+      ],
       "rollup": {
         "TAH-1": null,
         "TAH-2": {
@@ -872,7 +875,7 @@
         "TAH-8": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1
+            "ready": 1
           },
           "progress": 0.0,
           "total_descendants": 1
@@ -882,7 +885,7 @@
         [
           "TAH-2",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-3",
@@ -892,17 +895,17 @@
         [
           "TAH-3",
           "TAH-5",
-          false
+          true
         ],
         [
           "TAH-4",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-5",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-6",
@@ -917,12 +920,12 @@
         [
           "TAH-6",
           "TAH-5",
-          false
+          true
         ],
         [
           "TAH-7",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-7",
@@ -960,7 +963,7 @@
         "TAH-2": {
           "archived": false,
           "parent": null,
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "area:x",
             "rho"
@@ -975,7 +978,7 @@
         "TAH-4": {
           "archived": false,
           "parent": "TAH-8",
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "parked",
             "rho"
@@ -1008,26 +1011,17 @@
       },
       "unsatisfied_blockers": {
         "TAH-1": [],
-        "TAH-2": [
-          "TAH-1"
-        ],
+        "TAH-2": [],
         "TAH-3": [
-          "TAH-2",
-          "TAH-5"
+          "TAH-2"
         ],
-        "TAH-4": [
-          "TAH-1"
-        ],
-        "TAH-5": [
-          "TAH-1"
-        ],
+        "TAH-4": [],
+        "TAH-5": [],
         "TAH-6": [
           "TAH-2",
-          "TAH-4",
-          "TAH-5"
+          "TAH-4"
         ],
         "TAH-7": [
-          "TAH-1",
           "TAH-3",
           "TAH-6"
         ],
@@ -1218,7 +1212,7 @@
               "title": "Task 0"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-2>",
               "key": "TAH-2",
@@ -1226,7 +1220,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x",
                 "rho"
@@ -1247,7 +1241,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-4>",
               "key": "TAH-4",
@@ -1255,7 +1249,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "parked",
                 "rho"
@@ -1263,7 +1257,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-5>",
               "key": "TAH-5",
@@ -1369,7 +1363,7 @@
           ],
           "nodes": [
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-2>",
               "key": "TAH-2",
@@ -1377,7 +1371,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x",
                 "rho"
@@ -1398,7 +1392,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-4>",
               "key": "TAH-4",
@@ -1406,7 +1400,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "parked",
                 "rho"
@@ -1561,7 +1555,7 @@
               "title": "Task 0"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-2>",
               "key": "TAH-2",
@@ -1569,7 +1563,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x",
                 "rho"
@@ -1590,7 +1584,7 @@
               "title": "Task 2"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-4>",
               "key": "TAH-4",
@@ -1598,7 +1592,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "parked",
                 "rho"
@@ -1606,7 +1600,7 @@
               "title": "Task 3"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAH-5>",
               "key": "TAH-5",
@@ -1882,7 +1876,10 @@
           "TAH-8"
         ]
       },
-      "ready": [],
+      "ready": [
+        "TAH-2",
+        "TAH-4"
+      ],
       "rollup": {
         "TAH-1": null,
         "TAH-2": {
@@ -1909,7 +1906,7 @@
         "TAH-8": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1
+            "ready": 1
           },
           "progress": 0.0,
           "total_descendants": 1
@@ -1919,7 +1916,7 @@
         [
           "TAH-2",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-3",
@@ -1929,17 +1926,17 @@
         [
           "TAH-3",
           "TAH-5",
-          false
+          true
         ],
         [
           "TAH-4",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-5",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-6",
@@ -1954,12 +1951,12 @@
         [
           "TAH-6",
           "TAH-5",
-          false
+          true
         ],
         [
           "TAH-7",
           "TAH-1",
-          false
+          true
         ],
         [
           "TAH-7",
@@ -1997,7 +1994,7 @@
         "TAH-2": {
           "archived": false,
           "parent": null,
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "area:x",
             "rho"
@@ -2012,7 +2009,7 @@
         "TAH-4": {
           "archived": false,
           "parent": "TAH-8",
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "parked",
             "rho"
@@ -2045,26 +2042,17 @@
       },
       "unsatisfied_blockers": {
         "TAH-1": [],
-        "TAH-2": [
-          "TAH-1"
-        ],
+        "TAH-2": [],
         "TAH-3": [
-          "TAH-2",
-          "TAH-5"
+          "TAH-2"
         ],
-        "TAH-4": [
-          "TAH-1"
-        ],
-        "TAH-5": [
-          "TAH-1"
-        ],
+        "TAH-4": [],
+        "TAH-5": [],
         "TAH-6": [
           "TAH-2",
-          "TAH-4",
-          "TAH-5"
+          "TAH-4"
         ],
         "TAH-7": [
-          "TAH-1",
           "TAH-3",
           "TAH-6"
         ],

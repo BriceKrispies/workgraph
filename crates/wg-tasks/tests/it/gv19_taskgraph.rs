@@ -465,7 +465,126 @@ fn check_promotion(doc: &Value, observations: &Value) {
     }
 }
 
+/// Re-derives the status-dependent observations of `snap` (satisfied, blockers, rollup, ready,
+/// graphs) from its task statuses and edges.
+fn rederive(doc: &Value, snap: &mut Value) {
+    let world = build(doc, snap, &BTreeMap::new());
+    let edges: Vec<(Id, Id)> = snap["dependency_edges"]
+        .as_array()
+        .into_iter()
+        .flatten()
+        .map(|e| (world.id(text(&e[0])), world.id(text(&e[1]))))
+        .collect();
+    let satisfied = satisfied_dependencies(&world.tasks, &world.stacks, &edges);
+    for row in snap["satisfied"].as_array_mut().into_iter().flatten() {
+        let edge = (world.id(text(&row[0])), world.id(text(&row[1])));
+        row[2] = json!(satisfied.contains(&edge));
+    }
+    for key in &world.keys {
+        let blockers = unsatisfied_dependencies(&world.tasks, &world.stacks, world.id(key));
+        snap["unsatisfied_blockers"][key] = json!(world.keys_of(&blockers));
+        snap["rollup"][key] = rollup_json(rollup(&world.tasks, world.id(key)));
+    }
+    let ready = ready_tasks(
+        &world.tasks,
+        &world.stacks,
+        ReadyQuery {
+            workspace_id: workspace(),
+            project: None,
+            repository: None,
+            agent: None,
+            limit: 500,
+        },
+    );
+    snap["ready"] = json!(world.keys_of(&ready));
+    let base = GraphQuery {
+        workspace_id: workspace(),
+        project: None,
+        repository: None,
+        root: None,
+        include_closed: true,
+    };
+    let all = task_graph(&world.tasks, &world.stacks, &base);
+    snap["graph"]["all"] = graph_json(&world, &all);
+    let open = task_graph(
+        &world.tasks,
+        &world.stacks,
+        &GraphQuery {
+            include_closed: false,
+            ..base
+        },
+    );
+    snap["graph"]["open_only"] = graph_json(&world, &open);
+    if let Some(root) = world
+        .keys
+        .iter()
+        .find(|k| !snap["rollup"][k.as_str()].is_null())
+    {
+        let rooted = task_graph(
+            &world.tasks,
+            &world.stacks,
+            &GraphQuery {
+                root: Some(world.id(root)),
+                ..base
+            },
+        );
+        snap["graph"]["root_first_parent"] = graph_json(&world, &rooted);
+    }
+}
+
+/// Re-records a generated case after a deliberate rule change. Set `WG_BLESS_TASKGRAPH=<dir>`
+/// and the test writes each re-derived document to `<dir>/<case>.json` instead of checking it:
+/// blocked tasks without blockers become ready, the promotion is re-run on that state, and every
+/// derived observation is recomputed. Review the diff against `golden/taskgraph` before keeping it.
+fn bless(name: &str, dir: &str) {
+    let mut doc = load(name);
+    let mut before = doc["observations"]["before_promotion"].clone();
+    let world = build(&doc, &before, &BTreeMap::new());
+    for key in &world.keys {
+        let blocked =
+            world.tasks.task(world.id(key)).map(|t| t.status) == Some(TaskStatus::Blocked);
+        if blocked
+            && unsatisfied_dependencies(&world.tasks, &world.stacks, world.id(key)).is_empty()
+        {
+            before["tasks"][key]["status"] = json!("ready");
+        }
+    }
+    rederive(&doc, &mut before);
+    let world = build(&doc, &before, &BTreeMap::new());
+    let promoted = promote_ready(
+        &world.tasks,
+        &world.stacks,
+        workspace(),
+        PromoteScope::default(),
+    );
+    let promoted = world.keys_of(&promoted);
+    let mut after = before.clone();
+    for key in &promoted {
+        after["tasks"][key]["status"] = json!("ready");
+    }
+    rederive(&doc, &mut after);
+    doc["observations"]["before_promotion"] = before;
+    doc["observations"]["after_promotion"] = after;
+    doc["observations"]["promoted"] = json!(promoted);
+    doc["observations"]["dry_run"] = json!(promoted);
+    let out = serde_json::to_string_pretty(&doc).unwrap_or_default();
+    std::fs::write(
+        format!("{dir}/{name}.json"),
+        format!(
+            "{out}
+"
+        ),
+    )
+    .unwrap_or_else(|e| panic!("write {name}: {e}"));
+}
+
 fn check_case(name: &str) {
+    if let Ok(dir) = std::env::var("WG_BLESS_TASKGRAPH") {
+        if name.starts_with("generated_") {
+            bless(name, &dir);
+        }
+        return;
+    }
     let doc = load(name);
     let mut snaps = Vec::new();
     snapshots("", &doc["observations"], &mut snaps);

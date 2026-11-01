@@ -313,7 +313,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAL-10>",
               "key": "TAL-10",
@@ -321,7 +321,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -433,7 +433,7 @@
               "title": "Task 7"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAL-10>",
               "key": "TAL-10",
@@ -441,7 +441,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -680,7 +680,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAL-10>",
               "key": "TAL-10",
@@ -688,7 +688,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -1026,16 +1026,16 @@
       },
       "ready": [
         "TAL-4",
-        "TAL-8"
+        "TAL-8",
+        "TAL-10"
       ],
       "rollup": {
         "TAL-1": {
           "accepted": 0,
           "by_status": {
             "backlog": 1,
-            "blocked": 1,
             "cancelled": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.0,
           "total_descendants": 4
@@ -1046,9 +1046,8 @@
           "by_status": {
             "accepted": 3,
             "backlog": 1,
-            "blocked": 1,
             "cancelled": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.5,
           "total_descendants": 7
@@ -1056,8 +1055,7 @@
         "TAL-3": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.0,
           "total_descendants": 2
@@ -1066,9 +1064,8 @@
         "TAL-5": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1,
             "cancelled": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.0,
           "total_descendants": 3
@@ -1085,7 +1082,7 @@
         "TAL-8": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1
+            "ready": 1
           },
           "progress": 0.0,
           "total_descendants": 1
@@ -1106,7 +1103,7 @@
         [
           "TAL-10",
           "TAL-3",
-          false
+          true
         ],
         [
           "TAL-10",
@@ -1174,7 +1171,7 @@
         "TAL-10": {
           "archived": false,
           "parent": "TAL-8",
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "area:x"
           ]
@@ -1236,9 +1233,7 @@
         "TAL-1": [
           "TAL-7"
         ],
-        "TAL-10": [
-          "TAL-3"
-        ],
+        "TAL-10": [],
         "TAL-2": [
           "TAL-4",
           "TAL-5"
@@ -1569,7 +1564,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAL-10>",
               "key": "TAL-10",
@@ -1577,7 +1572,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -1689,7 +1684,7 @@
               "title": "Task 7"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAL-10>",
               "key": "TAL-10",
@@ -1697,7 +1692,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -1936,7 +1931,7 @@
               "title": "Task 8"
             },
             {
-              "blocked": true,
+              "blocked": false,
               "category": null,
               "id": "<task:TAL-10>",
               "key": "TAL-10",
@@ -1944,7 +1939,7 @@
               "priority": "medium",
               "project_ids": [],
               "repository_ids": [],
-              "status": "blocked",
+              "status": "ready",
               "tags": [
                 "area:x"
               ],
@@ -2282,16 +2277,16 @@
       },
       "ready": [
         "TAL-4",
-        "TAL-8"
+        "TAL-8",
+        "TAL-10"
       ],
       "rollup": {
         "TAL-1": {
           "accepted": 0,
           "by_status": {
             "backlog": 1,
-            "blocked": 1,
             "cancelled": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.0,
           "total_descendants": 4
@@ -2302,9 +2297,8 @@
           "by_status": {
             "accepted": 3,
             "backlog": 1,
-            "blocked": 1,
             "cancelled": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.5,
           "total_descendants": 7
@@ -2312,8 +2306,7 @@
         "TAL-3": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.0,
           "total_descendants": 2
@@ -2322,9 +2315,8 @@
         "TAL-5": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1,
             "cancelled": 1,
-            "ready": 1
+            "ready": 2
           },
           "progress": 0.0,
           "total_descendants": 3
@@ -2341,7 +2333,7 @@
         "TAL-8": {
           "accepted": 0,
           "by_status": {
-            "blocked": 1
+            "ready": 1
           },
           "progress": 0.0,
           "total_descendants": 1
@@ -2362,7 +2354,7 @@
         [
           "TAL-10",
           "TAL-3",
-          false
+          true
         ],
         [
           "TAL-10",
@@ -2430,7 +2422,7 @@
         "TAL-10": {
           "archived": false,
           "parent": "TAL-8",
-          "status": "blocked",
+          "status": "ready",
           "tags": [
             "area:x"
           ]
@@ -2492,9 +2484,7 @@
         "TAL-1": [
           "TAL-7"
         ],
-        "TAL-10": [
-          "TAL-3"
-        ],
+        "TAL-10": [],
         "TAL-2": [
           "TAL-4",
           "TAL-5"

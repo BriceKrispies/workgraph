@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: "/",
   build: {
-    outDir: "../src/workgraph/api/static",
+    outDir: "dist",
     emptyOutDir: true,
     chunkSizeWarningLimit: 1500,
   },

@@ -1,6 +1,6 @@
-"""Unified quality gate: `uv run tools/check.py` (add --no-web to skip the frontend).
+"""Unified quality gate: `python tools/check.py` (add --no-web to skip the frontend).
 
-Runs, in order: ruff lint, ruff format check, ty, the Rust steps (cargo fmt check, clippy with
+Runs, in order: the Rust steps (cargo fmt check, clippy with
 warnings denied, `cargo purity`) and, when the frontend dependencies are installed, bun run
 typecheck / test / build. Add --tests to also run the Rust tests (`cargo test --workspace`) and the
 conformance corpus against the Rust binaries; only
@@ -88,11 +88,7 @@ def main() -> None:
         help="also run `cargo test --workspace` (used by stack verification only)",
     )
     args = parser.parse_args()
-    uv = shutil.which("uv") or "uv"
     cargo = shutil.which("cargo") or "cargo"
-    step("ruff lint", [uv, "run", "ruff", "check", "."])
-    step("ruff format", [uv, "run", "ruff", "format", "--check", "."])
-    step("ty", [uv, "run", "ty", "check"])
     step("cargo fmt", [cargo, "fmt", "--all", "--check"])
     step("cargo clippy", [cargo, "clippy", "--workspace", "--all-targets", "--", "-D", "warnings"])
     step("cargo purity", [cargo, "purity"])

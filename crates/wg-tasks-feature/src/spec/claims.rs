@@ -20,12 +20,12 @@ use wg_registry::resolve;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::accept::comment_step;
 use wg_tasks::claims::{
-    Caller, ClaimPlan, REASON_ATTEMPT_FAILED, REASON_COMPLETION, REASON_EXPIRED_CLAIM_RELEASED,
-    REASON_LEASE_EXPIRED, expired_claims, plan_claim, plan_complete, plan_release,
-    plan_report_result,
+    Caller, ClaimPlan, REASON_ATTEMPT_FAILED, REASON_CLAIM_UNBLOCKED, REASON_COMPLETION,
+    REASON_EXPIRED_CLAIM_RELEASED, REASON_LEASE_EXPIRED, expired_claims, plan_claim, plan_complete,
+    plan_release, plan_report_result,
 };
 use wg_tasks::comments::check_attempt_owner;
-use wg_tasks::deps::unsatisfied_dependencies;
+use wg_tasks::deps::{CLAIMABLE_DEPENDENCY_STATUSES, unsatisfied_dependencies_in};
 use wg_tasks::transition::{Applied, Change, transition};
 use wg_types::{AttemptStatus, CommentKind, Id, Permission, TaskStatus, WgError};
 use wg_verify::{TaskScope, applicable_checks};
@@ -98,7 +98,8 @@ pub fn claim_task(
     stamp.require(&[Permission::TaskClaim])?;
     let tasks = &world.tasks;
     let task = resolve::task(tasks, workspace, reference)?;
-    let blockers = unsatisfied_dependencies(tasks, &world.stacks, task.id);
+    let blockers =
+        unsatisfied_dependencies_in(tasks, &world.stacks, task.id, CLAIMABLE_DEPENDENCY_STATUSES);
     let actor = stamp.actor.to_string();
     let plan = plan_claim(
         task,
@@ -127,6 +128,7 @@ pub fn claim_task(
             claimant,
             expires_at,
             release_expired,
+            unblock,
             set_assignee,
         } => {
             let start = Applied {
@@ -143,6 +145,20 @@ pub fn claim_task(
                     TaskStatus::Ready,
                     Change {
                         reason: Some(REASON_EXPIRED_CLAIM_RELEASED),
+                        claimable: true,
+                        ..Change::default()
+                    },
+                )?
+            } else if unblock {
+                step(
+                    start,
+                    world,
+                    stamp,
+                    task.id,
+                    TaskStatus::Ready,
+                    Change {
+                        reason: Some(REASON_CLAIM_UNBLOCKED),
+                        claimable: true,
                         ..Change::default()
                     },
                 )?
@@ -159,6 +175,7 @@ pub fn claim_task(
                 TaskStatus::Claimed,
                 Change {
                     reason: Some(&reason),
+                    claimable: true,
                     ..Change::default()
                 },
             )?;

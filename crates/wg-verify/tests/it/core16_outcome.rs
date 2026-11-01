@@ -57,6 +57,7 @@ fn facts() -> AutoAcceptFacts {
         active_stack_item: false,
         active_stack_parent: false,
         lands_through_stacks: false,
+        unaccepted_blockers: false,
         is_latest_run: true,
     }
 }
@@ -157,6 +158,21 @@ fn auto_accept_guards_run_in_order() {
                 ..facts()
             },
             AutoAcceptSkip::NotAwaitingReview,
+        ),
+        (
+            AutoAcceptFacts {
+                unaccepted_blockers: true,
+                ..facts()
+            },
+            AutoAcceptSkip::UnacceptedBlockers,
+        ),
+        (
+            AutoAcceptFacts {
+                unaccepted_blockers: true,
+                is_latest_run: false,
+                ..facts()
+            },
+            AutoAcceptSkip::UnacceptedBlockers,
         ),
         (
             AutoAcceptFacts {

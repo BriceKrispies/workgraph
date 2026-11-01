@@ -12,6 +12,7 @@ use time::Duration;
 use wg_model::{Task, TaskSlice};
 use wg_types::{TaskStatus, Timestamp, WgError};
 
+use crate::deps::BLOCKED_BY_DEPENDENCIES;
 use crate::lifecycle::check_task_transition;
 use wg_types::pyval::prefix;
 
@@ -22,6 +23,8 @@ pub const SYSTEM_ACTOR_PREFIX: &str = "system:";
 pub const REASON_EXPIRED_CLAIM_RELEASED: &str = "expired claim released";
 /// Reason recorded when the sweep releases an expired claim.
 pub const REASON_LEASE_EXPIRED: &str = "claim lease expired";
+/// Reason recorded when a claim unblocks a task whose blockers are all complete.
+pub const REASON_CLAIM_UNBLOCKED: &str = "dependencies awaiting acceptance; claimed";
 /// Reason recorded by a release that gave no reason.
 pub const REASON_RELEASED: &str = "released";
 /// Reason recorded when completion moves the task to review or verification.
@@ -48,11 +51,13 @@ pub enum ClaimPlan {
     Renew { expires_at: Timestamp },
     /// Take the task. `release_expired` names an expired foreign claimant; the shell first moves
     /// the task to ready with [`REASON_EXPIRED_CLAIM_RELEASED`]. `set_assignee` is true when the
-    /// task has no assignee yet.
+    /// task has no assignee yet. `unblock` is true when the task is blocked by dependencies that
+    /// are all complete: the shell first moves it to ready with [`REASON_CLAIM_UNBLOCKED`].
     Take {
         claimant: String,
         expires_at: Timestamp,
         release_expired: Option<String>,
+        unblock: bool,
         set_assignee: bool,
     },
 }
@@ -82,8 +87,8 @@ pub fn lease_expiry(at: Timestamp, minutes: i64) -> Result<Timestamp, WgError> {
 
 /// The claim decision of `_claim_in_session`.
 ///
-/// `blockers` are the unsatisfied dependencies of the task (from `deps::unsatisfied_dependencies`);
-/// a claim with blockers is refused. `agent` is the `ClaimRequest.agent` name; when given the
+/// `blockers` are the dependencies the claim still waits for (from `deps::unsatisfied_dependencies_in`
+/// with `CLAIMABLE_DEPENDENCY_STATUSES`); a claim with blockers is refused. `agent` is the `ClaimRequest.agent` name; when given the
 /// claimant is `agent:<name>`, otherwise the caller's actor.
 pub fn plan_claim(
     task: &Task,
@@ -120,6 +125,13 @@ pub fn plan_claim(
         }
         // An expired foreign claim is released before the task is re-claimed.
         (Some(holder.to_owned()), TaskStatus::Ready)
+    } else if task.status == TaskStatus::Blocked
+        && blockers.is_empty()
+        && task.metadata.get("blocked_reason").and_then(Value::as_str)
+            == Some(BLOCKED_BY_DEPENDENCIES)
+    {
+        // Every blocker's work is complete: a manual claim unblocks the task.
+        (None, TaskStatus::Blocked)
     } else if !matches!(task.status, TaskStatus::Ready | TaskStatus::Failed) {
         return Err(WgError::invalid_transition(format!(
             "task {} is {}; only ready (or failed) tasks can be claimed",
@@ -139,12 +151,15 @@ pub fn plan_claim(
         ))
         .detail("blocked_by", keys));
     }
+    let unblock = from == TaskStatus::Blocked;
+    let from = if unblock { TaskStatus::Ready } else { from };
     check_task_transition(from, TaskStatus::Claimed, false, false)?;
 
     Ok(ClaimPlan::Take {
         claimant,
         expires_at,
         release_expired,
+        unblock,
         set_assignee: task.assignee.is_none(),
     })
 }

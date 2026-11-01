@@ -13,6 +13,7 @@ use wg_registry::resolve;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::landing::{ACCEPTABLE_TASK_STATUSES, guard_child};
 use wg_tasks::accept::*;
+use wg_tasks::deps::unaccepted_dependencies;
 use wg_tasks::promote::promote_dependents as promotable;
 use wg_tasks::transition::{Applied, Change, transition};
 use wg_types::pyval;
@@ -55,6 +56,25 @@ fn scope_of(tasks: &wg_model::TaskSlice, task: &wg_model::Task) -> TaskScope {
     }
 }
 
+/// `VerificationService._refuse_unaccepted_blockers`: a task is accepted only after every task it
+/// depends on is accepted.
+fn refuse_unaccepted_blockers(
+    tasks: &wg_model::TaskSlice,
+    task: &wg_model::Task,
+) -> Result<(), WgError> {
+    let blockers = unaccepted_dependencies(tasks, task.id);
+    if blockers.is_empty() {
+        return Ok(());
+    }
+    let keys: Vec<String> = blockers.iter().map(|b| b.key.to_string()).collect();
+    Err(WgError::conflict(format!(
+        "{} cannot be accepted until its dependencies are accepted: {}",
+        task.key,
+        keys.join(", ")
+    ))
+    .detail("blocked_by", keys))
+}
+
 /// `VerificationService.accept` (automated) and `accept_manually`.
 pub fn accept_task(
     loaded: &AcceptWorld,
@@ -83,6 +103,7 @@ pub fn accept_task(
     if let Some(stack) = loaded.world.stacks.active_stack_of_parent(task.id) {
         return Ok(Decision::new(Route::Land { stack_id: stack.id }));
     }
+    refuse_unaccepted_blockers(tasks, task)?;
     let mode = if manual { "manual" } else { "automated" };
     let reason = if manual || !reason.is_empty() {
         reason

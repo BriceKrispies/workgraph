@@ -10,6 +10,7 @@ use wg_model::entity::VerificationRun;
 use wg_model::stamp::Stamp;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::accept::{AcceptFacts, Run, accept_in, active_item};
+use wg_tasks::deps::unaccepted_dependencies;
 use wg_types::{Id, Permission, TaskStatus, WgError};
 use wg_verify::{ApplicableCheck, AutoAcceptFacts, auto_accept_skip, ran_fast_tier_only};
 
@@ -68,6 +69,7 @@ pub fn auto_accept(
             .active_stack_of_parent(task.id)
             .is_some(),
         lands_through_stacks: loaded.lands_through_stacks,
+        unaccepted_blockers: !unaccepted_dependencies(tasks, task.id).is_empty(),
         is_latest_run: loaded.latest_run == Some(loaded.run.id),
     };
     if auto_accept_skip(&facts).is_some() {

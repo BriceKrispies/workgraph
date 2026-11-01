@@ -7,10 +7,13 @@ use crate::common;
 use common::{id, stack_slice, stamp, task, tasks_slice};
 use serde_json::json;
 use wg_model::stamp::Stamp;
-use wg_tasks::deps::unsatisfied_dependencies;
+use wg_tasks::deps::{
+    CLAIMABLE_DEPENDENCY_STATUSES, unaccepted_dependencies, unsatisfied_dependencies,
+    unsatisfied_dependencies_in,
+};
 use wg_tasks::promote::{
-    REASON_REOPENED, REASON_UNBLOCKED, Refresh, dependency_gate, promote_dependents,
-    refresh_blocked_state,
+    REASON_REOPENED, REASON_UNBLOCKED, Refresh, dependency_gate, dependency_gate_in,
+    promote_dependents, refresh_blocked_state,
 };
 use wg_tasks::transition::{Change, transition};
 use wg_types::{Actor, ErrorCode, StackItemState, StackStatus, TaskStatus};
@@ -217,4 +220,147 @@ fn cancelling_a_dependency_unblocks_its_dependent() {
         .task(id(2))
         .unwrap_or_else(|| panic!("task 2"));
     assert_eq!(dependent.status, TaskStatus::Ready);
+}
+
+fn blocked_by_dependencies(number: i64) -> wg_model::Task {
+    let mut parked = task("TAA", number, TaskStatus::Blocked, None);
+    parked.metadata =
+        serde_json::Map::from_iter([("blocked_reason".to_owned(), json!("dependencies"))]);
+    parked
+}
+
+#[test]
+fn a_completed_blocker_satisfies_a_manual_claim_but_not_scheduling() {
+    let stacks = stack_slice(vec![]);
+    for complete in [TaskStatus::AwaitingReview, TaskStatus::AwaitingVerification] {
+        let tasks = pair(complete, TaskStatus::Ready);
+        let dependent = tasks.task(id(2)).unwrap_or_else(|| panic!("task 2"));
+        // Scheduling waits for acceptance: the task is still blocked and cannot be claimed.
+        assert_eq!(unsatisfied_dependencies(&tasks, &stacks, id(2)).len(), 1);
+        let err = dependency_gate(&tasks, &stacks, dependent, TaskStatus::Claimed, None)
+            .err()
+            .unwrap_or_else(|| panic!("scheduling must refuse {complete}"));
+        assert_eq!(err.code, ErrorCode::InvalidTransition);
+        // A manual claim accepts the completed blocker.
+        assert!(
+            unsatisfied_dependencies_in(&tasks, &stacks, id(2), CLAIMABLE_DEPENDENCY_STATUSES)
+                .is_empty()
+        );
+        let claimed = dependency_gate_in(
+            &tasks,
+            &stacks,
+            dependent,
+            TaskStatus::Claimed,
+            None,
+            CLAIMABLE_DEPENDENCY_STATUSES,
+        )
+        .unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(claimed.target, TaskStatus::Claimed);
+    }
+    // A claimed blocker satisfies neither.
+    let tasks = pair(TaskStatus::Claimed, TaskStatus::Ready);
+    assert_eq!(
+        unsatisfied_dependencies_in(&tasks, &stacks, id(2), CLAIMABLE_DEPENDENCY_STATUSES).len(),
+        1
+    );
+}
+
+#[test]
+fn a_blocker_awaiting_review_leaves_the_dependent_blocked_until_accepted() {
+    let stacks = stack_slice(vec![]);
+    let tasks = tasks_slice(
+        vec![
+            task("TAA", 1, TaskStatus::Claimed, None),
+            blocked_by_dependencies(2),
+        ],
+        vec![],
+        vec![(id(2), id(1))],
+    );
+    let completed = transition(
+        &tasks,
+        &stacks,
+        &propagation_stamp(),
+        propagation_stamp().ids(),
+        id(1),
+        TaskStatus::AwaitingReview,
+        Change::default(),
+    )
+    .unwrap_or_else(|e| panic!("{e}"));
+    let status_of =
+        |applied: &wg_tasks::transition::Applied| applied.tasks.task(id(2)).map(|t| t.status);
+    assert_eq!(status_of(&completed), Some(TaskStatus::Blocked));
+
+    let accepted = transition(
+        &completed.tasks,
+        &stacks,
+        &propagation_stamp(),
+        completed.ids,
+        id(1),
+        TaskStatus::Accepted,
+        Change {
+            privileged: true,
+            ..Change::default()
+        },
+    )
+    .unwrap_or_else(|e| panic!("{e}"));
+    assert_eq!(status_of(&accepted), Some(TaskStatus::Ready));
+}
+
+#[test]
+fn a_claim_transition_takes_a_task_whose_blocker_awaits_review() {
+    let stacks = stack_slice(vec![]);
+    let tasks = pair(TaskStatus::AwaitingReview, TaskStatus::Ready);
+    let refused = transition(
+        &tasks,
+        &stacks,
+        &propagation_stamp(),
+        propagation_stamp().ids(),
+        id(2),
+        TaskStatus::Claimed,
+        Change::default(),
+    );
+    assert!(refused.is_err());
+    let claimed = transition(
+        &tasks,
+        &stacks,
+        &propagation_stamp(),
+        propagation_stamp().ids(),
+        id(2),
+        TaskStatus::Claimed,
+        Change {
+            claimable: true,
+            ..Change::default()
+        },
+    )
+    .unwrap_or_else(|e| panic!("{e}"));
+    assert_eq!(
+        claimed.tasks.task(id(2)).map(|t| t.status),
+        Some(TaskStatus::Claimed)
+    );
+}
+
+#[test]
+fn acceptance_needs_every_direct_dependency_accepted() {
+    let tasks = tasks_slice(
+        vec![
+            task("TAA", 1, TaskStatus::Accepted, None),
+            task("TAA", 2, TaskStatus::AwaitingReview, None),
+            task("TAA", 3, TaskStatus::AwaitingVerification, None),
+            task("TAA", 4, TaskStatus::Cancelled, None),
+            task("TAA", 5, TaskStatus::AwaitingReview, None),
+        ],
+        vec![],
+        vec![
+            (id(5), id(1)),
+            (id(5), id(2)),
+            (id(5), id(3)),
+            (id(5), id(4)),
+        ],
+    );
+    let keys: Vec<String> = unaccepted_dependencies(&tasks, id(5))
+        .iter()
+        .map(|t| t.key.to_string())
+        .collect();
+    assert_eq!(keys, ["TAA-2", "TAA-3", "TAA-4"]);
+    assert!(unaccepted_dependencies(&tasks, id(1)).is_empty());
 }

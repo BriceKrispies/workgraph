@@ -30,6 +30,8 @@ pub struct AutoAcceptFacts {
     pub active_stack_parent: bool,
     /// A repository in the manifest lands its work through stacks.
     pub lands_through_stacks: bool,
+    /// A direct dependency of the task is not accepted yet.
+    pub unaccepted_blockers: bool,
     /// The finished run is the task's latest run.
     pub is_latest_run: bool,
 }
@@ -46,6 +48,7 @@ pub enum AutoAcceptSkip {
     ActiveStackItem,
     StackParent,
     LandsThroughStacks,
+    UnacceptedBlockers,
     NotLatestRun,
 }
 
@@ -69,6 +72,8 @@ pub fn auto_accept_skip(facts: &AutoAcceptFacts) -> Option<AutoAcceptSkip> {
         Some(AutoAcceptSkip::StackParent)
     } else if facts.lands_through_stacks {
         Some(AutoAcceptSkip::LandsThroughStacks)
+    } else if facts.unaccepted_blockers {
+        Some(AutoAcceptSkip::UnacceptedBlockers)
     } else if !facts.is_latest_run {
         Some(AutoAcceptSkip::NotLatestRun)
     } else {

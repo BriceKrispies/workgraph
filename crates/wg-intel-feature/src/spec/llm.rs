@@ -48,7 +48,22 @@ pub fn is_unavailable(error: &ProviderError) -> bool {
 /// The provider error as the `WgError` the caller raises when the provider is unavailable.
 #[must_use]
 pub fn unavailable_error(error: &ProviderError) -> WgError {
-    WgError::provider_unavailable(error.message())
+    let message = error.message();
+    let error = WgError::provider_unavailable(message);
+    // A provider that stayed unreachable names itself and its attempt count, as Python's
+    // `ProviderUnavailableError` details do.
+    let named = message
+        .split_once(" is unreachable after ")
+        .and_then(|(provider, rest)| {
+            let attempts: u32 = rest.split_once(" attempt(s)")?.0.parse().ok()?;
+            Some((provider, attempts))
+        });
+    match named {
+        Some((provider, attempts)) => error
+            .with_detail("provider", Json::from(provider))
+            .with_detail("attempts", Json::from(attempts)),
+        None => error,
+    }
 }
 
 /// The error of an embedding call that failed: an unavailable provider is raised as such, any

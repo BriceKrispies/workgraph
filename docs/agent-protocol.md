@@ -17,7 +17,7 @@ supports_usage = true
 supports_resume = false
 ```
 
-or `uv run workgraph agent add-command my-agent C:/tools/my-agent.exe --arg run --arg "{manifest}"`.
+or `workgraph agent add-command my-agent C:/tools/my-agent.exe --arg run --arg "{manifest}"`.
 
 - No shell is involved; every template element becomes exactly one argument.
 - Allowed placeholders: `{attempt_id}`, `{task_id}`, `{task_key}`, `{workdir}`, `{manifest}`,
@@ -77,7 +77,7 @@ and outcome revisions, enforces read-only repositories, runs the approved verifi
 and moves the task to awaiting review (or failed). Commit with a `Task-ID: <KEY>` trailer, never
 push or merge, and do not modify read-only repositories.
 
-A reference implementation is `src/workgraph/demo/scripted_agent.py`.
+A reference implementation is `workgraph-demo-agent` (`crates/wg-demo-agent`).
 
 ## External managed attempts
 

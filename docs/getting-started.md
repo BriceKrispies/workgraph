@@ -4,25 +4,50 @@
 
 | Requirement | Why |
 | --- | --- |
-| Python 3.12+ and [uv](https://docs.astral.sh/uv/) | Runs Workgraph and manages its environment |
+| Rust toolchain (version pinned in `rust-toolchain.toml`) | Builds the `workgraph` binary |
 | Git 2.40+ | Authoritative Git operations (ingestion, worktrees, diffs) |
-| Bun (optional) | Builds the web UI |
+| Bun | Builds the web UI, which the server embeds |
 | Ollama (optional) | Local model classification, embeddings and narratives |
 | Claude Code (optional) | Claude Code agent adapter and lifecycle hooks |
 
-From a checkout:
+From a checkout, build the UI first so it is embedded, then the binaries:
 
 ```sh
-uv sync
-uv run workgraph init
 bun install --cwd web
-bun run --cwd web build
+bun run --cwd web build          # writes web/dist
+cargo build --release -p wg-cli
 ```
 
-`uv run workgraph doctor` checks Python, Git, the schema, database integrity, configuration,
-inference providers, agent adapters, workers, the hook spool and the UI build.
+Copy `targetelease\workgraph.exe` and `targetelease\workgraph-demo-agent.exe` to
+`%USERPROFILE%\.localin`. The MCP registration and the Claude Code hooks store that path, so
+replacing the files in place keeps them working. Then create the workspace:
 
-To install the command for your user: `uv tool install .` (then use `workgraph` directly).
+```sh
+workgraph init
+```
+
+## Verification
+
+```sh
+workgraph doctor
+workgraph claude status
+claude mcp list
+```
+
+`workgraph doctor` checks Git, the schema, database integrity, configuration, inference providers,
+agent adapters, workers, the hook spool and the UI build. `workgraph claude status` shows hook
+installation and ingestion counts. `claude mcp list` should show the `workgraph` server connected.
+
+## Rollback
+
+The database schema and row formats are the same in the Python and Rust versions, so no data step
+is needed. From a commit that still has the Python code (for example `main`):
+
+```sh
+uv tool install .
+```
+
+This restores the Python `workgraph` command at the same path.
 
 ## Where data lives
 
@@ -38,15 +63,15 @@ repository.
 ## Quick start
 
 ```sh
-uv run workgraph init --workspace acme --prefix AC
-uv run workgraph repo register C:/code/auth-service
-uv run workgraph repo register C:/code/web-client
-uv run workgraph project create login --repo auth-service --repo web-client
-uv run workgraph task create "Refresh expired sessions" --repo auth-service --repo web-client --project login --ready
-uv run workgraph task create "Use refresh flow in UI" --repo web-client --depends-on AC-1 --ready
-uv run workgraph task ready
-uv run workgraph git sync
-uv run workgraph serve
+workgraph init --workspace acme --prefix AC
+workgraph repo register C:/code/auth-service
+workgraph repo register C:/code/web-client
+workgraph project create login --repo auth-service --repo web-client
+workgraph task create "Refresh expired sessions" --repo auth-service --repo web-client --project login --ready
+workgraph task create "Use refresh flow in UI" --repo web-client --depends-on AC-1 --ready
+workgraph task ready
+workgraph git sync
+workgraph serve
 ```
 
 Then open <http://127.0.0.1:8765/>.
@@ -58,18 +83,18 @@ the code once. `workgraph serve --local` (or `server.lan = false`) keeps it on l
 Agents typically:
 
 ```sh
-uv run workgraph --json task ready
-uv run workgraph task claim AC-1
-uv run workgraph task progress AC-1 "implemented the endpoint" --percent 60
-uv run workgraph git link AC-1 3f2c1ab
-uv run workgraph task complete AC-1 -m "endpoint and tests added"
+workgraph --json task ready
+workgraph task claim AC-1
+workgraph task progress AC-1 "implemented the endpoint" --percent 60
+workgraph git link AC-1 3f2c1ab
+workgraph task complete AC-1 -m "endpoint and tests added"
 ```
 
 and a human (or configured verification) accepts:
 
 ```sh
-uv run workgraph verify run AC-1
-uv run workgraph task accept AC-1
+workgraph verify run AC-1
+workgraph task accept AC-1
 ```
 
 ## Running agents (opt-in)
@@ -77,9 +102,9 @@ uv run workgraph task accept AC-1
 Agent code execution is disabled until you opt in:
 
 ```sh
-uv run workgraph config set execution.enabled true
-uv run workgraph agent list
-uv run workgraph run start AC-1 --agent claude_code --wait
+workgraph config set execution.enabled true
+workgraph agent list
+workgraph run start AC-1 --agent claude_code --wait
 ```
 
 `--wait` needs a worker: either `workgraph serve` (which starts one) or `workgraph worker run`.
@@ -87,9 +112,9 @@ uv run workgraph run start AC-1 --agent claude_code --wait
 ## Demonstrations
 
 ```sh
-uv run workgraph demo e2e
-uv run workgraph --home ./demo-home demo seed
-uv run workgraph --home ./demo-home serve
+workgraph demo e2e
+workgraph --home ./demo-home demo seed
+workgraph --home ./demo-home serve
 ```
 
 `demo e2e` runs the 25-step cross-repository scenario in a temporary home and deletes it
@@ -108,11 +133,11 @@ Nothing in Workgraph requires network access:
   For fully offline enrichment select the built-in heuristic provider:
 
 ```sh
-uv run workgraph config set llm.classification '{"provider": "heuristic", "model": "heuristic-v1"}'
-uv run workgraph config set llm.embeddings '{"provider": "heuristic", "model": "hash-embed-256"}'
-uv run workgraph config set llm.summarization '{"provider": "heuristic", "model": "heuristic-v1"}'
+workgraph config set llm.classification '{"provider": "heuristic", "model": "heuristic-v1"}'
+workgraph config set llm.embeddings '{"provider": "heuristic", "model": "hash-embed-256"}'
+workgraph config set llm.summarization '{"provider": "heuristic", "model": "heuristic-v1"}'
 ```
 
-- The scripted command agent (`workgraph/demo/scripted_agent.py`) runs real worktree edits and
+- The scripted command agent (`workgraph-demo-agent`) runs real worktree edits and
   commits without any external agent.
 - The web UI is served from the local build; it loads no remote assets.

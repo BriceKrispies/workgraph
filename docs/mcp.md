@@ -19,7 +19,7 @@ automation rules. Agents cannot accept work, author automation rules, change tru
 or start code execution unless the operator grants it:
 
 ```sh
-uv run workgraph mcp --agent-name ci-bot --grant run:start --grant repo:register
+workgraph mcp --agent-name ci-bot --grant run:start --grant repo:register
 ```
 
 There is no tool for raw SQL or shell commands. Analytics are queried with metric ids, allowlisted
@@ -86,7 +86,7 @@ All tools have JSON-Schema input validation and structured output. List tools ac
 ## Register with Claude Code
 
 ```sh
-uv run workgraph claude install --mcp
+workgraph claude install --mcp
 ```
 
 or manually:
@@ -96,12 +96,12 @@ claude mcp add --scope user workgraph -- workgraph mcp
 ```
 
 (When Workgraph is not installed globally, use the absolute path printed by
-`uv run workgraph claude mcp-config`.)
+`workgraph claude mcp-config`.)
 
 ## Register with another MCP client
 
 Any standards-compliant client that launches stdio servers can use the block printed by
-`uv run workgraph claude mcp-config`, for example in a client's `mcpServers` settings:
+`workgraph claude mcp-config`, for example in a client's `mcpServers` settings:
 
 ```json
 {

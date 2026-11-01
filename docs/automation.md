@@ -27,9 +27,9 @@ Rules are declarative JSON documents persisted in the database. Only actors with
 ```
 
 ```sh
-uv run workgraph automation create @rules/triage.json
-uv run workgraph automation preview --rule "triage critical bugs" --task WG-12
-uv run workgraph automation runs --rule "triage critical bugs"
+workgraph automation create @rules/triage.json
+workgraph automation preview --rule "triage critical bugs" --task WG-12
+workgraph automation runs --rule "triage critical bugs"
 ```
 
 ## Triggers

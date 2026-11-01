@@ -36,12 +36,12 @@ function freePort(): Promise<number> {
 }
 
 function workgraph(home: string, args: string[]) {
-  return spawnSync("uv", ["run", "--no-sync", "workgraph", "--home", home, ...args], {
+  return spawnSync(process.env.WORKGRAPH_BIN ?? "workgraph", ["--home", home, ...args], {
     cwd: repoRoot,
     encoding: "utf-8",
     shell: false,
     timeout: 600_000,
-    env: { ...process.env, PYTHONUTF8: "1" },
+    env: process.env,
   });
 }
 
@@ -68,7 +68,7 @@ export default async function globalSetup(): Promise<void> {
   }
   // `demo e2e --home` keeps its own home layout under the given directory.
   const port = await freePort();
-  const server = spawn("uv", ["run", "--no-sync", "workgraph", "--home", home, "serve", "--port", String(port), "--no-worker"], {
+  const server = spawn(process.env.WORKGRAPH_BIN ?? "workgraph", ["--home", home, "serve", "--port", String(port), "--no-worker"], {
     cwd: repoRoot,
     stdio: "ignore",
     shell: false,

@@ -72,8 +72,8 @@ Verification configurations are **trusted configuration**: only actors with `con
 interpreter as executable needs `allow_shell: true`).
 
 ```sh
-uv run workgraph verify config ci --scope-type repository --scope api --check "{\"name\": \"tests\", \"kind\": \"test\", \"command\": [\"uv\", \"run\", \"pytest\", \"-q\"]}"
-uv run workgraph verify config integration --scope-type project --scope platform --check "{\"name\": \"contract\", \"kind\": \"integration\", \"command\": [\"python\", \"tools/contract.py\"], \"timeout_seconds\": 600}"
+workgraph verify config ci --scope-type repository --scope api --check "{\"name\": \"tests\", \"kind\": \"test\", \"command\": [\"uv\", \"run\", \"pytest\", \"-q\"]}"
+workgraph verify config integration --scope-type project --scope platform --check "{\"name\": \"contract\", \"kind\": \"integration\", \"command\": [\"python\", \"tools/contract.py\"], \"timeout_seconds\": 600}"
 ```
 
 Scopes: `workspace`, `project`, `repository` (runs in that repository's checkout), `task`.
@@ -113,8 +113,8 @@ Integration checks run in a scratch directory with `WORKGRAPH_MANIFEST` and
 `WORKGRAPH_REPO_<NAME>_PATH` for every repository in the manifest.
 
 ```sh
-uv run workgraph verify run WG-12
-uv run workgraph verify failures --check "unit tests"
+workgraph verify run WG-12
+workgraph verify failures --check "unit tests"
 ```
 
 ## Acceptance

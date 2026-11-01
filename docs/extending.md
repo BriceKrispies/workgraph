@@ -1,68 +1,58 @@
 # Extending Workgraph
 
-Workgraph defines interfaces only at real subsystem boundaries.
+Workgraph defines interfaces only at real subsystem boundaries. The rule for every change: decisions
+go in a Core or Pure crate as functions over values; I/O goes in a shell crate; interfaces only
+parse and render. `cargo purity` and `cargo lint-arch` enforce the split ([architecture.md](architecture.md)).
 
 ## A new agent provider
 
-Implement `AgentProvider` (`src/workgraph/integrations/agents/base.py`):
-
-```python
-class MyProvider:
-    name = "my-agent"
-    adapter_type = "my_agent"
-
-    def capabilities(self) -> AgentCapabilities: ...
-    def check_available(self) -> tuple[bool, str]: ...
-    def config_snapshot(self) -> dict[str, Any]: ...  # non-secret, stored on each attempt
-    def run(
-        self, request: AgentRunRequest, on_event: EventSink, should_cancel: CancelCheck
-    ) -> AgentRunResult: ...
-```
-
-Register a config type and construction in `integrations/agents/registry.py`. Use
-`integrations/process.run_process` for subprocesses (timeouts, cancellation, tree kill, log
-capture). Report usage/cost only when the agent measured it. Often the generic command adapter
-([agent-protocol.md](agent-protocol.md)) is enough and needs no code.
+Agent providers live in `wg-agentspec` (types and decisions: capabilities, availability, the
+config snapshot stored on each attempt, request and result shapes) and `wg-agents` (the shell that
+spawns the agent). Add the provider's data and argument decisions to `wg-agentspec`, and its
+process handling to `wg-agents`, using `wg-proc` for subprocesses (timeouts, cancellation, tree
+kill, log capture). Report usage and cost only when the agent measured it. Often the generic
+command adapter ([agent-protocol.md](agent-protocol.md)) is enough and needs no code.
 
 ## A new inference provider
 
-Implement `LLMProvider` (`integrations/llm/base.py`: `capabilities`, `list_models`,
-`check_model`, `generate_json`, `embed`) and either add a config type in `config/settings.py`
-plus a branch in `integrations/llm/registry.build`, or register a factory at runtime in
-`integrations/llm/registry.EXTRA_FACTORIES`. Raise `ProviderUnavailableError`/`ModelUnavailableError`
-for connectivity problems (jobs retry) and `InvalidModelOutputError` for unusable output.
+Providers are in `wg-intel` (decisions: prompts, parsing, the heuristic provider) and its feature
+crate `wg-intel-feature` (config and HTTP calls). Add a config type, then a branch where providers
+are built. Report connectivity problems as provider or model unavailable (jobs retry) and unusable
+output as invalid model output.
 
 ## A new metric
 
-Add a `Metric` to `analytics/metrics.py` (id, family, definition, unit, statistic kind, base
-relation, time column, value/where expressions) and run `uv run tools/gen_metric_docs.py`. If it
-needs new data, extend the warehouse fact tables in `analytics/warehouse.py`. Metrics are only
-ever composed from the registry and validated parameters.
+Add a metric definition (id, family, definition, unit, statistic kind, base relation, time column,
+value and where expressions) to the registry in `wg-analytics` (`core/metrics.rs`). If it needs new
+data, extend the fact tables in `wg-analytics`. Metrics are only composed from the registry and
+validated parameters. Regenerate the metric reference in [analytics.md](analytics.md) by hand to
+match.
 
 ## A new automation action or trigger
 
-Add a Pydantic action model to `automation/rules.py` (include it in the `Action` union), implement
-it in `AutomationService._execute_action` and add it to the catalog set; new trigger events go in
-`TRIGGER_EVENTS` and must be emitted by a service with `record_event`.
+Add the action to the rule spec in `wg-automation` (`spec.rs`) and its execution in
+`wg-automation-feature`; new trigger events go in the trigger validation in `rules.rs` and must be
+emitted by a decision that records the event.
 
 ## A new language for structural analysis
 
-Add the grammar package, a loader in `analytics/code/structure._loaders`, node-type mappings in
-`SYMBOL_NODES` and the file extension in `analytics/code/classify.EXTENSION_LANGUAGES`.
+Add the tree-sitter grammar dependency to `wg-codeparse`, its loader and node-type mappings, and the
+file extension mapping in `wg-codeanalysis`.
 
 ## A new MCP tool or API endpoint
 
-Add a method to the relevant application service (with `require(...)` and `record_event(...)`),
-then expose it in `mcp/server.py` (via the `tool` helper) and/or `api/routes/*.py`, and a CLI
-command in `cli/commands/*.py`. Interfaces must not contain business logic.
+Put the decision in the domain's Core crate, then expose it in the domain's feature crate: an MCP
+tool, an HTTP route and a CLI command, each with its pure arguments and view code in `spec/`.
+`contracts/` holds snapshots of the CLI tree, OpenAPI document and MCP descriptors; update the
+snapshot with the change so the contract tests keep matching.
 
 ## A schema change
 
-Edit the ORM in `persistence/orm/`, generate a migration (see [testing.md](testing.md)), review it
-(FTS shadow tables are excluded from autogenerate), update `persistence/schema_version.SCHEMA_HEAD`
-and add a test that upgrades a populated database.
+Add a migration to `wg-store`, the matching row codec in `wg-rows`, and the column in
+`wg-archivespec`'s layout if exports include it. Add a store test that upgrades a populated
+database from the previous revision.
 
 ## A new event schema version
 
-Bump `EVENT_SCHEMA_VERSIONS[event_type]` in `core/events/log.py` and register an upcaster from the
-previous version; readers always see the current shape and stored events are never rewritten.
+Bump the event type's schema version in `wg-events` and register an upcaster from the previous
+version. Readers always see the current shape; stored events are never rewritten.

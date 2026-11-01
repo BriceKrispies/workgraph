@@ -1,21 +1,8 @@
-# Python
-__pycache__/
-*.py[cod]
-.venv/
-.pytest_cache/
-.ruff_cache/
-.coverage
-coverage.xml
-htmlcov/
-dist/
-build/
-*.egg-info/
-
 # Workgraph local state (never commit databases, artifacts or credentials)
 *.db
 *.db-wal
 *.db-shm
-# Tracked schema fixtures (CF-05); built by tools/contracts/dbdump.py build
+# Tracked schema fixtures (CF-05)
 !golden/db/*.db
 *.duckdb
 *.duckdb.wal
@@ -28,7 +15,6 @@ web/node_modules/
 web/dist/
 web/test-results/
 web/playwright-report/
-src/workgraph/api/static/
 
 # Editors / OS
 .idea/

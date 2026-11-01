@@ -29,9 +29,9 @@ claude -p --output-format stream-json --verbose --permission-mode <mode> --sessi
 ## Lifecycle hooks
 
 ```sh
-uv run workgraph claude install
-uv run workgraph claude status
-uv run workgraph claude uninstall
+workgraph claude install
+workgraph claude status
+workgraph claude uninstall
 ```
 
 `install` merges handlers for `SessionStart`, `SessionEnd`, `PreToolUse`, `PostToolUse`,
@@ -106,11 +106,11 @@ tool class, model and waiting time, and the ten slowest calls). Runs stored befo
 Transcripts that were not readable when the hook fired (or that predate this) can be applied later:
 
 ```sh
-uv run workgraph claude backfill-transcripts [--limit N]
+workgraph claude backfill-transcripts [--limit N]
 ```
 
 It processes runs with a transcript path and no model, prints `parsed`, `missing`, `linked` and
 `attempts_created`, and is idempotent.
 
-`uv run workgraph claude backfill-time [--limit N]` stores the wall-time breakdown (`telemetry.time`) on
+`workgraph claude backfill-time [--limit N]` stores the wall-time breakdown (`telemetry.time`) on
 runs that lack it, reading the same transcripts. It writes nothing else and is idempotent.

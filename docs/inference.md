@@ -24,18 +24,18 @@ variable.
 ```sh
 ollama pull qwen2.5:7b-instruct
 ollama pull nomic-embed-text
-uv run workgraph doctor
+workgraph doctor
 ```
 
 `doctor` reports whether each configured model is pulled. Change models with:
 
 ```sh
-uv run workgraph config set llm.classification.model llama3.1:8b
-uv run workgraph config set llm.embeddings.model mxbai-embed-large
-uv run workgraph search --reindex
+workgraph config set llm.classification.model llama3.1:8b
+workgraph config set llm.embeddings.model mxbai-embed-large
+workgraph search --reindex
 ```
 
-Remote or non-default endpoints: `uv run workgraph config set llm.providers.ollama.base_url http://192.168.1.20:11434`.
+Remote or non-default endpoints: `workgraph config set llm.providers.ollama.base_url http://192.168.1.20:11434`.
 
 ## When the model is unavailable
 
@@ -65,9 +65,9 @@ Confirmed classifications are added to the gold-standard set automatically; add 
 `workgraph classify gold --category bug_fix --task WG-3` or `--title "..."`. Then:
 
 ```sh
-uv run workgraph classify evaluate --provider ollama --model qwen2.5:7b-instruct
-uv run workgraph classify evaluate --provider heuristic --model heuristic-v1
-uv run workgraph classify evaluations
+workgraph classify evaluate --provider ollama --model qwen2.5:7b-instruct
+workgraph classify evaluate --provider heuristic --model heuristic-v1
+workgraph classify evaluations
 ```
 
 Each evaluation stores accuracy, macro F1, per-class precision/recall/F1 and the confusion matrix.

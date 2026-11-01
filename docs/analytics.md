@@ -7,12 +7,12 @@ operational state and need no network access.
 ## Querying
 
 ```sh
-uv run workgraph analytics metrics
-uv run workgraph analytics query tasks_accepted --by period --period week
-uv run workgraph analytics query execution_duration --by provider --by model --since 2026-09-01
-uv run workgraph analytics query cumulative_churn --by category --repo auth-service
-uv run workgraph analytics compare tasks_accepted 2026-09-01 2026-09-15 2026-09-15 2026-10-01 --by category
-uv run workgraph analytics export facts.parquet --format parquet --dataset task_facts
+workgraph analytics metrics
+workgraph analytics query tasks_accepted --by period --period week
+workgraph analytics query execution_duration --by provider --by model --since 2026-09-01
+workgraph analytics query cumulative_churn --by category --repo auth-service
+workgraph analytics compare tasks_accepted 2026-09-01 2026-09-15 2026-09-15 2026-10-01 --by category
+workgraph analytics export facts.parquet --format parquet --dataset task_facts
 ```
 
 HTTP: `POST /api/v1/ws/{ws}/analytics/query` with `{"metric": ..., "group_by": [...], "period": ..., "filters": {...}}`.
@@ -70,7 +70,7 @@ sum - never only an average. Ratios report numerator and denominator.
 
 <!-- metrics:end -->
 
-Regenerate this table with `uv run tools/gen_metric_docs.py`.
+This table mirrors the metric registry in `crates/wg-analytics/src/core/metrics.rs`.
 
 ## Fact tables
 

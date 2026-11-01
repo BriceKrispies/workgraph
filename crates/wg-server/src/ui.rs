@@ -1,5 +1,5 @@
 //! The built web UI: embedded at build time from Vite's output directory
-//! (`src/workgraph/api/static`, while Python exists), read from that directory at run time in
+//! (`web/dist`), read from that directory at run time in
 //! debug builds, or read from a directory given at run time.
 
 use std::path::PathBuf;
@@ -9,7 +9,7 @@ use rust_embed::RustEmbed;
 /// Vite's output directory. A missing directory embeds nothing: the server then shows the
 /// "web UI has not been built" page.
 #[derive(RustEmbed)]
-#[folder = "../../src/workgraph/api/static/"]
+#[folder = "../../web/dist/"]
 #[allow_missing = true]
 struct Embedded;
 

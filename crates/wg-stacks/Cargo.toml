@@ -21,3 +21,4 @@ uuid = { version = "1", default-features = false, features = ["std", "serde"] }
 
 [lib]
 doctest = false
+test = false

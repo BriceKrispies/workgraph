@@ -18,3 +18,4 @@ wg-json = { path = "../wg-json" }
 
 [lib]
 doctest = false
+test = false

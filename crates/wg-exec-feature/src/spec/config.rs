@@ -49,5 +49,11 @@ pub fn provider_failure(error: &ProviderError) -> WgError {
         }
         ProviderError::InvalidOutput(_) => ErrorCode::ValidationFailed,
     };
-    WgError::new(code, error.message())
+    let raised = WgError::new(code, error.message());
+    match error.unreachable_details() {
+        Some((provider, attempts)) => raised
+            .with_detail("provider", Value::from(provider))
+            .with_detail("attempts", Value::from(attempts)),
+        None => raised,
+    }
 }

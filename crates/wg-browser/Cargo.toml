@@ -19,3 +19,4 @@ ureq = "3.5"
 
 [lib]
 doctest = false
+test = false

@@ -48,7 +48,13 @@ pub fn is_unavailable(error: &ProviderError) -> bool {
 /// The provider error as the `WgError` the caller raises when the provider is unavailable.
 #[must_use]
 pub fn unavailable_error(error: &ProviderError) -> WgError {
-    WgError::provider_unavailable(error.message())
+    let raised = WgError::provider_unavailable(error.message());
+    match error.unreachable_details() {
+        Some((provider, attempts)) => raised
+            .with_detail("provider", Json::from(provider))
+            .with_detail("attempts", Json::from(attempts)),
+        None => raised,
+    }
 }
 
 /// The error of an embedding call that failed: an unavailable provider is raised as such, any

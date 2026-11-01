@@ -26,3 +26,4 @@ wg-wire = { path = "../wg-wire" }
 
 [lib]
 doctest = false
+test = false

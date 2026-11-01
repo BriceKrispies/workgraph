@@ -1049,6 +1049,7 @@ impl Page {
                 reason: Some(&reason),
                 privileged: true,
                 tracker: true,
+                claimable: false,
                 caused_by: accepted,
                 attempt_id: None,
                 run_id: None,

@@ -6,10 +6,10 @@
 //! carries out the plans returned here. A refusal is a [`Refusal`]; nothing moves when one is
 //! returned, and every repository is checked before any branch moves.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 
 use serde_json::{Value, json};
-use wg_types::{ErrorCode, StackItemState, StackStatus, TaskStatus, WgError};
+use wg_types::{ErrorCode, Id, StackItemState, StackStatus, TaskStatus, WgError};
 
 use crate::ejection::returns_to_ready;
 use crate::ordered::sorted_by;
@@ -234,6 +234,54 @@ fn order_key(item: &&LandItem) -> (bool, i64, i64) {
         item.merge_order.is_none(),
         item.merge_order.unwrap_or(0),
         item.number,
+    )
+}
+
+/// `_blockers_first`: orders `rows` so each follows the rows it depends on; ties keep the given
+/// order. `blockers` maps a task id to the ids it depends on; only ids of `rows` matter. A cycle
+/// (which the dependency graph forbids) falls back to the first pending row.
+pub fn blockers_first<T>(
+    rows: Vec<T>,
+    id_of: impl Fn(&T) -> Id,
+    blockers: &BTreeMap<Id, BTreeSet<Id>>,
+) -> Vec<T> {
+    place(rows, &id_of, blockers, BTreeSet::new(), Vec::new())
+}
+
+/// Rows with their positions, split into the one placed next and the rest.
+type Indexed<T> = (Vec<(usize, T)>, Vec<(usize, T)>);
+
+/// One step of [`blockers_first`]: the first pending row whose blockers are all placed goes next.
+fn place<T>(
+    pending: Vec<T>,
+    id_of: &impl Fn(&T) -> Id,
+    blockers: &BTreeMap<Id, BTreeSet<Id>>,
+    placed: BTreeSet<Id>,
+    ordered: Vec<T>,
+) -> Vec<T> {
+    let at = pending
+        .iter()
+        .position(|row| {
+            blockers
+                .get(&id_of(row))
+                .is_none_or(|needed| needed.is_subset(&placed))
+        })
+        .unwrap_or(0);
+    let (taken, rest): Indexed<T> = pending
+        .into_iter()
+        .enumerate()
+        .partition(|(index, _)| *index == at);
+    let Some((_, row)) = taken.into_iter().next() else {
+        return ordered;
+    };
+    let placed: BTreeSet<Id> = placed.into_iter().chain([id_of(&row)]).collect();
+    let ordered: Vec<T> = ordered.into_iter().chain([row]).collect();
+    place(
+        rest.into_iter().map(|(_, row)| row).collect(),
+        id_of,
+        blockers,
+        placed,
+        ordered,
     )
 }
 

@@ -4,13 +4,16 @@
 
 use crate::common;
 
-use common::{id, stack_slice, task, tasks_slice};
+use common::{id, stack_slice, stamp, task, tasks_slice};
 use serde_json::json;
+use wg_model::stamp::Stamp;
+use wg_tasks::deps::unsatisfied_dependencies;
 use wg_tasks::promote::{
     REASON_REOPENED, REASON_UNBLOCKED, Refresh, dependency_gate, promote_dependents,
     refresh_blocked_state,
 };
-use wg_types::{ErrorCode, StackItemState, StackStatus, TaskStatus};
+use wg_tasks::transition::{Change, transition};
+use wg_types::{Actor, ErrorCode, StackItemState, StackStatus, TaskStatus};
 
 /// Task 2 depends on task 1; task 1 has `first` status and task 2 `second`.
 fn pair(first: TaskStatus, second: TaskStatus) -> wg_model::TaskSlice {
@@ -156,4 +159,62 @@ fn promote_dependents_moves_backlog_dependents_whose_dependencies_are_accepted()
     let promoted = promote_dependents(&tasks, &stacks, id(1));
     let keys: Vec<String> = promoted.iter().map(|t| t.key.to_string()).collect();
     assert_eq!(keys, ["TAA-2"]);
+}
+
+fn propagation_stamp() -> Stamp {
+    Stamp {
+        at: stamp(100),
+        entropy: [7; 32],
+        actor: Actor::parse("human:brice").unwrap_or_else(|e| panic!("{e}")),
+        permissions: rpds::RedBlackTreeSetSync::new_sync(),
+        correlation: id(9).into(),
+        causation: None,
+        attempt: None,
+        automation_depth: 0,
+    }
+}
+
+#[test]
+fn a_cancelled_dependency_is_satisfied() {
+    let stacks = stack_slice(vec![]);
+    let tasks = pair(TaskStatus::Cancelled, TaskStatus::Backlog);
+    assert!(unsatisfied_dependencies(&tasks, &stacks, id(2)).is_empty());
+
+    let dependent = tasks.task(id(2)).unwrap_or_else(|| panic!("task 2"));
+    let gated = dependency_gate(&tasks, &stacks, dependent, TaskStatus::Ready, None)
+        .unwrap_or_else(|e| panic!("{e}"));
+    assert_eq!(gated.target, TaskStatus::Ready);
+    assert!(!gated.blocked_by_dependencies);
+
+    let promoted = promote_dependents(&tasks, &stacks, id(1));
+    let keys: Vec<String> = promoted.iter().map(|t| t.key.to_string()).collect();
+    assert_eq!(keys, ["TAA-2"]);
+}
+
+#[test]
+fn cancelling_a_dependency_unblocks_its_dependent() {
+    let stacks = stack_slice(vec![]);
+    let mut parked = task("TAA", 2, TaskStatus::Blocked, None);
+    parked.metadata =
+        serde_json::Map::from_iter([("blocked_reason".to_owned(), json!("dependencies"))]);
+    let tasks = tasks_slice(
+        vec![task("TAA", 1, TaskStatus::Ready, None), parked],
+        vec![],
+        vec![(id(2), id(1))],
+    );
+    let applied = transition(
+        &tasks,
+        &stacks,
+        &propagation_stamp(),
+        propagation_stamp().ids(),
+        id(1),
+        TaskStatus::Cancelled,
+        Change::default(),
+    )
+    .unwrap_or_else(|e| panic!("{e}"));
+    let dependent = applied
+        .tasks
+        .task(id(2))
+        .unwrap_or_else(|| panic!("task 2"));
+    assert_eq!(dependent.status, TaskStatus::Ready);
 }

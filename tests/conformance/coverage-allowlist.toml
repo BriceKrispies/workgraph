@@ -9,126 +9,110 @@
 # BEGIN conformance_budget (generated)
 
 [[exclusion]]
-id = "B05"
+id = "C001"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "B09"
+id = "C037"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C003"
+id = "C047"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C007"
+id = "C048"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C014"
+id = "C049"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C015"
+id = "C053"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C032"
+id = "C066"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C038"
+id = "C100"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C039"
+id = "C104"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C045"
+id = "C124"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C046"
+id = "C125"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C051"
+id = "C131"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C057"
+id = "C137"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C068"
+id = "C141"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C072"
+id = "C143"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C080"
+id = "C168"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C084"
+id = "C169"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C085"
+id = "F09"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C098"
+id = "H055"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C101"
+id = "H056"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C106"
+id = "H057"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C112"
+id = "H058"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C147"
+id = "H059"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C154"
+id = "H060"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C155"
+id = "H061"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C159"
+id = "M55"
 reason = "cut by the 2-minute test budget"
 
 [[exclusion]]
-id = "C160"
-reason = "cut by the 2-minute test budget"
-
-[[exclusion]]
-id = "C163"
-reason = "cut by the 2-minute test budget"
-
-[[exclusion]]
-id = "C185"
-reason = "cut by the 2-minute test budget"
-
-[[exclusion]]
-id = "H069"
-reason = "cut by the 2-minute test budget"
-
-[[exclusion]]
-id = "H070"
+id = "M56"
 reason = "cut by the 2-minute test budget"
 # END conformance_budget

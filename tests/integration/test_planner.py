@@ -362,3 +362,16 @@ def test_cli_experiment_next_and_report(run, home):
     text = run("experiment", "report", "cli-plan", json_mode=False)
     assert "haiku" in text and "fit: needs at least 4" in text
     assert run("experiment", "next", "cli-plan", json_mode=False).startswith("pending: ")
+
+
+def test_degenerate_band_range_plans_only_that_band(app, human, ws):
+    # Once the band-4 task is used, the nearest unused band is 3, which lies outside the 4..4 range.
+    _make_pool(app, human, ws, {3: 3, 4: 1})
+    protocol = _protocol(
+        bands={"min": 4, "max": 4},
+        staircase={"per_visit": 1, "up": 1, "down": 1, "max_reversals": 1, "max_trials": 6},
+    )
+    slug = _start(app, human, ws, protocol)
+    planned, done = _drive(app, human, ws, slug)
+    assert [t.band for t in planned] == [4]
+    assert (done["done"], done["reason"]) == (True, "pool_exhausted")

@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 
 use crate::spec::exec::integrate::{
     Done, begin_item, due_item, finish_item, inactive_result, integrate_followup, ran_result,
-    settled,
+    settled, waiting_sync,
 };
 use crate::spec::exec::verify::verification_job;
 use crate::spec::exec::worktree::{IntegrationTarget, integration_target};
@@ -87,6 +87,25 @@ impl Exec<'_> {
             conflicts,
             progressed,
         } = self.merge_due_items(context, &target, &git)?;
+        // Pending items whose task left no succeeded attempt head cannot merge: say so, per item.
+        let waiting = self
+            .0
+            .runtime
+            .decide_then(
+                context,
+                |session| {
+                    let world = stack_world(session, stack_id)?;
+                    let mut has_head = BTreeMap::new();
+                    for item in world.stacks.items_of(stack_id) {
+                        let found = !heads_of(session, &world, stack_id, item.id)?.is_empty();
+                        has_head.insert(item.id, found);
+                    }
+                    Ok((world, has_head))
+                },
+                |(world, has_head), stamp| waiting_sync(world, stamp, stack_id, has_head),
+                index_written,
+            )?
+            .reply;
         if progressed {
             self.followup_integration(context, stack_id, repository_id)?;
         }
@@ -96,6 +115,7 @@ impl Exec<'_> {
             &merged,
             &skipped,
             &conflicts,
+            &waiting,
         ))
     }
 

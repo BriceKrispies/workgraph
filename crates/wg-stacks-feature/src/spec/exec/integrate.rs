@@ -19,7 +19,7 @@ use wg_stacks::merge::{
     ItemStep, MergeOutcome, conflict_comment, conflict_reason, conflict_record, fully_merged,
     merge_message, plan_item, record_merge, start_integrating,
 };
-use wg_stacks::queue::{DueItem, ItemDetail, is_settled, next_due};
+use wg_stacks::queue::{DueItem, ItemDetail, is_settled, next_due, set_waiting, waiting_note};
 use wg_tasks::transition::Change;
 use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError, parse_id};
 
@@ -337,13 +337,45 @@ pub fn integrate_followup(
     Ok(chain.finish(()))
 }
 
-/// The result object of an `integrate` that ran.
+/// `waiting_sync`: each item's `waiting` note is set while the item is pending with no succeeded
+/// attempt head, and cleared otherwise. `has_head` tells, per item, whether its task left a head in
+/// any stack repository. Returns the `{task, reason}` of every item waiting now.
+pub fn waiting_sync(
+    world: &TaskWorld,
+    stamp: &Stamp,
+    stack_id: Id,
+    has_head: &BTreeMap<Id, bool>,
+) -> Result<Decision<Vec<Value>>, WgError> {
+    let mut chain = Chain::start(world, stamp);
+    let mut waiting = Vec::new();
+    for item in world.stacks.items_of(stack_id) {
+        let task_key = world
+            .tasks
+            .task(item.task_id)
+            .map(|task| task.key.to_string())
+            .unwrap_or_default();
+        let found = has_head.get(&item.id).copied().unwrap_or(true);
+        let note = waiting_note(item.state, found, &task_key);
+        let mut detail = ItemDetail::load(item.detail.as_deref());
+        if set_waiting(&mut detail, note.as_deref()) {
+            chain = chain.item_detail(item.id, dump_detail(&detail));
+        }
+        if let Some(reason) = note {
+            waiting.push(json!({"task": task_key, "reason": reason}));
+        }
+    }
+    Ok(chain.finish(waiting))
+}
+
+/// The result object of an `integrate` that ran. `waiting` lists the pending items that have no
+/// succeeded attempt head yet, as `{task, reason}`.
 #[must_use]
 pub fn ran_result(
     repository: &str,
     merged: &[String],
     skipped: &[String],
     conflicts: &[String],
+    waiting: &[Value],
 ) -> Value {
     json!({
         "status": "ran",
@@ -351,13 +383,14 @@ pub fn ran_result(
         "merged": merged,
         "skipped": skipped,
         "conflicts": conflicts,
+        "waiting": waiting,
     })
 }
 
 /// The result object of an `integrate` for a stack that is no longer active.
 #[must_use]
 pub fn inactive_result() -> Value {
-    json!({"status": "inactive", "merged": [], "skipped": [], "conflicts": []})
+    json!({"status": "inactive", "merged": [], "skipped": [], "conflicts": [], "waiting": []})
 }
 
 /// Whether a stack status counts as in progress for integration.

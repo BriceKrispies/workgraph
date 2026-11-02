@@ -244,3 +244,37 @@ fn depth_of<'a>(
     };
     (depth, memo.insert(task, depth))
 }
+
+/// The detail key of the note that says why a pending item cannot merge yet.
+pub const WAITING_KEY: &str = "waiting";
+
+/// The note on a pending item that has no succeeded attempt head in any stack repository: such an
+/// item cannot merge until its task is worked (or adopted), so the integration pass reports it.
+/// `None` when the item is not waiting.
+pub fn waiting_note(state: StackItemState, has_head: bool, task_key: &str) -> Option<String> {
+    (state == S::Pending && !has_head).then(|| {
+        format!(
+            "no succeeded attempt of {task_key} left a head in this stack; run an attempt and \
+             submit it, or adopt its branch with `workgraph attempt adopt`"
+        )
+    })
+}
+
+/// Sets (or clears, for `None`) the waiting note in `detail`. Returns whether the detail changed.
+pub fn set_waiting(detail: &mut ItemDetail, note: Option<&str>) -> bool {
+    let current = detail.other.get(WAITING_KEY).and_then(Value::as_str);
+    if current == note {
+        return false;
+    }
+    match note {
+        Some(text) => {
+            detail
+                .other
+                .insert(WAITING_KEY.to_owned(), Value::String(text.to_owned()));
+        }
+        None => {
+            detail.other.remove(WAITING_KEY);
+        }
+    }
+    true
+}

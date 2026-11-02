@@ -38,6 +38,26 @@ fn json_strings(value: Option<&Json>) -> Vec<String> {
         .unwrap_or_default()
 }
 
+/// The detail cell of a stack item: its detail summary, plus the waiting note while the item is
+/// pending (a note left by an earlier pass is not shown once the item has moved on).
+fn item_detail_line(item: &Value) -> String {
+    let summary = detail_summary(opt(get(item, "detail")).as_deref());
+    let waiting = opt(get(item, "detail"))
+        .and_then(|text| serde_json::from_str::<Json>(&text).ok())
+        .and_then(|parsed| {
+            parsed
+                .get(wg_stacks::queue::WAITING_KEY)
+                .and_then(Json::as_str)
+                .map(str::to_owned)
+        })
+        .filter(|_| s(get(item, "state")) == "pending");
+    match waiting {
+        Some(note) if summary.is_empty() => format!("waiting: {note}"),
+        Some(note) => format!("{summary}; waiting: {note}"),
+        None => summary,
+    }
+}
+
 /// `_detail_summary`: one line for an item's detail, naming its conflicting paths and its ejection
 /// when it has either. A detail that is not a JSON object is shown as it is.
 #[must_use]
@@ -134,7 +154,7 @@ pub fn stack_view(console: &Console, stack: &Value) -> String {
                 merge_order,
                 s(get(item, "task_key")),
                 s(get(item, "state")),
-                detail_summary(opt(get(item, "detail")).as_deref()),
+                item_detail_line(item),
                 s(get(item, "task_title")),
             ]
         })

@@ -271,6 +271,31 @@ impl Git {
         Ok(output.returncode == 0)
     }
 
+    /// The paths that `base..tip` adds (the net tree difference, renames not followed).
+    ///
+    /// # Errors
+    /// [`GitError`] when the diff call fails.
+    pub fn added_paths(&self, base: &str, tip: &str) -> Result<Vec<String>, GitError> {
+        let output = self.run_with(
+            &[
+                "diff",
+                "--name-only",
+                "-z",
+                "--no-renames",
+                "--diff-filter=A",
+                base,
+                tip,
+            ],
+            RunOptions::CHECKED,
+        )?;
+        Ok(output
+            .stdout
+            .split('\0')
+            .filter(|path| !path.is_empty())
+            .map(str::to_owned)
+            .collect())
+    }
+
     /// The content of `path` at commit `sha`, `None` when it is absent or git fails.
     pub fn show_file(&self, sha: &str, path: &str) -> Option<Vec<u8>> {
         let spec = format!("{sha}:{path}");

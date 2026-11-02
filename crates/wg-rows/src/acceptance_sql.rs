@@ -37,6 +37,17 @@ pub fn latest_run_of_task(task_id: Id) -> Statement {
     }
 }
 
+/// The newest run of an attempt (the submit verification of its change); at most one row.
+pub fn latest_run_of_attempt(attempt_id: Id) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT {} FROM \"verification_runs\" WHERE \"attempt_id\" = ?1              ORDER BY \"created_at\" DESC, \"id\" DESC LIMIT 1",
+            select_list(Table::VerificationRun, None)
+        ),
+        params: vec![id_sql(attempt_id)],
+    }
+}
+
 /// The acceptance decisions of a task, oldest first.
 pub fn acceptances_of_task(task_id: Id) -> Statement {
     Statement {

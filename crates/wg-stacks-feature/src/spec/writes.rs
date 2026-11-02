@@ -7,6 +7,8 @@
 //! command prints. What only git can say (a new stack's base commits, the tip of an attempt
 //! branch, the tip of an integration worktree) comes in as a value the shell read.
 
+use std::collections::BTreeSet;
+
 use serde_json::json;
 use wg_jobs::limits::stack_key;
 use wg_jobs::queue::{NewJob, enqueue};
@@ -132,13 +134,15 @@ pub fn base_source(
 }
 
 /// `StackService.create`: a stack of the parent's children. `base_shas` pairs each repository name
-/// with the head of its default branch, in repository order.
+/// with the head of its default branch, in repository order. `verified` holds the children whose
+/// submit verification passed before the stack existed; they start ready (see [`ready_verified`]).
 pub fn create(
     world: &TaskWorld,
     stamp: &Stamp,
     scope: Id,
     parent_ref: &str,
     base_shas: &[(String, String)],
+    verified: &BTreeSet<Id>,
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::StackWrite])?;
     let plan = create_plan(world, scope, parent_ref)?;
@@ -190,7 +194,7 @@ pub fn create(
             };
             (items.into_iter().chain([item]).collect(), ids)
         });
-    let (event_id, _) = ids.next();
+    let (event_id, ids) = ids.next();
     let payload = StackCreated {
         parent_key: plan.parent.key.clone(),
         integration_branch: branch.clone(),
@@ -221,12 +225,73 @@ pub fn create(
             stack_id,
             EventPayload::StackCreated(payload),
         ));
-    let after = TaskWorld {
+    let created = TaskWorld {
         tasks: world.tasks.clone(),
         stacks: world.stacks.apply_all(decision.writes.iter()),
     };
+    let ready = ready_verified(&created, stamp, ids, stack_id, verified)?;
+    let stacks = created.stacks.apply_all(ready.writes.iter());
+    let after = TaskWorld {
+        tasks: created.tasks,
+        stacks,
+    };
     let reply = stack_out(&after, &stack, &Tips::new())?;
-    Ok(decision.with_reply(reply))
+    Ok(decision.then(ready).with_reply(reply))
+}
+
+/// The children that were verified before their stack existed: the pending items of `stack_id`
+/// whose child is in `verified` become ready, exactly as `mark_ready` moves them when the ready
+/// event arrives after the stack was created. The integration jobs of the ready items are queued by
+/// the transition itself.
+pub fn ready_verified(
+    world: &TaskWorld,
+    stamp: &Stamp,
+    ids: IdSeq,
+    stack_id: Id,
+    verified: &BTreeSet<Id>,
+) -> Result<Decision<()>, WgError> {
+    let Some(stack) = world.stacks.stack(stack_id) else {
+        return Ok(Decision::new(()));
+    };
+    let pending: Vec<StackItem> = world
+        .stacks
+        .items_of(stack_id)
+        .filter(|item| item.state == StackItemState::Pending && verified.contains(&item.task_id))
+        .cloned()
+        .collect();
+    let Some(parent) = world.tasks.task(stack.parent_task_id) else {
+        return Ok(Decision::new(()));
+    };
+    let mut decision = Decision::new(());
+    let mut step = Step {
+        decision: Decision::new(()),
+        tasks: world.tasks.clone(),
+        stacks: world.stacks.clone(),
+        ids,
+    };
+    for item in &pending {
+        let Some(child) = world.tasks.task(item.task_id) else {
+            continue;
+        };
+        let moved = transition_item(
+            &step,
+            stamp,
+            stack,
+            parent,
+            child,
+            item,
+            StackItemState::Ready,
+            item.detail.clone(),
+        )?;
+        decision = decision.then(moved.decision);
+        step = Step {
+            decision: Decision::new(()),
+            tasks: moved.tasks,
+            stacks: moved.stacks,
+            ids: moved.ids,
+        };
+    }
+    Ok(decision)
 }
 
 // ---------------------------------------------------------------- add and remove
@@ -767,13 +832,25 @@ pub fn integration_keys(queued: &Queued, version: Id) -> Vec<String> {
 }
 
 /// `StackService.integrate`: one `stack_integrate` job per repository of the active stack.
+///
+/// `verified` holds the pending children whose submit verification passed; they are readied first
+/// (see [`ready_verified`]) so that this integration picks them up.
 pub fn integrate(
     stamp: &Stamp,
+    world: &TaskWorld,
     queued: &Queued,
     version: Id,
     queue: &QueueSlice,
+    verified: &BTreeSet<Id>,
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::StackWrite])?;
+    let ready = ready_verified(
+        world,
+        stamp,
+        substamp(stamp, 50).ids(),
+        queued.stack.id,
+        verified,
+    )?;
     let mut ids: Vec<Id> = queued.repositories.iter().map(|(id, _, _)| *id).collect();
     ids.sort();
     let jobs = integration_jobs(&queued.stack, &ids, version, stamp, queue);
@@ -796,7 +873,7 @@ pub fn integrate(
         .iter()
         .flat_map(|(_, job)| job.writes.iter().cloned().collect::<Vec<_>>())
         .fold(Decision::new(()), Decision::write);
-    Ok(decision.with_reply(dict!({
+    Ok(ready.then(decision).with_reply(dict!({
         "stack": text(&queued.parent_key),
         "jobs": Value::List(listed),
     })))
@@ -927,5 +1004,189 @@ mod tests {
             ),
             None
         );
+    }
+}
+
+#[cfg(test)]
+mod verified_tests {
+    use super::*;
+    use rpds::VectorSync;
+    use wg_model::Row;
+    use wg_model::entity::{Repository, TaskRepository};
+    use wg_types::{AccessMode, Actor, Permission, TaskKey, TaskPriority, TaskStatus, Timestamp};
+
+    fn id(n: u128) -> Id {
+        wg_model::derive_id(&[9; 32], u32::try_from(n).unwrap_or(0))
+    }
+
+    fn at(second: u32) -> Timestamp {
+        Timestamp::from_components(2026, 11, 2, 12, 0, u8::try_from(second).unwrap_or(0), 0)
+            .unwrap_or_else(|e| panic!("timestamp: {e}"))
+    }
+
+    fn stamp() -> Stamp {
+        Stamp {
+            at: at(0),
+            entropy: [7; 32],
+            actor: Actor::parse("human:brice").unwrap_or_else(|e| panic!("{e}")),
+            permissions: [Permission::StackWrite].into_iter().collect(),
+            correlation: id(99).into(),
+            causation: None,
+            attempt: None,
+            automation_depth: 0,
+        }
+    }
+
+    fn task(n: u128, number: i64, parent: Option<Id>) -> Task {
+        Task {
+            id: id(n),
+            workspace_id: id(1),
+            number,
+            key: TaskKey::parse(&format!("WG-{number}")).unwrap_or_else(|e| panic!("{e}")),
+            title: format!("Task {number}"),
+            description: String::new(),
+            description_hash: String::new(),
+            acceptance_criteria: VectorSync::new_sync(),
+            status: TaskStatus::AwaitingReview,
+            priority: TaskPriority::Medium,
+            category: None,
+            parent_id: parent,
+            assignee: None,
+            assigned_agent: None,
+            claimed_by: None,
+            claim_expires_at: None,
+            auto_execute: false,
+            estimated_effort: None,
+            metadata: Default::default(),
+            due_at: None,
+            scheduled_at: None,
+            created_by: "human:brice".into(),
+            version: 1,
+            created_at: at(1),
+            updated_at: at(1),
+            started_at: None,
+            completed_at: None,
+            accepted_at: None,
+            archived_at: None,
+            current_classification_id: None,
+        }
+    }
+
+    /// The parent `WG-1` with children `WG-2` and `WG-3`, linked to repository `svc`.
+    fn world_with_children(stack: Option<Id>) -> TaskWorld {
+        let parent = id(10);
+        let mut rows = vec![
+            Row::from(task(10, 1, None)),
+            Row::from(task(11, 2, Some(parent))),
+            Row::from(task(12, 3, Some(parent))),
+            Row::from(Repository {
+                id: id(40),
+                workspace_id: id(1),
+                name: "svc".into(),
+                description: String::new(),
+                identity_fingerprint: None,
+                default_branch: Some("main".into()),
+                tracked_branches: VectorSync::new_sync(),
+                access_mode: AccessMode::ReadWrite,
+                health_status: "ok".into(),
+                health_detail: Default::default(),
+                health_checked_at: None,
+                is_shallow: false,
+                last_scanned_at: None,
+                archived_at: None,
+                metadata: Default::default(),
+                created_at: at(1),
+                updated_at: at(1),
+            }),
+            Row::from(TaskRepository {
+                task_id: id(11),
+                repository_id: id(40),
+                access: "read_write".into(),
+                created_at: at(1),
+            }),
+        ];
+        if let Some(stack_id) = stack {
+            rows.push(Row::from(Stack {
+                id: stack_id,
+                workspace_id: id(1),
+                parent_task_id: parent,
+                status: StackStatus::Open,
+                created_at: at(1),
+                updated_at: at(1),
+                land_request: None,
+            }));
+            for (item, child) in [(20, 11), (21, 12)] {
+                rows.push(Row::from(StackItem {
+                    id: id(item),
+                    stack_id,
+                    task_id: id(child),
+                    state: StackItemState::Pending,
+                    merge_order: None,
+                    detail: None,
+                    created_at: at(1),
+                    updated_at: at(1),
+                }));
+            }
+        }
+        TaskWorld::default().with_rows(rows)
+    }
+
+    fn state_of(stacks: &StackSlice, item: u128) -> StackItemState {
+        stacks
+            .items_of(id(100))
+            .find(|row| row.id == id(item))
+            .map(|row| row.state)
+            .unwrap_or_else(|| panic!("no item {item}"))
+    }
+
+    #[test]
+    fn a_child_verified_before_the_stack_is_ready_after_create() {
+        let world = world_with_children(None);
+        let verified: BTreeSet<Id> = [id(11)].into_iter().collect();
+        let decision = create(
+            &world,
+            &stamp(),
+            id(1),
+            "WG-1",
+            &[("svc".to_owned(), "base".to_owned())],
+            &verified,
+        )
+        .unwrap_or_else(|e| panic!("create: {}", e.message));
+        let stacks = world.stacks.apply_all(decision.writes.iter());
+        let stack_id = stacks
+            .stacks
+            .keys()
+            .next()
+            .copied()
+            .unwrap_or_else(|| panic!("no stack"));
+        let item_state = |task: u128| {
+            stacks
+                .items_of(stack_id)
+                .find(|row| row.task_id == id(task))
+                .map(|row| row.state)
+        };
+        assert_eq!(item_state(11), Some(StackItemState::Ready));
+        assert_eq!(item_state(12), Some(StackItemState::Pending));
+    }
+
+    #[test]
+    fn a_child_without_a_passed_submit_stays_pending() {
+        let world = world_with_children(Some(id(100)));
+        let decision = ready_verified(&world, &stamp(), stamp().ids(), id(100), &BTreeSet::new())
+            .unwrap_or_else(|e| panic!("ready: {}", e.message));
+        assert!(decision.writes.is_empty());
+        assert_eq!(state_of(&world.stacks, 20), StackItemState::Pending);
+        assert_eq!(state_of(&world.stacks, 21), StackItemState::Pending);
+    }
+
+    #[test]
+    fn only_the_verified_pending_child_becomes_ready() {
+        let world = world_with_children(Some(id(100)));
+        let verified: BTreeSet<Id> = [id(11)].into_iter().collect();
+        let decision = ready_verified(&world, &stamp(), stamp().ids(), id(100), &verified)
+            .unwrap_or_else(|e| panic!("ready: {}", e.message));
+        let stacks = world.stacks.apply_all(decision.writes.iter());
+        assert_eq!(state_of(&stacks, 20), StackItemState::Ready);
+        assert_eq!(state_of(&stacks, 21), StackItemState::Pending);
     }
 }

@@ -14,6 +14,7 @@
 pub mod exec;
 pub mod reads;
 
+use std::collections::BTreeSet;
 use std::path::{Path, PathBuf};
 
 use wg_git::{Git, RunOptions};
@@ -24,7 +25,7 @@ use wg_registry::checkout::primary_checkout;
 use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_runtime::{App, RequestContext, index_written};
 use wg_store::{EventQuery, Session, TaskWorld};
-use wg_types::{Id, Permission, WgError};
+use wg_types::{AttemptStatus, Id, Permission, StackItemState, WgError};
 
 use crate::spec::git_failure;
 use crate::spec::out::Tips;
@@ -93,6 +94,33 @@ fn jobs_under(session: &mut Session<'_>, keys: &[String]) -> Result<QueueSlice, 
 
 /// The queued stack of a request with the version of its state and the jobs under `keys`.
 type Pending = (Queued, Id, QueueSlice);
+
+/// The world of an integration, the queued stack, its version and jobs, and the pending children
+/// that were verified before they joined the stack.
+type Integrating = (TaskWorld, Queued, Id, QueueSlice, BTreeSet<Id>);
+
+/// The children among `task_ids` whose latest attempt succeeded and whose submit verification
+/// passed. A child that was verified before its stack existed never sent the ready event, so the
+/// stack readies it when it is created or integrated (see `writes::ready_verified`).
+fn verified_children(session: &mut Session<'_>, task_ids: &[Id]) -> Result<BTreeSet<Id>, WgError> {
+    let mut verified = BTreeSet::new();
+    for task_id in task_ids {
+        // Attempts are listed oldest first, so the last one is the latest.
+        let Some(latest) = session.attempts_of_task(*task_id, &[])?.pop() else {
+            continue;
+        };
+        if !matches!(latest.status, AttemptStatus::Succeeded) {
+            continue;
+        }
+        let passed = session
+            .latest_verification_run_of_attempt(latest.id)?
+            .is_some_and(|run| run.status == "passed");
+        if passed {
+            verified.insert(*task_id);
+        }
+    }
+    Ok(verified)
+}
 
 /// A stack-write check against a fresh stamp, before anything is looked up.
 pub fn require_stack_write(app: &mut App, context: &RequestContext) -> Result<(), WgError> {
@@ -216,6 +244,12 @@ pub fn create(
             context,
             |session| {
                 let world = load_world(session, scope)?;
+                let children: Vec<Id> = writes::create_plan(&world, scope, parent)?
+                    .children
+                    .iter()
+                    .map(|child| child.id)
+                    .collect();
+                let verified = verified_children(session, &children)?;
                 let mut shas = Vec::new();
                 for repository in writes::create_plan(&world, scope, parent)?.repositories {
                     let checkouts = session.checkouts(repository.id)?;
@@ -228,9 +262,11 @@ pub fn create(
                     .map_err(|err| git_failure(&err))?;
                     shas.push((repository.name.clone(), sha));
                 }
-                Ok((world, shas))
+                Ok((world, shas, verified))
             },
-            |(world, shas), stamp| writes::create(world, stamp, scope, parent, shas),
+            |(world, shas, verified), stamp| {
+                writes::create(world, stamp, scope, parent, shas, verified)
+            },
             index_written,
         )?
         .reply)
@@ -375,14 +411,23 @@ pub fn integrate(
         .runtime
         .decide(
             context,
-            |session| -> Result<Pending, WgError> {
+            |session| -> Result<Integrating, WgError> {
                 let world = load_world(session, scope)?;
                 let queued = writes::queued(&world, scope, parent)?;
                 let version = latest_event_id(session, queued.stack.id)?;
                 let jobs = jobs_under(session, &writes::integration_keys(&queued, version))?;
-                Ok((queued, version, jobs))
+                let pending: Vec<Id> = world
+                    .stacks
+                    .items_of(queued.stack.id)
+                    .filter(|item| item.state == StackItemState::Pending)
+                    .map(|item| item.task_id)
+                    .collect();
+                let verified = verified_children(session, &pending)?;
+                Ok((world, queued, version, jobs, verified))
             },
-            |(queued, version, jobs), stamp| writes::integrate(stamp, queued, *version, jobs),
+            |(world, queued, version, jobs, verified), stamp| {
+                writes::integrate(stamp, world, queued, *version, jobs, verified)
+            },
         )?
         .reply)
 }

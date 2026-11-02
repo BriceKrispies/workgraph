@@ -27,18 +27,19 @@ use wg_store::Session;
 use wg_tasks::accept::active_item;
 use wg_tasks::transition::Applied;
 use wg_types::{
-    AttemptStatus, ChangeSetItemStatus, ChangeSetStatus, Id, Permission, StackItemState,
-    TaskStatus, WgError,
+    AttemptStatus, ChangeSetItemStatus, ChangeSetStatus, Id, Permission, TaskStatus, WgError,
 };
 use wg_wire::convention::json_value;
 use wg_wire::dto::attempt;
 
+use super::conclude::{gate_adopted, load_submit};
 use super::resolve::{find_attempt, find_task};
 use super::worktrees::{worktree_prepare, worktree_release};
 use crate::spec::attempt_writes::{
     Finish, NewAttempt, attempt_limit, claimed, claimed_chain, created, escalated, failures,
     finished, gone, reason_text, start_chain, start_out, status_set, task_moved,
 };
+use crate::spec::worktrees::PrepareRequest;
 
 /// `decide` for decisions that may write tasks: the search index follows the writes in the same
 /// transaction, as it does for every task service.
@@ -537,8 +538,10 @@ pub fn attempt_finish(
 /// `reference`, so work made outside Workgraph can enter a stack without a manual merge. The
 /// attempt's baseline is the merge-base of `reference` with the stack base (or the repository's
 /// default branch outside a stack). The task ends `awaiting_verification`, and a stack child is
-/// marked ready as a submit would mark it, without running the fast checks: the stack's full
-/// verification of the integration tip still runs.
+/// run through the same gate as a submit (WG-4072): the attempt gets a worktree at the ref, and a
+/// stack child's fast checks run there. A pass marks the stack item ready and the task stays
+/// awaiting verification; a failure fails the attempt and the task, as a submit does. A task with
+/// no fast checks is marked ready without a run, as a submit marks it.
 pub fn attempt_adopt(
     app: &mut App,
     context: &RequestContext,
@@ -549,6 +552,7 @@ pub fn attempt_adopt(
 ) -> Result<Value, WgError> {
     app.require_permission(context, Permission::TaskClaim)?;
     app.require_permission(context, Permission::AttemptWrite)?;
+    app.require_permission(context, Permission::VerifyRun)?;
     let reference = reference.trim();
     if reference.is_empty() {
         return Err(WgError::validation("adopt needs a ref to adopt"));
@@ -703,17 +707,6 @@ pub fn attempt_adopt(
                     },
                 );
                 let (chain, row) = status_set(chain, stamp, &row, AttemptStatus::Running)?;
-                let (chain, row) = finished(
-                    chain,
-                    stamp,
-                    &row,
-                    AttemptStatus::Succeeded,
-                    Finish {
-                        exit_reason: Some("adopted".to_owned()),
-                        summary: Some(reason.clone()),
-                        ..Finish::default()
-                    },
-                )?;
                 let (set_id, ids) = chain.ids.next();
                 let (item_id, ids) = ids.next();
                 let set = ChangeSet {
@@ -761,12 +754,33 @@ pub fn attempt_adopt(
             },
         )?
         .reply;
-    if matches!(
-        stack_state,
-        Some(StackItemState::Pending | StackItemState::Conflict | StackItemState::Ejected)
-    ) {
-        wg_stacks_feature::service::mark_ready(app, context, task_id)?;
+    // The gate needs the adopted ref checked out in a managed worktree, as a submit's attempt has.
+    // The read-only request plans no change set, so the adopted change set above stays the only one.
+    let prepared = worktree_prepare(
+        app,
+        context,
+        attempt_id,
+        Some(vec![PrepareRequest {
+            repository_id: repo.id,
+            access: "read_only".to_owned(),
+            target_ref: Some(head.clone()),
+            base: None,
+        }]),
+        Some("worktree"),
+        &[],
+    );
+    if let Err(err) = prepared {
+        let end = EarlyEnd::external_start_failed(&err.message);
+        let _ = finalize_failure(app, context, attempt_id, &end);
+        return Err(err);
     }
+    let summary = format!("adopted {reference}");
+    let verification = gate_adopted(app, context, task_id, attempt_id, &summary)?;
+    worktree_release(app, context, attempt_id, false, false)?;
+    let facts = app
+        .runtime
+        .store
+        .read(|session| load_submit(session, &attempt_id.to_string()))?;
     Ok(json_value(&json!({
         "attempt_id": attempt_id.to_string(),
         "attempt_number": number,
@@ -776,7 +790,8 @@ pub fn attempt_adopt(
         "baseline_sha": baseline,
         "baseline_ref": base_ref,
         "commits": commits.len(),
-        "task_status": "awaiting_verification",
-        "attempt_status": "succeeded",
+        "verification": verification,
+        "task_status": facts.task.status.as_str(),
+        "attempt_status": facts.attempt.status.as_str(),
     })))
 }

@@ -232,7 +232,7 @@ fn load_reported(session: &mut wg_store::Session<'_>, attempt_id: Id) -> Result<
 
 /// The gate and the verification of a task that waits for it. Returns the verification report.
 #[allow(clippy::too_many_arguments)]
-fn verify_attempt(
+pub(crate) fn verify_attempt(
     app: &mut App,
     context: &RequestContext,
     collaborators: &mut dyn Collaborators,
@@ -313,13 +313,16 @@ fn verify_attempt(
 }
 
 /// The facts a submit checks before it writes anything.
-struct SubmitFacts {
-    attempt: AgentAttempt,
-    task: Task,
-    stacked: bool,
+pub(crate) struct SubmitFacts {
+    pub(crate) attempt: AgentAttempt,
+    pub(crate) task: Task,
+    pub(crate) stacked: bool,
 }
 
-fn load_submit(session: &mut Session<'_>, reference: &str) -> Result<SubmitFacts, WgError> {
+pub(crate) fn load_submit(
+    session: &mut Session<'_>,
+    reference: &str,
+) -> Result<SubmitFacts, WgError> {
     let attempt = find_attempt(session, reference)?;
     let world = session.task_world(Some(attempt.workspace_id), &[])?;
     let task = world
@@ -332,6 +335,41 @@ fn load_submit(session: &mut Session<'_>, reference: &str) -> Result<SubmitFacts
         attempt,
         task,
     })
+}
+
+/// The fast gate of an adopted attempt (WG-4072): `attempt_adopt` has recorded the ref as a
+/// succeeded attempt in a running state, and this runs the gate and verification that
+/// `attempt_submit` runs for the same task, through [`verify_attempt`] with the live collaborators.
+/// The attempt's worktree at the adopted ref must already be prepared.
+pub(crate) fn gate_adopted(
+    app: &mut App,
+    context: &RequestContext,
+    task_id: Id,
+    attempt_id: Id,
+    summary: &str,
+) -> Result<Json, WgError> {
+    let input = Concluding {
+        report: AgentReport {
+            status: "succeeded".to_owned(),
+            summary: Some(summary.to_owned()),
+            error: None,
+            exit_code: None,
+            duration_ms: None,
+            usage_fields: Map::new(),
+        },
+        record: None,
+    };
+    let max_attempts = execution_number(&app.config()?, "max_attempts_per_task", 3);
+    verify_attempt(
+        app,
+        context,
+        &mut Live,
+        task_id,
+        attempt_id,
+        &input,
+        &|| false,
+        max_attempts,
+    )
 }
 
 /// `RunService.submit_external`: concludes an external managed attempt from the commits the agent

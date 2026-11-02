@@ -263,6 +263,21 @@ fn result_reports_complete_claimed_work_or_record_a_comment() {
 }
 
 #[test]
+fn a_result_on_an_unclaimed_ready_task_is_refused_naming_the_state() {
+    // Regression for WG-4072: `task result` on a ready task used to return the task unchanged
+    // with no error. It must now refuse, for either outcome, and name the required state.
+    let ready = task("TAA", 1, TaskStatus::Ready, None);
+    for succeeded in [true, false] {
+        let error = plan_report_result(&ready, caller(AGENT_ONE), succeeded, "", false)
+            .err()
+            .unwrap_or_else(|| panic!("a ready task must refuse a result (succeeded={succeeded})"));
+        assert_eq!(error.code, ErrorCode::InvalidTransition);
+        assert!(error.message.contains("ready"), "{}", error.message);
+        assert!(error.message.contains("claim"), "{}", error.message);
+    }
+}
+
+#[test]
 fn comments_and_progress_payloads() {
     let mut extra = Map::new();
     extra.insert("kind".to_owned(), json!("overridden"));

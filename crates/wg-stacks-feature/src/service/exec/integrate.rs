@@ -10,11 +10,11 @@ use crate::spec::exec::integrate::{
 use crate::spec::exec::verify::verification_job;
 use crate::spec::exec::worktree::{IntegrationTarget, integration_target};
 use serde_json::Value;
-use wg_git::Git;
+use wg_git::{BranchPosition, Git};
 use wg_rows::task_world_sql::TaskWorld;
 use wg_runtime::spec::RequestContext;
-use wg_stacks::merge::ItemStep;
-use wg_store::Session;
+use wg_stacks::merge::{ItemStep, stale_head_reason};
+use wg_store::{RecordedHead, Session};
 use wg_types::{Id, WgError};
 
 use super::stack_world;
@@ -51,6 +51,28 @@ fn heads_of(
         })
 }
 
+/// The reason the recorded head `recorded` must not merge because its attempt branch moved past it.
+/// `None` when the branch still points at it, does not exist, or the attempt records no branch: a
+/// head whose branch is gone is merged as before.
+fn stale_reason(git: &Git, recorded: Option<&RecordedHead>) -> Result<Option<String>, WgError> {
+    let Some(RecordedHead {
+        head_sha,
+        branch: Some(branch),
+    }) = recorded
+    else {
+        return Ok(None);
+    };
+    let position = git
+        .branch_position(branch, head_sha)
+        .map_err(|err| crate::spec::git_failure(&err))?;
+    Ok(match position {
+        BranchPosition::Moved { tip, descends } => {
+            Some(stale_head_reason(branch, head_sha, &tip, descends))
+        }
+        BranchPosition::Missing | BranchPosition::Same => None,
+    })
+}
+
 use super::Exec;
 
 impl Exec<'_> {
@@ -85,6 +107,7 @@ impl Exec<'_> {
             merged,
             skipped,
             conflicts,
+            refused,
             progressed,
         } = self.merge_due_items(context, &target, &git)?;
         // Pending items whose task left no succeeded attempt head cannot merge: say so, per item.
@@ -115,6 +138,7 @@ impl Exec<'_> {
             &merged,
             &skipped,
             &conflicts,
+            &refused,
             &waiting,
         ))
     }
@@ -132,6 +156,7 @@ impl Exec<'_> {
         let mut merged = Vec::new();
         let mut skipped = Vec::new();
         let mut conflicts = Vec::new();
+        let mut refused = Vec::new();
         loop {
             let due = self.0.runtime.query(
                 |session| stack_world(session, stack_id),
@@ -144,6 +169,7 @@ impl Exec<'_> {
             let (kind, key) = self.integrate_item(context, target, git, item_id)?;
             match kind {
                 ItemKind::Conflict => conflicts.push(key),
+                ItemKind::Refused => refused.push(key),
                 ItemKind::Skipped => skipped.push(key),
                 ItemKind::Merged => merged.push(key),
                 ItemKind::Noop => {}
@@ -154,6 +180,7 @@ impl Exec<'_> {
             merged,
             skipped,
             conflicts,
+            refused,
             progressed,
         })
     }
@@ -167,6 +194,22 @@ impl Exec<'_> {
         item_id: Id,
     ) -> Result<(ItemKind, String), WgError> {
         let stack_id = target.stack_id;
+        // The head the attempt recorded here, and the branch it points at now. Git is read
+        // outside the transactions, as the merge is.
+        let recorded = self.0.runtime.query(
+            |session| {
+                let world = stack_world(session, stack_id)?;
+                let task_id = world
+                    .stacks
+                    .items
+                    .get(&item_id)
+                    .map(|item| item.task_id)
+                    .ok_or_else(|| WgError::workgraph(format!("stack item {item_id} vanished")))?;
+                session.latest_recorded_head(task_id, target.repository_id)
+            },
+            |recorded| Ok(recorded.clone()),
+        )?;
+        let stale = stale_reason(git, recorded.as_ref())?;
         let begun = self
             .0
             .runtime
@@ -177,7 +220,9 @@ impl Exec<'_> {
                     let heads = heads_of(session, &world, stack_id, item_id)?;
                     Ok((world, heads))
                 },
-                |(world, heads), stamp| begin_item(world, stamp, item_id, target, heads),
+                |(world, heads), stamp| {
+                    begin_item(world, stamp, item_id, target, heads, stale.clone())
+                },
                 index_written,
             )?
             .reply;
@@ -185,6 +230,7 @@ impl Exec<'_> {
             ItemStep::MergeUnchanged => return Ok((ItemKind::Merged, begun.task_key)),
             ItemStep::Skip => return Ok((ItemKind::Skipped, begun.task_key)),
             ItemStep::Noop => return Ok((ItemKind::Noop, begun.task_key)),
+            ItemStep::Refuse(_) => return Ok((ItemKind::Refused, begun.task_key)),
             ItemStep::Merge(head) => head.clone(),
         };
         let outcome = self.merge_head(git, &head, &begun.message)?;
@@ -316,11 +362,12 @@ impl Exec<'_> {
     }
 }
 
-/// The task keys a pass over the due items merged, skipped and found conflicting.
+/// The task keys a pass over the due items merged, skipped, refused and found conflicting.
 struct Merged {
     merged: Vec<String>,
     skipped: Vec<String>,
     conflicts: Vec<String>,
+    refused: Vec<String>,
     progressed: bool,
 }
 
@@ -329,5 +376,7 @@ enum ItemKind {
     Merged,
     Skipped,
     Conflict,
+    /// The recorded head was not merged: its attempt branch moved past it.
+    Refused,
     Noop,
 }

@@ -28,7 +28,7 @@ use wg_store::{EventQuery, Session, TaskWorld};
 use wg_types::{AttemptStatus, Id, Permission, StackItemState, WgError};
 
 use crate::spec::git_failure;
-use crate::spec::out::Tips;
+use crate::spec::out::{ItemHead, Tips};
 use crate::spec::reads::{self as pure_reads, TipTarget};
 use crate::spec::writes::{self, Queued, RecordedBranch};
 
@@ -170,10 +170,51 @@ pub fn show(
                 &worktrees,
                 &pure_reads::show_targets(&world, scope, parent)?,
             );
-            Ok((world, tips))
+            let heads = read_item_heads(session, &world, scope, parent)?;
+            Ok((world, tips, heads))
         },
-        |(world, tips)| pure_reads::show(world, scope, parent, tips),
+        |(world, tips, heads)| pure_reads::show(world, scope, parent, tips, heads),
     )
+}
+
+/// The head each item's newest succeeded attempt recorded in each stack repository, with the
+/// branch that attempt pushed and the commit that branch points at now. A repository with no
+/// recorded head has no entry.
+fn read_item_heads(
+    session: &mut Session<'_>,
+    world: &TaskWorld,
+    scope: Id,
+    parent: &str,
+) -> Result<Vec<ItemHead>, WgError> {
+    let mut heads = Vec::new();
+    for target in pure_reads::head_targets(world, scope, parent)? {
+        let Some(recorded) = session.latest_recorded_head(target.task_id, target.repository_id)?
+        else {
+            continue;
+        };
+        let checkouts = session.checkouts(target.repository_id)?;
+        let tip = match (
+            recorded.branch.as_deref(),
+            primary_checkout(&checkouts, true),
+        ) {
+            (Some(branch), Some(checkout)) => Git {
+                path: PathBuf::from(&checkout.path),
+                timeout_ms: GIT_TIMEOUT_MS,
+            }
+            .rev_parse_verify_quiet(&format!("refs/heads/{branch}"))
+            .ok()
+            .flatten(),
+            _ => None,
+        };
+        heads.push(ItemHead {
+            task_id: target.task_id,
+            repository: target.repository,
+            head: recorded.head_sha,
+            branch: recorded.branch,
+            tip,
+        });
+    }
+    Ok(heads)
 }
 
 /// `StackService.containing`: every stack the task is an item of, newest first.

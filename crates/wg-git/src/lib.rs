@@ -14,6 +14,7 @@ mod stack;
 
 pub use hook::{HookOutcome, install_post_commit_hook};
 pub use inspect::resolve;
+pub use ops::BranchPosition;
 pub use runner::{Git, GitOutput, git_version};
 pub use stack::INTEGRATION_IDENTITY;
 pub use wg_gitcore::{GitError, HookError, RunOptions};

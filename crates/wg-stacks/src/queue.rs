@@ -287,3 +287,36 @@ pub fn set_waiting(detail: &mut ItemDetail, note: Option<&str>) -> bool {
     }
     true
 }
+
+/// The detail key of the notes that say why an item's recorded head was refused: an object from
+/// repository name to the reason. Cleared when that repository's head merges.
+pub const STALE_KEY: &str = "stale_heads";
+
+/// Sets (or clears, for `None`) the stale-head note of `repository` in `detail`. Returns whether
+/// the detail changed.
+pub fn set_stale(detail: &mut ItemDetail, repository: &str, note: Option<&str>) -> bool {
+    let mut notes = match detail.other.get(STALE_KEY) {
+        Some(Value::Object(map)) => map.clone(),
+        _ => Map::new(),
+    };
+    let before = notes.clone();
+    match note {
+        Some(text) => {
+            notes.insert(repository.to_owned(), Value::String(text.to_owned()));
+        }
+        None => {
+            notes.remove(repository);
+        }
+    }
+    if notes == before {
+        return false;
+    }
+    if notes.is_empty() {
+        detail.other.remove(STALE_KEY);
+    } else {
+        detail
+            .other
+            .insert(STALE_KEY.to_owned(), Value::Object(notes));
+    }
+    true
+}

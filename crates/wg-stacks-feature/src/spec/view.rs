@@ -51,11 +51,62 @@ fn item_detail_line(item: &Value) -> String {
                 .map(str::to_owned)
         })
         .filter(|_| s(get(item, "state")) == "pending");
-    match waiting {
-        Some(note) if summary.is_empty() => format!("waiting: {note}"),
-        Some(note) => format!("{summary}; waiting: {note}"),
-        None => summary,
+    let mut parts: Vec<String> = Vec::new();
+    if !summary.is_empty() {
+        parts.push(summary);
     }
+    if let Some(note) = waiting {
+        parts.push(format!("waiting: {note}"));
+    }
+    parts.extend(
+        stale_notes(item)
+            .into_iter()
+            .map(|note| format!("not merged: {note}")),
+    );
+    parts.join("; ")
+}
+
+/// The stale-head notes of an item: why a recorded head is not merged because its attempt branch
+/// moved on (`wg_stacks::queue::STALE_KEY`).
+fn stale_notes(item: &Value) -> Vec<String> {
+    opt(get(item, "detail"))
+        .and_then(|text| serde_json::from_str::<Json>(&text).ok())
+        .and_then(|parsed| {
+            parsed
+                .get(wg_stacks::queue::STALE_KEY)
+                .and_then(Json::as_object)
+                .map(|notes| {
+                    notes
+                        .values()
+                        .filter_map(Json::as_str)
+                        .map(str::to_owned)
+                        .collect()
+                })
+        })
+        .unwrap_or_default()
+}
+
+/// The recorded head of an item in each repository, with the attempt branch's tip when that branch
+/// now points elsewhere.
+fn item_head_line(item: &Value) -> String {
+    items(get(item, "recorded_heads"))
+        .iter()
+        .map(|row| {
+            let repository = s(get(row, "repository"));
+            let head = s(get(row, "head"));
+            let shown = short(get(row, "head"), 12);
+            match (opt(get(row, "branch")), opt(get(row, "tip"))) {
+                (Some(branch), Some(tip)) if tip != head => {
+                    format!(
+                        "{repository} {shown} (branch {branch} now at {})",
+                        prefix(&tip, 12)
+                    )
+                }
+                _ => format!("{repository} {shown}"),
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("; ")
 }
 
 /// `_detail_summary`: one line for an item's detail, naming its conflicting paths and its ejection
@@ -154,6 +205,7 @@ pub fn stack_view(console: &Console, stack: &Value) -> String {
                 merge_order,
                 s(get(item, "task_key")),
                 s(get(item, "state")),
+                item_head_line(item),
                 item_detail_line(item),
                 s(get(item, "task_title")),
             ]
@@ -162,7 +214,7 @@ pub fn stack_view(console: &Console, stack: &Value) -> String {
     let item_table = console
         .table(
             &rows,
-            &["merge order", "task", "state", "detail", "title"],
+            &["merge order", "task", "state", "head", "detail", "title"],
             None,
         )
         .text;

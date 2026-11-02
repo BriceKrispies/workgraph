@@ -7,7 +7,9 @@ use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use wg_git::{Git, GitError, GitOutput, HookOutcome, RunOptions, install_post_commit_hook};
+use wg_git::{
+    BranchPosition, Git, GitError, GitOutput, HookOutcome, RunOptions, install_post_commit_hook,
+};
 use wg_gitcore::{HOOK_MARKER, parse_meta};
 
 /// The runner for a repository at `path`, with the default timeout.
@@ -547,4 +549,49 @@ fn a_call_past_its_timeout_is_a_run_error() {
         }
         other => panic!("expected a timeout, got {other:?}"),
     }
+}
+
+#[test]
+fn branch_position_tells_missing_same_advanced_and_rewritten_branches() {
+    let dir = scratch("branch-position");
+    let first = repo_with_commit(&dir);
+    fixture(&dir, &["branch", "attempt", first.as_str()]);
+    let git = repo(&dir);
+    assert_eq!(
+        git.branch_position("attempt", &first).unwrap(),
+        BranchPosition::Same
+    );
+    assert_eq!(
+        git.branch_position("absent", &first).unwrap(),
+        BranchPosition::Missing
+    );
+
+    // The attempt branch gains a commit after the recorded head: the head is still an ancestor.
+    fixture(&dir, &["checkout", "-q", "attempt"]);
+    fs::write(dir.join("file.txt"), "two\n").unwrap();
+    fixture(&dir, &["commit", "-q", "-am", "more fixes"]);
+    let advanced = fixture(&dir, &["rev-parse", "HEAD"]);
+    assert_eq!(
+        git.branch_position("attempt", &first).unwrap(),
+        BranchPosition::Moved {
+            tip: advanced,
+            descends: true,
+        }
+    );
+
+    // The attempt branch is reset onto a history that does not contain the recorded head.
+    fixture(&dir, &["checkout", "-q", "--orphan", "fresh"]);
+    fs::write(dir.join("file.txt"), "rewritten\n").unwrap();
+    fixture(&dir, &["add", "file.txt"]);
+    fixture(&dir, &["commit", "-q", "-m", "rewritten history"]);
+    let rewritten = fixture(&dir, &["rev-parse", "HEAD"]);
+    fixture(&dir, &["checkout", "-q", "main"]);
+    fixture(&dir, &["branch", "-f", "attempt", rewritten.as_str()]);
+    assert_eq!(
+        git.branch_position("attempt", &first).unwrap(),
+        BranchPosition::Moved {
+            tip: rewritten,
+            descends: false,
+        }
+    );
 }

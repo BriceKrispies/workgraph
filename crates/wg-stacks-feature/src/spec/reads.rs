@@ -8,7 +8,7 @@ use wg_rows::EventRecord;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_types::{Id, WgError, parse_id};
 
-use super::out::{Tips, stack_list_out, stack_out};
+use super::out::{ItemHead, Tips, item_task_ids, stack_list_out, stack_out, with_item_heads};
 use super::{is_inactive, latest_stack, task_in};
 use wg_runtime::spec::events::event_out;
 
@@ -20,6 +20,49 @@ pub struct TipTarget {
     pub repository: String,
     /// `stacks/<stack id>/<directory name of the repository>`.
     pub directory: String,
+}
+
+/// One item task and one repository of the parent's newest stack, whose recorded head `stack show`
+/// reads.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct HeadTarget {
+    pub task_id: Id,
+    pub repository_id: Id,
+    pub repository: String,
+}
+
+/// The item and repository pairs of the parent's newest stack.
+pub fn head_targets(
+    world: &TaskWorld,
+    scope: Id,
+    parent_ref: &str,
+) -> Result<Vec<HeadTarget>, WgError> {
+    let parent = task_in(world, scope, parent_ref)?;
+    let stack = latest_stack(world, parent)?;
+    let repositories: Vec<(Id, String)> = world
+        .stacks
+        .repositories_of(stack.id)
+        .filter_map(|row| {
+            world
+                .tasks
+                .registry
+                .repository(row.repository_id)
+                .map(|repository| (row.repository_id, repository.name.clone()))
+        })
+        .collect();
+    Ok(world
+        .stacks
+        .items_of(stack.id)
+        .flat_map(|item| {
+            repositories
+                .iter()
+                .map(move |(repository_id, repository)| HeadTarget {
+                    task_id: item.task_id,
+                    repository_id: *repository_id,
+                    repository: repository.clone(),
+                })
+        })
+        .collect())
 }
 
 /// `StackIntegrator.worktree_path` relative to the worktrees directory.
@@ -92,9 +135,21 @@ pub fn show_targets(
 }
 
 /// `StackService.get`: the parent's newest stack.
-pub fn show(world: &TaskWorld, scope: Id, parent_ref: &str, tips: &Tips) -> Result<Value, WgError> {
+pub fn show(
+    world: &TaskWorld,
+    scope: Id,
+    parent_ref: &str,
+    tips: &Tips,
+    heads: &[ItemHead],
+) -> Result<Value, WgError> {
     let parent = task_in(world, scope, parent_ref)?;
-    stack_out(world, latest_stack(world, parent)?, tips)
+    let stack = latest_stack(world, parent)?;
+    let order = item_task_ids(world, stack);
+    Ok(with_item_heads(
+        stack_out(world, stack, tips)?,
+        &order,
+        heads,
+    ))
 }
 
 /// `StackService.containing`: every stack the task is an item of, newest first, without tips.

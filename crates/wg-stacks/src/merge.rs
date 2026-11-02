@@ -42,6 +42,9 @@ pub enum ItemStep {
     Noop,
     /// Merge this head.
     Merge(String),
+    /// The item's attempt branch moved past the recorded head, so that head must not merge. The
+    /// string says why (see [`stale_head_reason`]).
+    Refuse(String),
 }
 
 /// The decision at the top of `_integrate_item`.
@@ -57,6 +60,29 @@ pub fn plan_item(any_head: bool, head: Option<&str>, merged_head: Option<&str>) 
         Some(h) if merged_head == Some(h) => ItemStep::Noop,
         Some(h) => ItemStep::Merge(h.to_string()),
     }
+}
+
+/// Refuses a merge when the attempt branch has moved past the recorded head: a `Merge` step
+/// becomes `Refuse(reason)`, every other step stays as it is.
+pub fn guard_stale(step: ItemStep, stale: Option<String>) -> ItemStep {
+    match (step, stale) {
+        (ItemStep::Merge(_), Some(reason)) => ItemStep::Refuse(reason),
+        (step, _) => step,
+    }
+}
+
+/// Why a recorded head must not merge because its attempt branch moved. `descends` tells whether
+/// the recorded head is still an ancestor of the branch tip (the branch advanced), else the branch
+/// history was rewritten.
+pub fn stale_head_reason(branch: &str, recorded: &str, tip: &str, descends: bool) -> String {
+    let moved = if descends {
+        format!("advanced from {recorded} to {tip}")
+    } else {
+        format!("was rewritten: its tip {tip} does not descend from the recorded head {recorded}")
+    };
+    format!(
+        "attempt branch {branch} {moved}; adopt or resubmit the attempt so the new head runs the submit gate"
+    )
 }
 
 /// The merge commit message.

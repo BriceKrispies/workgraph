@@ -141,6 +141,13 @@ pub enum Refusal {
         parent: String,
         repository: String,
     },
+    /// A child is pending or ready: it became so after the verification was queued, so the
+    /// verified tip does not contain it. Landing would release it; the queue integrates it and
+    /// verifies the new tip first.
+    StaleVerification {
+        parent: String,
+        unsettled: Vec<String>,
+    },
 }
 
 impl Refusal {
@@ -154,6 +161,7 @@ impl Refusal {
             Self::NoVerificationEvent { .. } => "no_verification_event",
             Self::NoDefaultBranch { .. } => "no_default_branch",
             Self::IntegrationMoved { .. } => "integration_moved",
+            Self::StaleVerification { .. } => "stale_verification",
         }
     }
 
@@ -216,6 +224,15 @@ impl Refusal {
             )
             .detail("parent", parent.as_str())
             .detail("repository", repository.as_str()),
+            Self::StaleVerification { parent, unsettled } => WgError::new(
+                self.error_code(),
+                format!(
+                    "{parent}'s stack has children that became pending or ready after its verification started: {}; the stack integrates them and verifies the new tip before it can land, so verify the stack again before accepting it",
+                    unsettled.join(", ")
+                ),
+            )
+            .detail("parent", parent.as_str())
+            .detail("unsettled", unsettled),
         }
     }
 }
@@ -354,6 +371,17 @@ pub fn land_decision(state: &LandState) -> Result<LandDecision, Refusal> {
     });
     if let Some(refusal) = refusal {
         return Err(refusal);
+    }
+    // The stack verifies only once nothing is pending or ready. A child that is now pending or
+    // ready joined the queue after the verified tip was taken, so landing would release it
+    // unverified.
+    let unsettled: Vec<String> = ordered
+        .iter()
+        .filter(|item| matches!(item.state, StackItemState::Pending | StackItemState::Ready))
+        .map(|item| item.key.clone())
+        .collect();
+    if !unsettled.is_empty() {
+        return Err(Refusal::StaleVerification { parent, unsettled });
     }
     if repos.iter().any(|repo| repo.default_head != repo.base_sha) {
         Ok(LandDecision::Deferred { children })

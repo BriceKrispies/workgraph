@@ -241,9 +241,18 @@ Accepting the parent task of a verified stack lands it (`workgraph task accept P
   tip of each repository, and the integration worktrees are removed (`worktree remove --force`) and
   the integration branch is deleted (`stack.integration_removed`). Dependents of the accepted tasks
   are promoted by the normal acceptance path.
+- **Late children.** A child that is `pending` or `ready` when the landing runs became so after its
+  verification was queued (a settled queue has none), so the verified tip does not hold it. Landing
+  refuses with `stale_verification`, naming the children, rather than releasing them unverified. The
+  stack stays `verified` and nothing moves. The `stack_integrate` job that the child's transition to
+  `ready` queued runs once the verification job has released the stack's keys: it merges the child,
+  the queue settles, and a fresh `stack_verify` runs on the new tip. That pass lands the stack (or
+  leaves it for a manual accept) like any other. Children in `conflict` or `ejected` are not late in
+  this sense: a landing still releases them, as described above.
 - **Refusals.** A landing that is refused (stack not verified, parent not awaiting review, any child
   not `verified` (listed with its state, for example `ejected` or `pending`), a child not awaiting
-  review, dirty checkout, integration work in flight) is recorded as `stack.landing_refused` and changes nothing
+  review, a child that became pending or ready after the verification (`stale_verification`), dirty
+  checkout, integration work in flight) is recorded as `stack.landing_refused` and changes nothing
   else. With `stacks.auto_accept` enabled, the landing runs when the stack verifies, and a refusal
   leaves the stack `verified` for a manual accept.
 - **Auto-accept.** `stacks.auto_accept` (on by default; global, overridable per workspace; see

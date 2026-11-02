@@ -149,7 +149,9 @@ of a stack lands the stack (see below).
 - **Unverified children are released by the landing.** The verified integration tip does not contain
   a `pending`, `ready`, `conflict` or `ejected` child that has no merges on the branch, so landing
   takes those children out of the stack: each goes back to `ready` (when it was awaiting verification
-  or review), gets a comment, and is no longer part of the stack. The parent and the verified children
+  or review), gets a comment, and is no longer part of the stack. A child that is `pending` or `ready`
+  at landing time is the exception: it became so after the verification was queued, so the landing is
+  refused (`stale_verification`) and the stack integrates that child and verifies again before it lands. The parent and the verified children
   land without them. A child that still has merges on the integration branch (a partly merged conflict)
   refuses the landing, which names it; verify again or remove it first. The `stack.landed` event lists
   the released children.

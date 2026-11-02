@@ -208,4 +208,37 @@ impl Git {
         )?;
         Ok(non_empty_trimmed(&output.stdout))
     }
+
+    /// Where the local branch `branch` stands against `recorded`, a commit id: missing, on it,
+    /// or moved. A moved branch says whether `recorded` is still an ancestor of its tip
+    /// (`descends`): true when the branch advanced, false when its history was rewritten.
+    ///
+    /// # Errors
+    /// [`GitError::Run`] when git cannot run.
+    pub fn branch_position(
+        &self,
+        branch: &str,
+        recorded: &str,
+    ) -> Result<BranchPosition, GitError> {
+        let Some(tip) = self.rev_parse_verify_quiet(&format!("refs/heads/{branch}"))? else {
+            return Ok(BranchPosition::Missing);
+        };
+        if tip == recorded {
+            return Ok(BranchPosition::Same);
+        }
+        let descends = self.is_ancestor(recorded, &tip)?;
+        Ok(BranchPosition::Moved { tip, descends })
+    }
+}
+
+/// Where a branch stands against a commit recorded for it. See [`Git::branch_position`].
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum BranchPosition {
+    /// The branch does not exist.
+    Missing,
+    /// The branch points at the recorded commit.
+    Same,
+    /// The branch points at `tip`, another commit. `descends` tells whether the recorded commit is
+    /// an ancestor of `tip`.
+    Moved { tip: String, descends: bool },
 }

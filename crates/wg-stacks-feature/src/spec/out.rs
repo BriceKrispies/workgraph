@@ -12,6 +12,85 @@ use wg_wire::dto::stack;
 /// repository with no entry has no worktree yet.
 pub type Tips = BTreeMap<(Id, String), String>;
 
+/// The head an item's newest succeeded attempt recorded in one repository, with the attempt's
+/// branch and the commit that branch points at now (`None` when the branch is not read).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ItemHead {
+    pub task_id: Id,
+    pub repository: String,
+    pub head: String,
+    pub branch: Option<String>,
+    pub tip: Option<String>,
+}
+
+/// The task ids of a stack's items, in the order `stack_out` lists them.
+pub fn item_task_ids(world: &TaskWorld, stack: &Stack) -> Vec<Id> {
+    items(world, stack)
+        .into_iter()
+        .map(|(_, task)| task.id)
+        .collect()
+}
+
+/// Adds `recorded_heads` to each item of a `stack_out` reply. `task_order` is the item order of
+/// that reply (see [`item_task_ids`]); an item with no recorded head gets an empty list.
+pub fn with_item_heads(value: Value, task_order: &[Id], heads: &[ItemHead]) -> Value {
+    let Value::Dict(fields) = value else {
+        return value;
+    };
+    let fields = fields
+        .into_iter()
+        .map(|(key, field)| {
+            let is_items = key.to_text().as_deref() == Some("items");
+            match field {
+                Value::List(rows) if is_items => {
+                    let rows = rows
+                        .into_iter()
+                        .zip(task_order)
+                        .map(|(row, task_id)| match row {
+                            Value::Dict(mut item) => {
+                                item.push((
+                                    "recorded_heads".into(),
+                                    recorded_heads(task_id, heads),
+                                ));
+                                Value::Dict(item)
+                            }
+                            other => other,
+                        })
+                        .collect();
+                    (key, Value::List(rows))
+                }
+                other => (key, other),
+            }
+        })
+        .collect();
+    Value::Dict(fields)
+}
+
+/// The `recorded_heads` list of one item.
+fn recorded_heads(task_id: &Id, heads: &[ItemHead]) -> Value {
+    Value::List(
+        heads
+            .iter()
+            .filter(|head| &head.task_id == task_id)
+            .map(|head| {
+                Value::Dict(vec![
+                    (
+                        "repository".into(),
+                        Value::Str(head.repository.as_str().into()),
+                    ),
+                    ("head".into(), Value::Str(head.head.as_str().into())),
+                    ("branch".into(), optional_text(head.branch.as_deref())),
+                    ("tip".into(), optional_text(head.tip.as_deref())),
+                ])
+            })
+            .collect(),
+    )
+}
+
+fn optional_text(text: Option<&str>) -> Value {
+    text.map_or(Value::Null, |text| Value::Str(text.into()))
+}
+
 /// The repository rows of a stack with their repository's name, ordered by name.
 fn repositories<'a>(world: &'a TaskWorld, stack: &Stack) -> Vec<(&'a StackRepository, &'a str)> {
     let mut rows: Vec<(&StackRepository, &str)> = world

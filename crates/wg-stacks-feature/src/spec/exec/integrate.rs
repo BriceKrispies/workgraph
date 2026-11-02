@@ -17,9 +17,11 @@ use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::ejection::returns_to_ready;
 use wg_stacks::merge::{
     ItemStep, MergeOutcome, conflict_comment, conflict_reason, conflict_record, fully_merged,
-    merge_message, plan_item, record_merge, start_integrating,
+    guard_stale, merge_message, plan_item, record_merge, start_integrating,
 };
-use wg_stacks::queue::{DueItem, ItemDetail, is_settled, next_due, set_waiting, waiting_note};
+use wg_stacks::queue::{
+    DueItem, ItemDetail, is_settled, next_due, set_stale, set_waiting, waiting_note,
+};
 use wg_tasks::transition::Change;
 use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError, parse_id};
 
@@ -113,13 +115,15 @@ fn load_item(chain: &Chain<'_>, item_id: Id) -> Result<Loaded, WgError> {
 }
 
 /// The first transaction of `_integrate_item`. `heads` is the head the task left in each stack
-/// repository it changed (`StackIntegrator.heads`).
+/// repository it changed (`StackIntegrator.heads`). `stale` is the reason the recorded head in this
+/// repository must not merge because its attempt branch moved (see `stale_head_reason`).
 pub fn begin_item(
     world: &TaskWorld,
     stamp: &Stamp,
     item_id: Id,
     target: &IntegrationTarget,
     heads: &BTreeMap<Id, String>,
+    stale: Option<String>,
 ) -> Result<Decision<Begun>, WgError> {
     let chain = Chain::start(world, stamp);
     let loaded = load_item(&chain, item_id)?;
@@ -130,7 +134,7 @@ pub fn begin_item(
         .get(&target.repository_name)
         .and_then(|merge| merge.get("head"))
         .and_then(Value::as_str);
-    let step = plan_item(!heads.is_empty(), head, merged_head);
+    let step = guard_stale(plan_item(!heads.is_empty(), head, merged_head), stale);
     let task_key = loaded.task.key.to_string();
     let message = merge_message(&task_key, &loaded.task.title, &target.integration_branch);
     let chain = match &step {
@@ -150,6 +154,14 @@ pub fn begin_item(
             }),
         ),
         ItemStep::Noop => chain,
+        ItemStep::Refuse(reason) => {
+            let mut noted = detail.clone();
+            if set_stale(&mut noted, &target.repository_name, Some(reason.as_str())) {
+                chain.item_detail(item_id, dump_detail(&noted))
+            } else {
+                chain
+            }
+        }
         ItemStep::Merge(_) => match start_integrating(loaded.stack.status) {
             Some(next) => chain.stack_status(loaded.stack.id, next, STARTED_REASON),
             None => chain,
@@ -194,6 +206,8 @@ pub fn finish_item(
         )?;
         return Ok(chain.finish(Done::Conflict));
     }
+    let mut detail = detail;
+    set_stale(&mut detail, &target.repository_name, None);
     let detail = record_merge(
         &detail,
         &target.repository_name,
@@ -367,14 +381,16 @@ pub fn waiting_sync(
     Ok(chain.finish(waiting))
 }
 
-/// The result object of an `integrate` that ran. `waiting` lists the pending items that cannot merge
-/// yet, as `{task, reason}`.
+/// The result object of an `integrate` that ran. `refused` lists the items whose recorded head was
+/// not merged because its attempt branch moved on. `waiting` lists the pending items that cannot
+/// merge yet, as `{task, reason}`.
 #[must_use]
 pub fn ran_result(
     repository: &str,
     merged: &[String],
     skipped: &[String],
     conflicts: &[String],
+    refused: &[String],
     waiting: &[Value],
 ) -> Value {
     json!({
@@ -383,6 +399,7 @@ pub fn ran_result(
         "merged": merged,
         "skipped": skipped,
         "conflicts": conflicts,
+        "refused": refused,
         "waiting": waiting,
     })
 }
@@ -390,7 +407,7 @@ pub fn ran_result(
 /// The result object of an `integrate` for a stack that is no longer active.
 #[must_use]
 pub fn inactive_result() -> Value {
-    json!({"status": "inactive", "merged": [], "skipped": [], "conflicts": [], "waiting": []})
+    json!({"status": "inactive", "merged": [], "skipped": [], "conflicts": [], "refused": [], "waiting": []})
 }
 
 /// Whether a stack status counts as in progress for integration.

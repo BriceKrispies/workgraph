@@ -12,7 +12,7 @@ use wg_stacks::landing::{
     LandRequest, LandState, Refusal, after_verified_outcome, after_verified_request,
     blockers_first, fast_forward_plan, guard_child, guard_defer, integration_busy, land_decision,
     move_args, move_bases_event, release_plan, release_unverified, rollback_args, rollback_order,
-    stale_heads, verified_run,
+    stale_heads, untracked_collisions, verified_run,
 };
 use wg_types::{ErrorCode, StackItemState, StackStatus, TaskStatus};
 
@@ -140,7 +140,76 @@ fn check(name: &str, descends: bool, holder: Option<(&str, bool)>) -> FfCheck {
         tip: "t".into(),
         descends,
         holder: holder.map(|(p, c)| (p.to_string(), c)),
+        holder_collisions: Vec::new(),
     }
+}
+
+fn with_collisions(mut check: FfCheck, collisions: &[&str]) -> FfCheck {
+    check.holder_collisions = collisions.iter().map(|p| (*p).to_string()).collect();
+    check
+}
+
+#[test]
+fn untracked_files_refuse_only_on_a_path_the_stack_adds() {
+    let added = vec!["src/new.rs".to_string(), "docs/a/b.md".to_string()];
+    // An unrelated untracked file does not collide, nor does a sibling or a parent directory.
+    assert!(
+        untracked_collisions(
+            &added,
+            &["notes.txt".into(), "src/other.rs".into(), "doc/".into()]
+        )
+        .is_empty()
+    );
+    // The same path collides, as does a file where the stack adds a directory or the reverse.
+    assert_eq!(
+        untracked_collisions(&added, &["src/new.rs".into(), "notes.txt".into()]),
+        ["src/new.rs"]
+    );
+    assert_eq!(
+        untracked_collisions(&added, &["docs/a/".into()]),
+        ["docs/a/"]
+    );
+    assert_eq!(
+        untracked_collisions(&added, &["docs/a/b.md/x".into()]),
+        ["docs/a/b.md/x"]
+    );
+}
+
+#[test]
+fn fast_forward_lands_past_unrelated_untracked_files() -> TestResult {
+    let plan = fast_forward_plan(&[check("a", true, Some(("/co", true)))])?;
+    assert_eq!(
+        plan[0].step,
+        FfStep::MergeFfOnly {
+            holder: "/co".into()
+        }
+    );
+    Ok(())
+}
+
+#[test]
+fn fast_forward_refuses_untracked_collision_and_names_the_path() {
+    let colliding = with_collisions(check("a", true, Some(("/co", true))), &["src/new.rs"]);
+    let err = fast_forward_plan(&[colliding]).err().expect("refused");
+    assert_eq!(err.code, ErrorCode::ValidationFailed);
+    assert!(err.message.contains("src/new.rs"), "{}", err.message);
+    assert!(
+        err.message.starts_with("/co has untracked files"),
+        "{}",
+        err.message
+    );
+}
+
+#[test]
+fn fast_forward_still_refuses_tracked_modifications_with_untracked_files() {
+    let dirty = with_collisions(check("a", true, Some(("/co", false))), &[]);
+    let err = fast_forward_plan(&[dirty]).err().expect("refused");
+    assert_eq!(err.code, ErrorCode::ValidationFailed);
+    assert!(
+        err.message.contains("uncommitted changes"),
+        "{}",
+        err.message
+    );
 }
 
 #[test]

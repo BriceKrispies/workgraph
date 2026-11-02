@@ -174,6 +174,21 @@ fn refs_branches_and_commits() {
 }
 
 #[test]
+fn added_paths_lists_only_files_the_range_adds() {
+    let dir = scratch("added");
+    let first = repo_with_commit(&dir);
+    fs::write(dir.join("new.txt"), "x").unwrap();
+    fs::write(dir.join("file.txt"), "changed\n").unwrap();
+    fixture(&dir, &["add", "new.txt", "file.txt"]);
+    fixture(&dir, &["commit", "-q", "-m", "second"]);
+    let second = fixture(&dir, &["rev-parse", "HEAD"]);
+    assert_eq!(
+        repo(&dir).added_paths(&first, &second).unwrap(),
+        ["new.txt"]
+    );
+}
+
+#[test]
 fn working_tree_status_and_worktrees() {
     let dir = scratch("status");
     repo_with_commit(&dir);

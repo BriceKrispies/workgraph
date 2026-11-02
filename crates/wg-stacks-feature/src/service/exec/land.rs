@@ -17,7 +17,7 @@ use wg_runtime::spec::RequestContext;
 use wg_stacks::landing::{
     FfCheck, FfStep, LandDecision, LandRepo, after_verified_outcome, after_verified_request,
     fast_forward_plan, guard_defer, move_args, moved_while_landing, rollback_args, rollback_order,
-    stale_heads,
+    stale_heads, untracked_collisions,
 };
 use wg_stacks::verify::StackRepoBase;
 use wg_store::EventQuery;
@@ -378,7 +378,7 @@ impl Exec<'_> {
             let descends = source
                 .is_ancestor(&target.base_sha, &tip)
                 .map_err(|err| git_failure(&err))?;
-            let holder = source
+            let found = source
                 .worktrees()
                 .map_err(|err| git_failure(&err))?
                 .into_iter()
@@ -386,11 +386,29 @@ impl Exec<'_> {
                     entry.branch.as_deref() == Some(default.as_str())
                         && Path::new(&entry.path).exists()
                         && !entry.prunable
-                })
-                .map(|entry| {
-                    let clean = git_at!(Path::new(&entry.path)).is_clean().unwrap_or(false);
-                    (entry.path, clean)
                 });
+            let (holder, holder_collisions) = match found {
+                None => (None, Vec::new()),
+                Some(entry) => {
+                    let checkout = git_at!(Path::new(&entry.path));
+                    // Staged or unstaged changes refuse; untracked files only refuse when the
+                    // incoming commits add a path of the same name.
+                    let (tracked_clean, collisions) = match checkout.status_porcelain() {
+                        Ok(status) => {
+                            let added = source
+                                .added_paths(&target.base_sha, &tip)
+                                .map_err(|err| git_failure(&err))?;
+                            let collisions = untracked_collisions(&added, &status.untracked);
+                            (
+                                status.staged.is_empty() && status.unstaged.is_empty(),
+                                collisions,
+                            )
+                        }
+                        Err(_) => (false, Vec::new()),
+                    };
+                    (Some((entry.path, tracked_clean)), collisions)
+                }
+            };
             checks.push(FfCheck {
                 repository: target.repository_name.clone(),
                 default_branch: default,
@@ -398,6 +416,7 @@ impl Exec<'_> {
                 tip,
                 descends,
                 holder,
+                holder_collisions,
             });
         }
         fast_forward_plan(&checks)

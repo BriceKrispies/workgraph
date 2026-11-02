@@ -473,8 +473,35 @@ pub struct FfCheck {
     pub tip: String,
     /// Whether `base_sha` is an ancestor of `tip`.
     pub descends: bool,
-    /// The user checkout holding the default branch, and whether it is clean.
+    /// The user checkout holding the default branch, and whether it has no staged or unstaged
+    /// (tracked) changes. Untracked files do not count here; see `holder_collisions`.
     pub holder: Option<(String, bool)>,
+    /// Untracked paths in the holder that the incoming commits add (see
+    /// [`untracked_collisions`]). A fast-forward would overwrite them, so they refuse it.
+    pub holder_collisions: Vec<String>,
+}
+
+/// The untracked paths that collide with a path the incoming commits add: the same path, or one
+/// lies inside the other (a file where the stack adds a directory, or the reverse). Other
+/// untracked paths are left alone, since a fast-forward cannot lose them.
+pub fn untracked_collisions(added: &[String], untracked: &[String]) -> Vec<String> {
+    untracked
+        .iter()
+        .filter(|path| {
+            let path = path.trim_end_matches('/');
+            added.iter().any(|add| {
+                let add = add.trim_end_matches('/');
+                add == path
+                    || add
+                        .strip_prefix(path)
+                        .is_some_and(|rest| rest.starts_with('/'))
+                    || path
+                        .strip_prefix(add)
+                        .is_some_and(|rest| rest.starts_with('/'))
+            })
+        })
+        .cloned()
+        .collect()
 }
 
 /// How one default branch moves.
@@ -514,6 +541,16 @@ pub fn fast_forward_plan(checks: &[FfCheck]) -> Result<Vec<FfMove>, WgError> {
                 Some((path, false)) => {
                     return Err(WgError::validation(format!(
                             "{path} has uncommitted changes and has {branch} checked out, so {branch} cannot be fast-forwarded there; commit or stash them, then accept again",
+                            branch = check.default_branch
+                        ))
+                    .detail("repository", check.repository.as_str())
+                    .detail("path", path.as_str())
+                    .detail("branch", check.default_branch.as_str()));
+                }
+                Some((path, true)) if !check.holder_collisions.is_empty() => {
+                    let names = check.holder_collisions.join(", ");
+                    return Err(WgError::validation(format!(
+                            "{path} has untracked files that the stack adds to {branch} ({names}), so {branch} cannot be fast-forwarded there; move or delete them, then accept again",
                             branch = check.default_branch
                         ))
                     .detail("repository", check.repository.as_str())

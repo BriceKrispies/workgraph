@@ -11,7 +11,7 @@ use std::collections::BTreeSet;
 
 use serde_json::json;
 use wg_jobs::limits::stack_key;
-use wg_jobs::queue::{NewJob, enqueue};
+use wg_jobs::queue::{NewJob, enqueue, enqueue_as};
 use wg_json::{Value, dict};
 use wg_model::entity::{Repository, RepositoryCheckout, Stack, StackItem, StackRepository, Task};
 use wg_model::event::{
@@ -229,7 +229,7 @@ pub fn create(
         tasks: world.tasks.clone(),
         stacks: world.stacks.apply_all(decision.writes.iter()),
     };
-    let ready = ready_verified(&created, stamp, ids, stack_id, verified)?;
+    let (ready, _) = ready_verified(&created, stamp, ids, stack_id, verified)?;
     let stacks = created.stacks.apply_all(ready.writes.iter());
     let after = TaskWorld {
         tasks: created.tasks,
@@ -249,9 +249,9 @@ pub fn ready_verified(
     ids: IdSeq,
     stack_id: Id,
     verified: &BTreeSet<Id>,
-) -> Result<Decision<()>, WgError> {
+) -> Result<(Decision<()>, IdSeq), WgError> {
     let Some(stack) = world.stacks.stack(stack_id) else {
-        return Ok(Decision::new(()));
+        return Ok((Decision::new(()), ids));
     };
     let pending: Vec<StackItem> = world
         .stacks
@@ -260,7 +260,7 @@ pub fn ready_verified(
         .cloned()
         .collect();
     let Some(parent) = world.tasks.task(stack.parent_task_id) else {
-        return Ok(Decision::new(()));
+        return Ok((Decision::new(()), ids));
     };
     let mut decision = Decision::new(());
     let mut step = Step {
@@ -291,7 +291,7 @@ pub fn ready_verified(
             ids: moved.ids,
         };
     }
-    Ok(decision)
+    Ok((decision, step.ids))
 }
 
 // ---------------------------------------------------------------- add and remove
@@ -449,17 +449,22 @@ pub(crate) struct Step {
 /// The `stack_integrate` job of each repository of `stack` (in repository-id order), keyed by the
 /// stack state `version` so that repeated requests for an unchanged stack collapse into one job
 /// (`StackService.enqueue_integration`). `queue` holds the jobs already stored under those keys.
+///
+/// Each job takes its id from `ids`, the id sequence of the decision that queues it. Jobs drawn
+/// from one fixed sub-stamp all got the same id, so readying several items in one decision
+/// collided on `jobs.id`. Returns the jobs and the advanced sequence.
 pub(crate) fn integration_jobs(
     stack: &Stack,
     repository_ids: &[Id],
     version: Id,
     stamp: &Stamp,
     queue: &QueueSlice,
-) -> Vec<(Id, Decision<Id>)> {
-    repository_ids
+    ids: IdSeq,
+) -> (Vec<(Id, Decision<Id>)>, IdSeq) {
+    let mut ids = ids;
+    let jobs = repository_ids
         .iter()
-        .enumerate()
-        .map(|(index, repository_id)| {
+        .map(|repository_id| {
             let mut job = NewJob::new("stack_integrate");
             job.payload = json!({
                 "stack_id": stack.id.to_string(),
@@ -473,10 +478,12 @@ pub(crate) fn integration_jobs(
             job.resource_keys = vec![stack_key(&stack.id.to_string(), &repository_id.to_string())];
             job.causation_id = Some(version);
             job.created_by = stamp.actor.to_string();
-            let salt = 100 + u32::try_from(index).unwrap_or(0);
-            (*repository_id, enqueue(queue, &job, &substamp(stamp, salt)))
+            let (job_id, next) = ids.next();
+            ids = next;
+            (*repository_id, enqueue_as(queue, &job, job_id, stamp))
         })
-        .collect()
+        .collect();
+    (jobs, ids)
 }
 
 /// The idempotency key of an integration job.
@@ -562,25 +569,28 @@ pub(crate) fn transition_item(
     } else {
         applied
     };
-    let decision = if target == StackItemState::Ready {
-        integration_jobs(
+    let (decision, ids) = if target == StackItemState::Ready {
+        let (jobs, ids) = integration_jobs(
             stack,
             &repository_ids(&stacks, stack.id),
             event_id,
             stamp,
             &QueueSlice::default(),
-        )
-        .into_iter()
-        .flat_map(|(_, job)| job.writes.iter().cloned().collect::<Vec<_>>())
-        .fold(applied.decision, Decision::write)
+            applied.ids,
+        );
+        let decision = jobs
+            .iter()
+            .flat_map(|(_, job)| job.writes.iter().cloned().collect::<Vec<_>>())
+            .fold(applied.decision, Decision::write);
+        (decision, ids)
     } else {
-        applied.decision
+        (applied.decision, applied.ids)
     };
     Ok(Step {
         decision,
         tasks: applied.tasks,
         stacks,
-        ids: applied.ids,
+        ids,
     })
 }
 
@@ -844,7 +854,7 @@ pub fn integrate(
     verified: &BTreeSet<Id>,
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::StackWrite])?;
-    let ready = ready_verified(
+    let (ready, job_ids) = ready_verified(
         world,
         stamp,
         substamp(stamp, 50).ids(),
@@ -853,7 +863,7 @@ pub fn integrate(
     )?;
     let mut ids: Vec<Id> = queued.repositories.iter().map(|(id, _, _)| *id).collect();
     ids.sort();
-    let jobs = integration_jobs(&queued.stack, &ids, version, stamp, queue);
+    let (jobs, _) = integration_jobs(&queued.stack, &ids, version, stamp, queue, job_ids);
     let listed = jobs
         .iter()
         .map(|(repository, job)| {
@@ -1172,8 +1182,9 @@ mod verified_tests {
     #[test]
     fn a_child_without_a_passed_submit_stays_pending() {
         let world = world_with_children(Some(id(100)));
-        let decision = ready_verified(&world, &stamp(), stamp().ids(), id(100), &BTreeSet::new())
-            .unwrap_or_else(|e| panic!("ready: {}", e.message));
+        let (decision, _) =
+            ready_verified(&world, &stamp(), stamp().ids(), id(100), &BTreeSet::new())
+                .unwrap_or_else(|e| panic!("ready: {}", e.message));
         assert!(decision.writes.is_empty());
         assert_eq!(state_of(&world.stacks, 20), StackItemState::Pending);
         assert_eq!(state_of(&world.stacks, 21), StackItemState::Pending);
@@ -1183,10 +1194,86 @@ mod verified_tests {
     fn only_the_verified_pending_child_becomes_ready() {
         let world = world_with_children(Some(id(100)));
         let verified: BTreeSet<Id> = [id(11)].into_iter().collect();
-        let decision = ready_verified(&world, &stamp(), stamp().ids(), id(100), &verified)
+        let (decision, _) = ready_verified(&world, &stamp(), stamp().ids(), id(100), &verified)
             .unwrap_or_else(|e| panic!("ready: {}", e.message));
         let stacks = world.stacks.apply_all(decision.writes.iter());
         assert_eq!(state_of(&stacks, 20), StackItemState::Ready);
         assert_eq!(state_of(&stacks, 21), StackItemState::Pending);
+    }
+
+    /// The ids of the jobs a decision inserts.
+    fn inserted_job_ids(writes: &[Write]) -> Vec<Id> {
+        writes
+            .iter()
+            .filter_map(|write| match write {
+                Write::Insert(Row::Job(job)) => Some(job.id),
+                _ => None,
+            })
+            .collect()
+    }
+
+    /// Queued jobs exist and none of them shares an id with another.
+    fn assert_unique_jobs(ids: &[Id]) {
+        assert!(!ids.is_empty(), "no integration job was queued");
+        let distinct: BTreeSet<Id> = ids.iter().copied().collect();
+        assert_eq!(distinct.len(), ids.len(), "jobs share an id: {ids:?}");
+    }
+
+    #[test]
+    fn create_readies_two_verified_children_with_unique_job_ids() {
+        let world = world_with_children(None);
+        let verified: BTreeSet<Id> = [id(11), id(12)].into_iter().collect();
+        let decision = create(
+            &world,
+            &stamp(),
+            id(1),
+            "WG-1",
+            &[("svc".to_owned(), "base".to_owned())],
+            &verified,
+        )
+        .unwrap_or_else(|e| panic!("create: {}", e.message));
+        let writes: Vec<Write> = decision.writes.iter().cloned().collect();
+        assert_unique_jobs(&inserted_job_ids(&writes));
+        let stacks = world.stacks.apply_all(decision.writes.iter());
+        let stack_id = stacks
+            .stacks
+            .keys()
+            .next()
+            .copied()
+            .unwrap_or_else(|| panic!("no stack"));
+        for task in [11, 12] {
+            let state = stacks
+                .items_of(stack_id)
+                .find(|row| row.task_id == id(task))
+                .map(|row| row.state);
+            assert_eq!(state, Some(StackItemState::Ready), "task {task}");
+        }
+    }
+
+    #[test]
+    fn integrate_readies_two_verified_children_with_unique_job_ids() {
+        let world = world_with_children(Some(id(100)));
+        let stack = world
+            .stacks
+            .stack(id(100))
+            .cloned()
+            .unwrap_or_else(|| panic!("no stack"));
+        let queued = Queued {
+            stack,
+            parent_key: "WG-1".to_owned(),
+            repositories: vec![(id(40), "svc".to_owned(), "base".to_owned())],
+        };
+        let verified: BTreeSet<Id> = [id(11), id(12)].into_iter().collect();
+        let decision = integrate(
+            &stamp(),
+            &world,
+            &queued,
+            id(77),
+            &QueueSlice::default(),
+            &verified,
+        )
+        .unwrap_or_else(|e| panic!("integrate: {}", e.message));
+        let writes: Vec<Write> = decision.writes.iter().cloned().collect();
+        assert_unique_jobs(&inserted_job_ids(&writes));
     }
 }

@@ -321,8 +321,14 @@ impl<'a> Chain<'a> {
             .into_iter()
             .filter(|id| Some(*id) != exclude)
             .collect();
-        let jobs = integration_jobs(&stack, &repositories, version, self.stamp, queue);
-        let ids = self.step.ids;
+        let (jobs, ids) = integration_jobs(
+            &stack,
+            &repositories,
+            version,
+            self.stamp,
+            queue,
+            self.step.ids,
+        );
         jobs.into_iter().fold(self, |chain, (_, job)| {
             let writes = job.map(|_| ());
             chain.apply(writes, ids)

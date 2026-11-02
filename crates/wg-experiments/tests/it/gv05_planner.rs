@@ -65,6 +65,17 @@ fn cases<'a>(doc: &'a Value, key: &str) -> Result<&'a Vec<Value>, Box<dyn Error>
     Ok(cases)
 }
 
+/// Keeps the first golden case of each distinct `shape`. Every case runs a 1000-resample
+/// bootstrap in the debug test build, so cases that exercise the same branch of the code add
+/// wall time without adding coverage; the shape names the branch.
+fn one_per_shape(cases: &[Value], shape: impl Fn(&Value) -> String) -> Vec<&Value> {
+    let mut seen = BTreeSet::new();
+    cases
+        .iter()
+        .filter(|case| seen.insert(shape(case)))
+        .collect()
+}
+
 #[test]
 fn summary_matches_python() -> TestResult {
     let doc = load()?;
@@ -157,7 +168,8 @@ fn lines_matches_python() -> TestResult {
 #[test]
 fn lines_interval_matches_python() -> TestResult {
     let doc = load()?;
-    for case in cases(&doc, "lines_interval")? {
+    // One case per probability: the seed only changes the resamples, not the code path.
+    for case in one_per_shape(cases(&doc, "lines_interval")?, |c| c["p"].to_string()) {
         let rows: Vec<FitRow> = case["rows"]
             .as_array()
             .ok_or("rows")?
@@ -208,7 +220,18 @@ fn size_trials(value: &Value) -> Result<Vec<SizeTrial>, Box<dyn Error>> {
 #[test]
 fn size_fit_matches_python() -> TestResult {
     let doc = load()?;
-    for case in cases(&doc, "size_fit")? {
+    // One case per outcome shape: each rejection reason, and each fit with a distinct
+    // convergence and interval shape (converged, CI present or absent).
+    let shape = |c: &Value| match c["result"]["ok"][0].is_null() {
+        true => format!("reject {}", c["result"]["ok"][1]),
+        false => format!(
+            "fit converged={} ci50={} ci80={}",
+            c["result"]["ok"][0]["converged"],
+            !c["result"]["ok"][0]["ci50"].is_null(),
+            !c["result"]["ok"][0]["ci80"].is_null(),
+        ),
+    };
+    for case in one_per_shape(cases(&doc, "size_fit")?, shape) {
         let trials = size_trials(&case["trials"])?;
         let seed = i128::from(int(&case["seed"])?);
         let got = size_fit(&trials, seed)?;

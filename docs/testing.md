@@ -4,8 +4,8 @@
 
 - **Hard 2-minute ceiling.** No test run takes longer than 120 s of wall-clock time. Budgets enforce
   it: `wg-conformance --budget SECS` (default 120, refused above 120) kills unfinished scenarios and
-  fails the run, and `tools/check.py` runs each test step under the same limit and kills its process
-  tree when it is exceeded. A check that does not fit is cut or split, never given more time.
+  fails the run, `tools/check.py` runs each test step under the same limit, and
+  `tools/test_budget.py` runs the workspace suite under it; each kills its process tree when exceeded. A check that does not fit is cut or split, never given more time.
 - **Conformance `check` compares behaviour.** For each step it compares the exit code and HTTP
   status. When both stdouts are JSON it compares their shape: the same object keys recursively, the
   same value kind per value, the same array lengths, ignoring scalar values and the normaliser's
@@ -31,6 +31,43 @@ python tools/check.py --tests     # the gate: fmt, clippy, purity, cargo test, c
 
 `tools/check.py` uses only the Python standard library to drive these steps. `--no-web` skips the
 frontend steps.
+
+## The 120 s test budget
+
+`cargo test --workspace` must finish within 120 s of wall-clock time on the development machine.
+`tools/test_budget.py` enforces it:
+
+```sh
+python tools/test_budget.py              # build (unbudgeted), then cargo test --workspace under 120 s
+python tools/test_budget.py --budget 60  # a tighter budget while iterating; above 120 is refused
+```
+
+It builds the test binaries in an unbudgeted `cargo test --workspace --no-run` step, then runs
+`cargo test --workspace` and kills its process tree past the budget. The run then fails with
+`test budget of 120 s exceeded` and prints the slowest test targets so far. On success it prints the
+slowest test targets (wall time per test binary or doc-test run, taken from cargo's `Running` headers).
+
+The fast tier is `cargo check --workspace`, which is what a single change runs. The full tier is
+`python tools/test_budget.py`.
+
+When a suite does not fit, cut it: remove tests that repeat a behaviour already covered faster, and
+shrink golden corpora to one case per output shape (see `crates/wg-experiments/tests/it/gv05_planner.rs`).
+Never raise the budget.
+
+Verification configuration (created by the coordinator, not by this repository) runs both tiers
+through the budget runner with a 120 s process timeout:
+
+```sh
+workgraph verify config workgraph-fast --scope-type repository --scope <repository> \
+  --check "{\"name\": \"check\", \"kind\": \"build\", \"tier\": \"fast\", \"command\": [\"cargo\", \"check\", \"--workspace\"], \"timeout_seconds\": 120}"
+workgraph verify config workgraph-full --scope-type repository --scope <repository> \
+  --check "{\"name\": \"tests\", \"kind\": \"test\", \"tier\": \"full\", \"command\": [\"python\", \"tools/test_budget.py\"], \"timeout_seconds\": 120}"
+```
+
+`<repository>` is the repository's name as registered in Workgraph.
+
+The `timeout_seconds` of the full check also covers its unbudgeted build step, so a cold build can
+exhaust it. Build the test binaries once beforehand on the machine that runs verification.
 
 ## Conformance
 

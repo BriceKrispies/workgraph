@@ -100,6 +100,20 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let out = runs::attempt_start(state.app()?, &context, &request)?;
             state.emit(&out, Some(&|c| view::start_view(c, &out)))
         }
+        Some("adopt") => {
+            let task = option_text(m, "task").unwrap_or_default();
+            let reference = option_text(m, "--ref").unwrap_or_default();
+            let repository = option_text(m, "--repository");
+            let out = runs::attempt_adopt(
+                state.app()?,
+                &context,
+                workspace.as_deref(),
+                &task,
+                &reference,
+                repository.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| view::adopt_line(c, &out)))
+        }
         Some("abandon") => {
             let reference = option_text(m, "attempt").unwrap_or_default();
             let reason = option_text(m, "--reason")

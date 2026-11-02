@@ -6,3 +6,4 @@ mod core13_manifest;
 mod core13_recovery;
 mod gv01_attempts;
 mod gv21_stackplan;
+mod wg4067_adopt;

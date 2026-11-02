@@ -46,6 +46,15 @@ impl Git {
         Ok(split_words(&output.stdout))
     }
 
+    /// `merge-base <a> <b>`: the best common ancestor, `None` when the two share no history.
+    ///
+    /// # Errors
+    /// [`GitError::Run`] when git cannot run.
+    pub fn merge_base(&self, a: &str, b: &str) -> Result<Option<String>, GitError> {
+        let output = self.run_with(&["merge-base", a, b], RunOptions::UNCHECKED)?;
+        Ok(non_empty_trimmed(&output.stdout))
+    }
+
     /// `rev-list <args>` unchecked: the caller reads the return code and the ids.
     ///
     /// # Errors

@@ -3,20 +3,33 @@
 //! its Python session read, asks [`crate::spec::attempt_writes`] and the `wg-exec` plans what to
 //! write, and applies the answer as one decision per Python session.
 
+use std::path::PathBuf;
+
+use rpds::VectorSync;
 use serde_json::{Map, json};
 use wg_exec::attempt::{
-    ACTIVE_STATUSES, abandon_plan, is_terminal, next_attempt_number, start_plan,
+    ACTIVE_STATUSES, abandon_plan, adopt_check, is_terminal, next_attempt_number, start_plan,
 };
 use wg_exec::run::EarlyEnd;
+use wg_git::Git;
 use wg_json::Value;
 use wg_model::Decision;
-use wg_model::entity::AgentAttempt;
+use wg_model::Write;
+use wg_model::entity::{AgentAttempt, ChangeSet, ChangeSetItem, Repository};
 use wg_model::stamp::py_repr_str;
+use wg_model::write::RowKey;
+use wg_registry::checkout::primary_checkout;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_runtime::spec::RequestContext;
+use wg_runtime::spec::effects::GIT_TIMEOUT_MS;
 use wg_runtime::{App, index_written};
 use wg_store::Session;
-use wg_types::{AttemptStatus, Id, Permission, TaskStatus, WgError};
+use wg_tasks::accept::active_item;
+use wg_tasks::transition::Applied;
+use wg_types::{
+    AttemptStatus, ChangeSetItemStatus, ChangeSetStatus, Id, Permission, StackItemState,
+    TaskStatus, WgError,
+};
 use wg_wire::convention::json_value;
 use wg_wire::dto::attempt;
 
@@ -518,4 +531,252 @@ pub fn attempt_finish(
         )?
         .reply;
     Ok(attempt::from_model(&row))
+}
+
+/// `AttemptService.adopt` (WG-4067): records a succeeded attempt whose head in one repository is
+/// `reference`, so work made outside Workgraph can enter a stack without a manual merge. The
+/// attempt's baseline is the merge-base of `reference` with the stack base (or the repository's
+/// default branch outside a stack). The task ends `awaiting_verification`, and a stack child is
+/// marked ready as a submit would mark it, without running the fast checks: the stack's full
+/// verification of the integration tip still runs.
+pub fn attempt_adopt(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    task_ref: &str,
+    reference: &str,
+    repository: Option<&str>,
+) -> Result<Value, WgError> {
+    app.require_permission(context, Permission::TaskClaim)?;
+    app.require_permission(context, Permission::AttemptWrite)?;
+    let reference = reference.trim();
+    if reference.is_empty() {
+        return Err(WgError::validation("adopt needs a ref to adopt"));
+    }
+    let scope = app.workspace_or_all(workspace)?;
+    let actor = context.actor.to_string();
+    let (task, world, repo, checkouts, has_active, covering) =
+        app.runtime.store.read(|session| {
+            let task = find_task(session, scope, task_ref)?;
+            let world = session.task_world(Some(task.workspace_id), &[])?;
+            let repo = match repository.filter(|name| !name.is_empty()) {
+                Some(name) => session
+                    .repositories(task.workspace_id, None, false)?
+                    .into_iter()
+                    .find(|row| row.name == name)
+                    .ok_or_else(|| WgError::not_found(format!("repository {name} not found")))?,
+                None => {
+                    let linked: Vec<Id> = world
+                        .tasks
+                        .repositories_of(task.id)
+                        .map(|link| link.repository_id)
+                        .collect();
+                    let only = match linked.as_slice() {
+                        [only] => *only,
+                        [] => {
+                            return Err(WgError::validation(
+                                "task has no linked repository; pass --repository NAME",
+                            ));
+                        }
+                        _ => {
+                            return Err(WgError::validation(
+                                "task links several repositories; pass --repository NAME",
+                            ));
+                        }
+                    };
+                    session
+                        .fetch::<Repository>(&RowKey::Repository(only))?
+                        .ok_or_else(|| WgError::not_found(format!("repository {only} not found")))?
+                }
+            };
+            let checkouts = session.checkouts(repo.id)?;
+            let has_active = !session
+                .attempts_of_task(task.id, ACTIVE_STATUSES)?
+                .is_empty();
+            let covering = session.active_repository_for_task(task.id, repo.id)?;
+            Ok((task, world, repo, checkouts, has_active, covering))
+        })?;
+    adopt_check(&task.key.to_string(), task.status, has_active)?;
+    let stack_state = active_item(&world.stacks, task.id).map(|(_, item)| item.state);
+    if stack_state.is_some() {
+        app.require_permission(context, Permission::StackWrite)?;
+    }
+    let checkout = primary_checkout(&checkouts, true).ok_or_else(|| {
+        WgError::validation(format!(
+            "repository '{}' has no available checkout",
+            repo.name
+        ))
+    })?;
+    let git = Git {
+        path: PathBuf::from(&checkout.path),
+        timeout_ms: GIT_TIMEOUT_MS,
+    };
+    let git_error = |error: wg_git::GitError| WgError::git(error.to_string());
+    let head = git.resolve_commit(reference).map_err(|_| {
+        WgError::validation(format!(
+            "ref {reference} does not resolve to a commit in repository '{}'",
+            repo.name
+        ))
+    })?;
+    let base_ref = match &covering {
+        Some(row) => row.base_sha.clone(),
+        None => match repo.default_branch.clone() {
+            Some(branch) => branch,
+            None => git
+                .default_branch()
+                .map_err(git_error)?
+                .ok_or_else(|| WgError::validation("repository has no default branch"))?,
+        },
+    };
+    let base = git.resolve_commit(&base_ref).map_err(git_error)?;
+    let baseline = git
+        .merge_base(&base, &head)
+        .map_err(git_error)?
+        .ok_or_else(|| {
+            WgError::validation(format!("{reference} shares no history with {base_ref}"))
+        })?;
+    let commits = git.rev_list_range(&baseline, &head).map_err(git_error)?;
+
+    let task_id = task.id;
+    let (attempt_id, number) = app
+        .runtime
+        .decide_written(
+            context,
+            |session| {
+                let world = session.task_world(Some(task.workspace_id), &[])?;
+                let numbers: Vec<i64> = session
+                    .attempts_of_task(task.id, &[])?
+                    .iter()
+                    .map(|row| row.number)
+                    .collect();
+                let active = !session
+                    .attempts_of_task(task.id, ACTIVE_STATUSES)?
+                    .is_empty();
+                Ok((world, numbers, active))
+            },
+            |(world, numbers, active), stamp| {
+                let current = world.tasks.task(task_id).ok_or_else(|| gone(task_id))?;
+                adopt_check(&current.key.to_string(), current.status, *active)?;
+                let reason = format!("adopted {reference}");
+                let mut chain = start_chain(stamp, &world.tasks);
+                if current.status == TaskStatus::Ready {
+                    chain = task_moved(
+                        chain,
+                        &world.stacks,
+                        stamp,
+                        task_id,
+                        TaskStatus::Claimed,
+                        &reason,
+                    )?;
+                    chain = claimed(chain, task_id, &actor);
+                }
+                let holder = chain
+                    .tasks
+                    .task(task_id)
+                    .ok_or_else(|| gone(task_id))?
+                    .clone();
+                let config: Map<String, serde_json::Value> = [
+                    ("external", json!(true)),
+                    ("adopted", json!(true)),
+                    ("ref", json!(reference)),
+                    ("repository", json!(repo.name)),
+                    ("baseline_ref", json!(base_ref)),
+                    ("baseline_sha", json!(baseline)),
+                ]
+                .into_iter()
+                .map(|(name, value)| (name.to_owned(), value))
+                .collect();
+                let (chain, row) = created(
+                    chain,
+                    stamp,
+                    &holder,
+                    next_attempt_number(numbers),
+                    NewAttempt {
+                        provider: "external".to_owned(),
+                        adapter: "external".to_owned(),
+                        status: AttemptStatus::Queued,
+                        agent_id: Some(actor.clone()),
+                        model: None,
+                        session_id: None,
+                        parent_attempt_id: None,
+                        config_snapshot: config,
+                    },
+                );
+                let (chain, row) = status_set(chain, stamp, &row, AttemptStatus::Running)?;
+                let (chain, row) = finished(
+                    chain,
+                    stamp,
+                    &row,
+                    AttemptStatus::Succeeded,
+                    Finish {
+                        exit_reason: Some("adopted".to_owned()),
+                        summary: Some(reason.clone()),
+                        ..Finish::default()
+                    },
+                )?;
+                let (set_id, ids) = chain.ids.next();
+                let (item_id, ids) = ids.next();
+                let set = ChangeSet {
+                    id: set_id,
+                    workspace_id: task.workspace_id,
+                    task_id,
+                    attempt_id: Some(row.id),
+                    title: reason.clone(),
+                    status: ChangeSetStatus::Open,
+                    created_at: stamp.at,
+                    updated_at: stamp.at,
+                };
+                let item = ChangeSetItem {
+                    id: item_id,
+                    change_set_id: set_id,
+                    repository_id: repo.id,
+                    base_sha: Some(baseline.clone()),
+                    head_sha: Some(head.clone()),
+                    branch: None,
+                    commit_shas: commits
+                        .iter()
+                        .cloned()
+                        .fold(VectorSync::new_sync(), |list, sha| list.push_back(sha)),
+                    status: ChangeSetItemStatus::Committed,
+                    detail: None,
+                    updated_at: stamp.at,
+                };
+                let chain = Applied {
+                    decision: chain
+                        .decision
+                        .write(Write::insert(set))
+                        .write(Write::insert(item)),
+                    ids,
+                    tasks: chain.tasks,
+                };
+                let chain = task_moved(
+                    chain,
+                    &world.stacks,
+                    stamp,
+                    task_id,
+                    TaskStatus::AwaitingVerification,
+                    &reason,
+                )?;
+                Ok(chain.decision.with_reply((row.id, row.number)))
+            },
+        )?
+        .reply;
+    if matches!(
+        stack_state,
+        Some(StackItemState::Pending | StackItemState::Conflict | StackItemState::Ejected)
+    ) {
+        wg_stacks_feature::service::mark_ready(app, context, task_id)?;
+    }
+    Ok(json_value(&json!({
+        "attempt_id": attempt_id.to_string(),
+        "attempt_number": number,
+        "task": task.key.to_string(),
+        "repository": repo.name,
+        "head_sha": head,
+        "baseline_sha": baseline,
+        "baseline_ref": base_ref,
+        "commits": commits.len(),
+        "task_status": "awaiting_verification",
+        "attempt_status": "succeeded",
+    })))
 }

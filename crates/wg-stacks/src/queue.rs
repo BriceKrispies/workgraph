@@ -248,11 +248,20 @@ fn depth_of<'a>(
 /// The detail key of the note that says why a pending item cannot merge yet.
 pub const WAITING_KEY: &str = "waiting";
 
-/// The note on a pending item that has no succeeded attempt head in any stack repository: such an
-/// item cannot merge until its task is worked (or adopted), so the integration pass reports it.
-/// `None` when the item is not waiting.
+/// The note on a pending item, which the integration pass reports because nothing will merge it
+/// yet. With no succeeded attempt head the task must be worked or adopted. With a head, the item
+/// was never marked ready (its work predates the item), and `stack readmit` queues it. `None` when
+/// the item is not pending.
 pub fn waiting_note(state: StackItemState, has_head: bool, task_key: &str) -> Option<String> {
-    (state == S::Pending && !has_head).then(|| {
+    if state != S::Pending {
+        return None;
+    }
+    Some(if has_head {
+        format!(
+            "{task_key} has a succeeded head but its item is not ready; `workgraph stack readmit` \
+             queues it for integration"
+        )
+    } else {
         format!(
             "no succeeded attempt of {task_key} left a head in this stack; run an attempt and \
              submit it, or adopt its branch with `workgraph attempt adopt`"

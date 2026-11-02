@@ -367,8 +367,8 @@ pub fn waiting_sync(
     Ok(chain.finish(waiting))
 }
 
-/// The result object of an `integrate` that ran. `waiting` lists the pending items that have no
-/// succeeded attempt head yet, as `{task, reason}`.
+/// The result object of an `integrate` that ran. `waiting` lists the pending items that cannot merge
+/// yet, as `{task, reason}`.
 #[must_use]
 pub fn ran_result(
     repository: &str,

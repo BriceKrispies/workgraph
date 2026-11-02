@@ -324,3 +324,19 @@ fn truthy(value: &Value) -> bool {
         other => !python(other).is_empty(),
     }
 }
+
+/// The human view of `attempt adopt`: the adopted attempt, its repository and the head it records.
+#[must_use]
+pub fn adopt_line(console: &Console, out: &Value) -> String {
+    console
+        .print(&format!(
+            "attempt {} (#{}) adopted {} in {}; task {} {}",
+            short(get(out, "attempt_id")),
+            cell(get(out, "attempt_number")),
+            short(get(out, "head_sha")),
+            cell(get(out, "repository")),
+            cell(get(out, "task")),
+            cell(get(out, "task_status"))
+        ))
+        .text
+}

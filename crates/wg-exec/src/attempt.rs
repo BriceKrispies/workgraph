@@ -288,3 +288,19 @@ fn python_repr(text: &str) -> String {
         format!("'{}'", text.replace('\\', "\\\\").replace('\'', "\\'"))
     }
 }
+
+/// Checks an `adopt` before its attempt is recorded. The task must be ready, claimed or awaiting
+/// verification, and must have no attempt in an active status.
+pub fn adopt_check(task_key: &str, task: S, has_active_attempt: bool) -> Result<(), WgError> {
+    if !matches!(task, S::Ready | S::Claimed | S::AwaitingVerification) {
+        return Err(WgError::validation(format!(
+            "task {task_key} is {task}; only a ready, claimed or awaiting_verification task can adopt a ref"
+        )));
+    }
+    if has_active_attempt {
+        return Err(WgError::validation(format!(
+            "task {task_key} has an active attempt; submit or abandon it before adopting a ref"
+        )));
+    }
+    Ok(())
+}

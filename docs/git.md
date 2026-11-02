@@ -126,6 +126,21 @@ applicable verification checks.
     tip and an instruction to rebase onto that tip. The task returns to `ready` with a comment
     carrying the same information, and the rest of the queue continues.
   - Items with no change in a repository are skipped for that repository (`stack.integration_skipped`).
+  - **Waiting.** A pending item cannot merge, so nothing else moves it. Every integrate pass sets a `waiting`
+    note in the item's detail for each pending item (and clears it once the item moves on), lists
+    `{task, reason}` under `waiting` in the job result, and `stack show` prints the note in the detail column
+    while the item is pending. Two cases: a task with no succeeded attempt head in any stack repository must
+    be worked or adopted; a task that does have a head was adopted or submitted before it joined the stack, and
+    `workgraph stack readmit PARENT TASK` queues it. A pass never reports a pending item as merged.
+  - **Adopting work made outside Workgraph.** `workgraph attempt adopt TASK --ref REF [--repository NAME]`
+    records a succeeded attempt whose head in the repository is `REF` (a branch or commit that must resolve
+    in the repository's checkout), so the work enters the stack without a manual merge. The task must be
+    `ready`, `claimed` or `awaiting_verification` with no active attempt. The attempt's baseline is the
+    merge-base of `REF` with the stack base (the repository's default branch outside a stack), and its
+    change set item records that base and the head. The task ends `awaiting_verification`; a stack child
+    still pending, conflicting or ejected is marked ready as a submit would mark it. Adopt does not run the
+    fast checks, so the stack's full verification of the integration tip is the check that covers adopted
+    work. `--repository` is required when the task links several repositories.
   - **Settled.** The queue settles when no item is `pending` or `ready` and at least one item is on
     the integration branch. After every integrate job that finds the stack settled, a
     `stack_verify` job is queued, keyed by the integration tips, so repeated settling on the same

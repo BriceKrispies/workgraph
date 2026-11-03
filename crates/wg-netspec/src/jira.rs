@@ -20,8 +20,13 @@ pub const DEV_STATUS_PATH: &str = "/rest/dev-status/latest/issue/detail";
 /// What differs between Jira Cloud and Jira Data Center.
 #[derive(Clone, PartialEq, Eq)]
 pub enum Flavour {
-    /// Jira Cloud: Basic auth with an account email and an API token; token pagination.
-    Cloud { email: String, token: String },
+    /// Jira Cloud, token pagination. With an email it sends Basic auth (email and API token);
+    /// without one the token is an OAuth 2.0 access token sent as Bearer, and the base URL is the
+    /// `https://api.atlassian.com/ex/jira/<cloud id>` gateway.
+    Cloud {
+        email: Option<String>,
+        token: String,
+    },
     /// Jira Data Center: a bearer personal access token; offset pagination.
     DataCenter { token: String },
 }
@@ -47,24 +52,39 @@ impl Flavour {
     /// The `fields` value that is enough to list `(id, key)` pairs.
     pub fn key_list_fields(&self) -> &'static str {
         match self {
-            Self::Cloud { .. } => "id",
-            Self::DataCenter { .. } => "key",
+            // /search/jql returns only the fields asked for, and `id` alone omits `key`.
+            Self::Cloud { .. } | Self::DataCenter { .. } => "key",
         }
     }
 
     /// The authorization header. Never log it or embed it in an error message.
     pub fn auth_headers(&self) -> Vec<Header> {
         match self {
-            Self::Cloud { email, token } => {
+            Self::Cloud { email: None, token } | Self::DataCenter { token } => {
+                vec![("Authorization".to_owned(), format!("Bearer {token}"))]
+            }
+            Self::Cloud {
+                email: Some(email),
+                token,
+            } => {
                 let raw = format!("{email}:{token}");
                 vec![(
                     "Authorization".to_owned(),
                     format!("Basic {}", STANDARD.encode(raw.as_bytes())),
                 )]
             }
-            Self::DataCenter { token } => {
-                vec![("Authorization".to_owned(), format!("Bearer {token}"))]
-            }
+        }
+    }
+
+    /// The same flavour with `token` in place of its current one.
+    #[must_use]
+    pub fn with_token(&self, token: String) -> Self {
+        match self {
+            Self::Cloud { email, .. } => Self::Cloud {
+                email: email.clone(),
+                token,
+            },
+            Self::DataCenter { .. } => Self::DataCenter { token },
         }
     }
 
@@ -260,4 +280,15 @@ pub fn unknown_time_zone_warning(name: &str) -> String {
 /// The warning logged when a development-panel lookup fails.
 pub fn dev_status_warning(external_id: &str, message: &str) -> String {
     format!("Jira dev-status lookup for issue {external_id} failed: {message}")
+}
+
+/// What one GET came to: the transport's failure, or the response read as a JSON object.
+pub fn read_result(
+    path: &str,
+    result: Result<wg_model::HttpResponse, wg_model::EffectError>,
+) -> Result<Value, TrackerError> {
+    match result {
+        Err(err) => Err(transport_error(path, &err.message)),
+        Ok(response) => read_response(path, response.status, &response.body),
+    }
 }

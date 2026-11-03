@@ -31,7 +31,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -128,7 +129,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -288,7 +290,8 @@
         "enabled": true,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -385,7 +388,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -482,7 +486,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -579,7 +584,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -781,7 +787,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -878,7 +885,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -977,7 +985,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -1035,6 +1044,8 @@
       },
       "trackers": {
         "acme": {
+          "assignee_field": null,
+          "auth": "basic",
           "base_url": "https://acme.atlassian.net",
           "cancelled_resolutions": [
             "Won't Do",
@@ -1044,14 +1055,20 @@
           "email_env": null,
           "flavour": "cloud",
           "full_sync_interval_seconds": 86400,
+          "jql": null,
+          "min_request_interval_seconds": 0.0,
           "missing_grace_seconds": 86400,
           "overlap_seconds": 120,
           "poll_interval_seconds": 300,
+          "pr_default_repos": {},
           "pr_fields": [],
           "projects": [
             "ACME"
           ],
+          "site_url": null,
           "timeout_seconds": 30.0,
+          "token_command": null,
+          "token_command_timeout_seconds": 60.0,
           "token_env": "JIRA_TOKEN",
           "type": "jira",
           "workspace": "acme"
@@ -1115,7 +1132,8 @@
         "enabled": true,
         "isolation": "in_place",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 4
+        "max_concurrent_runs": 4,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,

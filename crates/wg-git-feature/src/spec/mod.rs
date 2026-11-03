@@ -24,6 +24,7 @@ pub mod mode;
 pub mod reads;
 pub mod sql;
 pub mod surface;
+pub mod worktree_root;
 pub mod worktrees;
 
 /// Maps a git failure into the error an interface reports (`git_error`).

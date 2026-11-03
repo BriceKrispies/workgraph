@@ -90,6 +90,7 @@ auto_schedule = false          # scheduler starts auto_execute tasks when true
 isolation = "worktree"         # or "in_place" (exclusive checkout lease)
 allow_push = false
 allow_merge = false
+# worktree_root = "D:/wt"      # attempt worktrees as <root>/<task-key>-<n> (default: <data>/worktrees/<attempt id>)
 
 [jobs]
 worker_concurrency = 4
@@ -123,13 +124,19 @@ flavour = "cloud"                 # "data_center" once implemented
 base_url = "https://acme.atlassian.net"
 workspace = "work"
 projects = ["ABC"]                # Jira project keys; each maps to a Workgraph project of the same slug
+auth = "basic"                    # Cloud: "basic" (email + API token) or "bearer" (OAuth 2.0 access token)
 email_env = "WORKGRAPH_JIRA_EMAIL"
-token_env = "WORKGRAPH_JIRA_TOKEN"
+token_env = "WORKGRAPH_JIRA_TOKEN"  # or token_command = ["my-oauth-helper", "token"]; exactly one
+token_command_timeout_seconds = 60
 poll_interval_seconds = 300
 full_sync_interval_seconds = 86400
 overlap_seconds = 120
 missing_grace_seconds = 86400
 pr_fields = ["customfield_10042"]
+pr_default_repos = { customfield_10042 = "https://github.com/acme/service" }
+# assignee_field = "customfield_10100"  # a user field to read instead of Jira's assignee
+# jql = "assignee = currentUser()"      # ANDed onto every search; no ORDER BY
+min_request_interval_seconds = 0.0      # smallest gap between requests, up to 60
 dev_panel = true
 cancelled_resolutions = ["Won't Do", "Duplicate"]
 ```
@@ -157,10 +164,42 @@ Each `[trackers.<name>]` table connects Workgraph to one Jira site, read-only: W
 GET requests and never comments on, transitions or edits a Jira issue. Issues from the listed
 `projects` are mirrored as tasks into the workspace named by `workspace`. The maintenance leader
 queues an incremental sync every `poll_interval_seconds` and a full sync every
-`full_sync_interval_seconds`, and `workgraph tracker sync` runs one on demand. Credentials come only
-from the environment variables named by `email_env` and `token_env`; the configuration holds those
-names, never the values. The design, including the status mapping, is in
-[design/tracker-sync.md](design/tracker-sync.md).
+`full_sync_interval_seconds`, and `workgraph tracker sync` runs one on demand. The design, including
+the status mapping, is in [design/tracker-sync.md](design/tracker-sync.md).
+
+**Credentials.** The configuration names where the token comes from, never the token itself. Set
+exactly one of:
+
+- `token_env`: an environment variable holding an API token (Cloud) or a personal access token
+  (Data Center).
+- `token_command`: an argument vector (no shell) that prints the token on stdout, such as an OAuth
+  helper. It runs with the user's environment, its output is held in memory only, and it is re-run
+  when Jira answers 401, at most once a minute. It must finish within
+  `token_command_timeout_seconds`.
+
+On Cloud, `auth = "basic"` sends the token with the account email from `email_env`. With
+`auth = "bearer"` the token is an OAuth 2.0 access token, `email_env` is not used, and `base_url` is
+the API gateway, `https://api.atlassian.com/ex/jira/<cloud id>`. Set `site_url` to the site's own
+address so that browse links point there. Data Center always sends a Bearer personal access token.
+
+**Scope and rate limits.** `jql` narrows a large project: it is ANDed onto the incremental search and
+onto the full sync's listing of keys. Parents and blockers outside the filter are still fetched by
+key, and a full sync does not mark them missing while they exist in the listed projects.
+`min_request_interval_seconds` spaces out requests. A response marked `X-RateLimit-NearLimit: true`
+pauses the next request for at least 5 seconds. A 429's `Retry-After` is honoured in full up to five
+minutes; a longer one fails the request rather than retrying early.
+
+**Pull requests and assignees.** `pr_fields` are read for full pull request URLs (the scheme is
+optional) and for `pull/42` shorthand or numbers listed after a URL (`pull/112, 114 and 120`), which
+take the last URL's repository. `pr_default_repos` gives a field's repository for shorthand with no
+URL before it, and for a field that holds only numbers (`1749, #1809`); without one, such references
+are skipped. `assignee_field` names a user field to read instead of Jira's `assignee`, for sites where
+the assignee is not the person building the work; a multi-user field gives its first user.
+
+**Worktree root.** `[execution] worktree_root` (global or per workspace) puts attempt worktrees at
+`<root>/<task-key>-<n>` instead of `<data>/worktrees/<attempt id>`. Short paths keep deep
+repositories under the Windows path limit. The root may also hold your own worktrees: Workgraph only
+removes worktrees it recorded, in attempt directories directly inside the root.
 
 ## Secrets
 

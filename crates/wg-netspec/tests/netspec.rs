@@ -6,9 +6,11 @@ use rpds::VectorSync;
 use serde_json::json;
 use wg_model::{EffectError, EffectErrorKind, HttpResponse};
 use wg_netspec::jira::{Cursor, Flavour};
-use wg_netspec::jql::{jql_minute, jql_string, updated_jql};
+use wg_netspec::jql::{jql_minute, jql_string, scoped_jql, updated_jql};
 use wg_netspec::request::url;
-use wg_netspec::retry::{Attempt, Backoff, Step, jira_delay, jira_step, provider_step};
+use wg_netspec::retry::{
+    Attempt, Backoff, JiraStep, Step, jira_delay, jira_request_gap, jira_step, provider_step,
+};
 use wg_netspec::text::percent_encode;
 use wg_netspec::{ollama, openai};
 
@@ -47,13 +49,27 @@ fn jql_minute_applies_the_offset_and_drops_seconds() {
 fn updated_jql_adds_the_clause_only_with_a_stamp() {
     let projects = vec!["ABC".to_owned(), "DEF".to_owned()];
     assert_eq!(
-        updated_jql(&projects, None),
+        updated_jql(&projects, None, None),
         r#"project in ("ABC","DEF") ORDER BY updated ASC"#
     );
     assert_eq!(
-        updated_jql(&projects, Some("2026-10-18 04:30")),
+        updated_jql(&projects, None, Some("2026-10-18 04:30")),
         r#"project in ("ABC","DEF") AND updated >= "2026-10-18 04:30" ORDER BY updated ASC"#
     );
+}
+
+#[test]
+fn a_scope_is_anded_on_in_parentheses_and_a_blank_one_is_ignored() {
+    let projects = vec!["ABC".to_owned()];
+    assert_eq!(
+        updated_jql(
+            &projects,
+            Some("labels = x OR labels = y"),
+            Some("2026-10-18 04:30")
+        ),
+        r#"project in ("ABC") AND (labels = x OR labels = y) AND updated >= "2026-10-18 04:30" ORDER BY updated ASC"#
+    );
+    assert_eq!(scoped_jql(&projects, Some("  ")), r#"project in ("ABC")"#);
 }
 
 #[test]
@@ -111,34 +127,73 @@ fn provider_transport_failures_are_retried_but_unsendable_calls_are_not() {
 #[test]
 fn jira_retries_429_and_5xx_except_501_and_honours_retry_after() {
     let limited = Attempt::of(&response(429, Some("7")));
-    assert_eq!(jira_step(&limited, 1), Step::Retry { delay_seconds: 7.0 });
     assert_eq!(
-        jira_step(&Attempt::of(&response(501, None)), 1),
-        Step::Finished
+        jira_step(&limited, 1, false),
+        JiraStep::Retry { delay_seconds: 7.0 }
     );
     assert_eq!(
-        jira_step(&Attempt::of(&response(500, None)), 4),
-        Step::Finished
+        jira_step(&Attempt::of(&response(501, None)), 1, false),
+        JiraStep::Finished
     );
     assert_eq!(
-        jira_step(&Attempt::of(&response(500, None)), 3),
-        Step::Retry { delay_seconds: 2.0 }
+        jira_step(&Attempt::of(&response(500, None)), 4, false),
+        JiraStep::Finished
     );
+    assert_eq!(
+        jira_step(&Attempt::of(&response(500, None)), 3, false),
+        JiraStep::Retry { delay_seconds: 2.0 }
+    );
+    let too_long = Attempt::of(&response(429, Some("301")));
+    assert_eq!(jira_step(&too_long, 1, false), JiraStep::RetryAfterTooLong);
 }
 
 #[test]
-fn jira_delay_is_clamped_and_falls_back_to_backoff() {
-    assert_eq!(jira_delay(Some("999"), 1), 30.0);
-    assert_eq!(jira_delay(Some("-4"), 1), 0.0);
-    assert_eq!(jira_delay(Some("soon"), 2), 1.0);
-    assert_eq!(jira_delay(None, 1), 0.5);
-    assert_eq!(jira_delay(None, 10), 30.0);
+fn jira_reauthenticates_a_401_once() {
+    let rejected = Attempt::of(&response(401, None));
+    assert_eq!(jira_step(&rejected, 1, false), JiraStep::Reauthenticate);
+    assert_eq!(jira_step(&rejected, 1, true), JiraStep::Finished);
+}
+
+#[test]
+fn jira_delay_honours_retry_after_up_to_five_minutes() {
+    assert_eq!(jira_delay(Some("120"), 1), Some(120.0));
+    assert_eq!(jira_delay(Some("300"), 1), Some(300.0));
+    assert_eq!(jira_delay(Some("301"), 1), None);
+    assert_eq!(jira_delay(Some("-4"), 1), Some(0.0));
+    assert_eq!(jira_delay(Some("soon"), 2), Some(1.0));
+    assert_eq!(jira_delay(None, 1), Some(0.5));
+    assert_eq!(jira_delay(None, 10), Some(30.0));
+}
+
+#[test]
+fn near_limit_raises_the_gap_to_the_pause() {
+    assert_eq!(jira_request_gap(0.5, None), 0.5);
+    assert_eq!(jira_request_gap(0.5, Some("false")), 0.5);
+    assert_eq!(jira_request_gap(0.5, Some("TRUE")), 5.0);
+    assert_eq!(jira_request_gap(9.0, Some("true")), 9.0);
+}
+
+#[test]
+fn cloud_auth_is_basic_with_an_email_and_bearer_without() {
+    let header = |flavour: &Flavour| flavour.auth_headers()[0].1.clone();
+    let basic = Flavour::Cloud {
+        email: Some("e".to_owned()),
+        token: "t".to_owned(),
+    };
+    assert!(header(&basic).starts_with("Basic "));
+    let bearer = Flavour::Cloud {
+        email: None,
+        token: "t".to_owned(),
+    };
+    assert_eq!(header(&bearer), "Bearer t");
+    assert_eq!(header(&bearer.with_token("u".to_owned())), "Bearer u");
+    assert_eq!(bearer.key_list_fields(), "key");
 }
 
 #[test]
 fn cloud_pages_end_on_is_last_or_a_missing_token() {
     let flavour = Flavour::Cloud {
-        email: "e".to_owned(),
+        email: Some("e".to_owned()),
         token: "t".to_owned(),
     };
     let more = json!({"nextPageToken": "tok", "isLast": false});

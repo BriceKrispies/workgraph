@@ -1,24 +1,29 @@
 //! Jira issue JSON to a [`TrackerSnapshot`]: the fields Workgraph takes from one issue.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 use serde_json::Value;
 use wg_types::{TaskPriority, Timestamp};
 
-use crate::adf::adf_to_text;
+use crate::adf::{adf_to_text, adf_with_links};
 use crate::pull_request::{
-    PullRequestRef, SOURCE_CUSTOM_FIELD, SOURCE_DEV_PANEL, merge, parse_pull_request_url, urls_in,
+    PullRequestRef, SOURCE_CUSTOM_FIELD, SOURCE_DEV_PANEL, field_pull_requests, merge,
+    parse_pull_request_url,
 };
 use crate::sync::project_of;
 
 /// The mapping settings of one Jira connection that the mapper reads.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MappingConfig {
-    /// Site base URL; trailing slashes are dropped before `/browse/<key>` is appended.
+    /// Where issues are browsed; trailing slashes are dropped before `/browse/<key>` is appended.
     pub base_url: String,
     /// Custom fields whose text may name pull requests.
     pub pr_fields: Vec<String>,
+    /// Field id to the repository URL of pull requests that field names without one.
+    pub pr_default_repos: BTreeMap<String, String>,
+    /// The user field that is the assignee, when it is not Jira's `assignee`.
+    pub assignee_field: Option<String>,
     /// Whether development-panel pull requests are read.
     pub dev_panel: bool,
 }
@@ -118,7 +123,7 @@ pub fn map_issue(
         title: string_or_empty(fields.get("summary")),
         description: description_text(fields.get("description")),
         priority: priority(dig(fields, &["priority", "name"])),
-        assignee: text(dig(fields, &["assignee", "displayName"])),
+        assignee: user_name(fields.get(config.assignee_field.as_deref().unwrap_or("assignee"))),
         status_name: string_or_empty(dig(fields, &["status", "name"])),
         status_category: status_category(dig(fields, &["status", "statusCategory", "key"])),
         resolution: text(dig(fields, &["resolution", "name"])),
@@ -154,6 +159,31 @@ fn text(value: Option<&Value>) -> Option<String> {
         Value::String(s) if !s.is_empty() => Some(s.clone()),
         Value::Number(n) => Some(n.to_string()),
         _ => None,
+    }
+}
+
+/// A user field's display name; a multi-user field gives its first user.
+fn user_name(value: Option<&Value>) -> Option<String> {
+    let value = match value? {
+        Value::Array(items) => items.iter().find(|item| truthy(item))?,
+        other => other,
+    };
+    match value {
+        Value::Object(_) => text(value.get("displayName")),
+        Value::String(name) if !name.is_empty() => Some(name.clone()),
+        _ => None,
+    }
+}
+
+/// Python truthiness of a JSON value.
+fn truthy(value: &Value) -> bool {
+    match value {
+        Value::Null => false,
+        Value::Bool(flag) => *flag,
+        Value::Number(number) => number.as_f64() != Some(0.0),
+        Value::String(text) => !text.is_empty(),
+        Value::Array(items) => !items.is_empty(),
+        Value::Object(members) => !members.is_empty(),
     }
 }
 
@@ -251,19 +281,16 @@ fn pull_requests(
     dev_pull_requests: &[Value],
     config: &MappingConfig,
 ) -> Vec<PullRequestRef> {
-    let from_fields = config
-        .pr_fields
-        .iter()
-        .flat_map(|field_id| collect_strings(fields.get(field_id.as_str())))
-        .flat_map(urls_in)
-        .filter_map(|url| {
-            let trimmed = url.trim_end_matches(['.', ',', ';', ':', '!', '?']);
-            parse_pull_request_url(trimmed)
-        })
-        .map(|reference| PullRequestRef {
-            sources: vec![SOURCE_CUSTOM_FIELD],
-            ..reference
-        });
+    let from_fields = config.pr_fields.iter().flat_map(|field_id| {
+        let text = field_text(fields.get(field_id.as_str()));
+        let default_repo = config.pr_default_repos.get(field_id).map(String::as_str);
+        field_pull_requests(&text, default_repo)
+            .into_iter()
+            .map(|reference| PullRequestRef {
+                sources: vec![SOURCE_CUSTOM_FIELD],
+                ..reference
+            })
+    });
     let from_dev_panel = dev_pull_requests
         .iter()
         .filter(|_| config.dev_panel)
@@ -278,18 +305,27 @@ fn pull_requests(
     merge(from_fields.chain(from_dev_panel).collect())
 }
 
-/// Every string inside a field value: plain strings, lists, ADF trees and `{"url": ...}` objects.
-fn collect_strings(value: Option<&Value>) -> Vec<&str> {
+/// A field value as text: strings, numbers, lists, `{"url": ...}` objects and ADF with link
+/// targets kept.
+fn field_text(value: Option<&Value>) -> String {
     match value {
-        Some(Value::String(s)) => vec![s.as_str()],
+        Some(Value::String(s)) => s.clone(),
+        Some(Value::Number(n)) => n.to_string(),
+        Some(node @ Value::Object(map))
+            if map.get("type").and_then(Value::as_str) == Some("doc") =>
+        {
+            adf_with_links(node)
+        }
         Some(Value::Object(map)) => map
             .values()
-            .flat_map(|item| collect_strings(Some(item)))
-            .collect(),
+            .map(|item| field_text(Some(item)))
+            .collect::<Vec<_>>()
+            .join("\n"),
         Some(Value::Array(items)) => items
             .iter()
-            .flat_map(|item| collect_strings(Some(item)))
-            .collect(),
-        _ => Vec::new(),
+            .map(|item| field_text(Some(item)))
+            .collect::<Vec<_>>()
+            .join("\n"),
+        _ => String::new(),
     }
 }

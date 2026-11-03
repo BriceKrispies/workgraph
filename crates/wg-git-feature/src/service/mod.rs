@@ -7,6 +7,7 @@
 pub mod store;
 
 pub mod worktree_remove;
+pub mod worktree_root;
 
 mod attempt_links;
 mod entries;

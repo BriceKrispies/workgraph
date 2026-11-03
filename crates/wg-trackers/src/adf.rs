@@ -112,6 +112,33 @@ fn inline(node: &Value) -> String {
     }
 }
 
+/// An ADF tree as one text that keeps link targets, so a linked "PR 42" still names its URL.
+/// Blocks end with a newline; nothing is trimmed.
+pub(crate) fn adf_with_links(node: &Value) -> String {
+    match kind(node) {
+        Some("text") => {
+            let text = text(node.get("text"));
+            let href = link_href(node);
+            if !href.is_empty() && !text.contains(href.as_str()) {
+                format!("{text} {href} ")
+            } else {
+                text.to_string()
+            }
+        }
+        Some("hardBreak") => "\n".to_string(),
+        Some("mention" | "emoji" | "status") => attr_text(node, "text"),
+        Some("inlineCard" | "blockCard" | "embedCard") => format!(" {} ", attr_text(node, "url")),
+        other => {
+            let inner: String = children(node).into_iter().map(adf_with_links).collect();
+            if other.is_some_and(|k| BLOCK_TYPES.contains(&k)) {
+                inner + "\n"
+            } else {
+                inner
+            }
+        }
+    }
+}
+
 /// The `href` of the first link mark on a text node, or empty.
 fn link_href(node: &Value) -> String {
     let Some(marks) = node.get("marks").and_then(Value::as_array) else {

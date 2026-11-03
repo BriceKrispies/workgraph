@@ -197,7 +197,7 @@ fn boundary_roots(app: &mut App, workspace_id: Id) -> Result<(Vec<String>, Vec<S
             .ok_or_else(|| WgError::not_found(format!("workspace {workspace_id} not found")))?;
         Ok(boundary::allowed_roots(&row.settings))
     })?;
-    let managed = [
+    let mut managed: Vec<String> = [
         app.paths.worktrees_dir(),
         app.paths.runs_dir(),
         app.paths.artifacts_dir(),
@@ -205,6 +205,10 @@ fn boundary_roots(app: &mut App, workspace_id: Id) -> Result<(Vec<String>, Vec<S
     .into_iter()
     .map(|root| root.as_str().to_owned())
     .collect();
+    // Worktrees under a configured `execution.worktree_root` are known by their rows, not place.
+    managed.extend(wg_git_feature::service::worktree_root::live_managed_paths(
+        app,
+    )?);
     Ok((allowed, managed))
 }
 

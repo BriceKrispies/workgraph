@@ -38,6 +38,8 @@ fn config_of(value: &Value) -> MappingConfig {
             .filter_map(Value::as_str)
             .map(str::to_string)
             .collect(),
+        pr_default_repos: Default::default(),
+        assignee_field: None,
         dev_panel: value["dev_panel"].as_bool().unwrap_or(true),
     }
 }
@@ -116,6 +118,8 @@ fn the_missing_timestamp_case_is_the_only_error_case() {
         &MappingConfig {
             base_url: String::new(),
             pr_fields: Vec::new(),
+            pr_default_repos: Default::default(),
+            assignee_field: None,
             dev_panel: true,
         },
     );

@@ -37,6 +37,9 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("create") => {
             let body = create_body(m, &read_file)?;
             let out = service::task_create(state.app()?, &context, ws, &body)?;
+            if let Some(warning) = service::create_warning(&out) {
+                state.eprint(&format!("warning: {warning}\n"));
+            }
             state.emit(&out, Some(&|c| created_line(c, &out)))
         }
         Some("list") => {

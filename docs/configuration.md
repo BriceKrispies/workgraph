@@ -151,6 +151,13 @@ fast-tier-only run never accepts a task, and a run with no required checks never
 by default; set it to `false` to keep the `workgraph task accept` step (see
 [Task lifecycle](task-lifecycle.md#acceptance)).
 
+`[tasks] require_acceptance_criteria` is read per workspace too (a workspace file can set its own
+`[tasks]` table). It is off by default. A `task create` with no acceptance criteria always succeeds
+and returns a `warning` field (the CLI prints it to stderr). With the setting on, such a create is
+refused with a `validation_failed` error whose `reason` detail is `acceptance_criteria_required`, and
+so is any move of a task with no acceptance criteria to ready (`task update` to `ready`, and
+`task promote-ready`). Tasks that already exist are unaffected until they are promoted.
+
 ### Issue trackers
 
 Each `[trackers.<name>]` table connects Workgraph to one Jira site, read-only: Workgraph only issues

@@ -310,6 +310,17 @@ fn verification() -> Model {
     }
 }
 
+fn tasks() -> Model {
+    Model {
+        name: "TasksConfig",
+        fields: vec![def(
+            "require_acceptance_criteria",
+            Schema::Bool,
+            json!(false),
+        )],
+    }
+}
+
 fn retention() -> Model {
     Model {
         name: "RetentionConfig",
@@ -397,6 +408,7 @@ fn global() -> Model {
             def("jobs", model(jobs()), json!({})),
             def("stacks", model(stacks()), json!({})),
             def("verification", model(verification()), json!({})),
+            def("tasks", model(tasks()), json!({})),
             def("retention", model(retention()), json!({})),
             def("claude", model(claude_integration()), json!({})),
             def("automation", model(automation()), json!({})),
@@ -418,6 +430,7 @@ fn overrides() -> Model {
             def("jobs", section(), Value::Null),
             def("stacks", section(), Value::Null),
             def("verification", section(), Value::Null),
+            def("tasks", section(), Value::Null),
         ],
     }
 }

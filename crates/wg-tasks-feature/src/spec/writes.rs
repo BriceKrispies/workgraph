@@ -14,6 +14,7 @@ use wg_model::{Decision, Write};
 use wg_registry::resolve;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::archive::{ArchiveChange, archive_plan};
+use wg_tasks::create::refuse_without_criteria;
 use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
 use wg_tasks::edit::*;
 use wg_tasks::promote::{PromoteScope, promote_ready as promotable, promoted_by_project};
@@ -229,6 +230,7 @@ pub fn promote_ready(
     tags: &[String],
     project: Option<&str>,
     dry_run: bool,
+    require_criteria: bool,
 ) -> Result<Decision<Value>, WgError> {
     stamp.require(&[Permission::TaskWrite])?;
     let tasks = &world.tasks;
@@ -246,6 +248,10 @@ pub fn promote_ready(
             project: project_id,
         },
     );
+    // A promotion that would move a task with no acceptance criteria is refused, not partly applied.
+    for task in &moved {
+        refuse_without_criteria(!task.acceptance_criteria.is_empty(), require_criteria)?;
+    }
     let mut decision = Decision::new(());
     if !dry_run {
         let mut state = tasks.clone();

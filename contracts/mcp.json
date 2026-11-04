@@ -2301,7 +2301,7 @@
       }
     },
     {
-      "description": "Create a task. Repositories/projects/dependencies may be given by name or key.",
+      "description": "Create a task. Acceptance criteria are expected: a task created without them returns a warning field, or is refused when the workspace sets tasks.require_acceptance_criteria. Repositories/projects/dependencies may be given by name or key.",
       "input_schema": {
         "$defs": {
           "TaskFileIn": {

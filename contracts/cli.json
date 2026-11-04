@@ -6919,7 +6919,7 @@
         {
           "choices": null,
           "default": null,
-          "envvar": null,
+          "envvar": "WORKGRAPH_AGENT",
           "is_flag": false,
           "kind": "option",
           "multiple": false,
@@ -7032,6 +7032,20 @@
           "multiple": false,
           "opts": [
             "--attempt"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_AGENT",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--agent"
           ],
           "required": false,
           "secondary_opts": [],
@@ -8016,6 +8030,20 @@
         {
           "choices": null,
           "default": null,
+          "envvar": "WORKGRAPH_AGENT",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--agent"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
           "envvar": "WORKGRAPH_WORKSPACE",
           "is_flag": false,
           "kind": "option",
@@ -8370,6 +8398,20 @@
           "multiple": false,
           "opts": [
             "--attempt"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_AGENT",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--agent"
           ],
           "required": false,
           "secondary_opts": [],

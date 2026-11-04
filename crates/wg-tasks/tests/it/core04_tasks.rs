@@ -129,6 +129,55 @@ fn claims_are_exclusive_and_only_the_holder_releases() {
 }
 
 #[test]
+fn a_report_by_a_non_holder_is_refused_naming_the_holder_and_the_remedy() {
+    // The CLI's human claimed the task; an agent report (or completion) is refused, and the
+    // message names the holder and says how to claim and report as the same actor.
+    let claimed = holder(task("TAE", 1, TaskStatus::Claimed, None), HUMAN, 7200);
+    for refused in [
+        plan_report_result(&claimed, caller(AGENT_ONE), true, "done", false).err(),
+        plan_complete(&claimed, caller(AGENT_ONE), false).err(),
+    ] {
+        let Some(error) = refused else {
+            panic!("a non-holder report should be refused");
+        };
+        assert_eq!(error.code, ErrorCode::PermissionDenied);
+        assert!(
+            error.message.contains("claimed by human:brice"),
+            "{}",
+            error.message
+        );
+        assert!(
+            error.message.contains("--agent <name>"),
+            "{}",
+            error.message
+        );
+        assert!(
+            error.message.contains("WORKGRAPH_AGENT"),
+            "{}",
+            error.message
+        );
+        assert!(
+            error.message.contains("without --agent"),
+            "{}",
+            error.message
+        );
+    }
+    // The same actor that holds the claim reports successfully.
+    let by_agent = holder(task("TAF", 2, TaskStatus::Claimed, None), AGENT_ONE, 7200);
+    plan_report_result(&by_agent, caller(AGENT_ONE), true, "done", false)
+        .unwrap_or_else(|e| panic!("{e}"));
+    // Releasing names the same remedy.
+    let Err(released) = plan_release(&claimed, caller(AGENT_ONE), None) else {
+        panic!("a non-holder release should be refused");
+    };
+    assert!(
+        released.message.contains("--agent <name>"),
+        "{}",
+        released.message
+    );
+}
+
+#[test]
 fn the_holder_renews_its_lease_and_an_expired_claim_is_retaken() {
     let claimed = holder(task("TAA", 1, TaskStatus::Claimed, None), AGENT_ONE, 100);
     // Same claimant while the lease is live: renewal.

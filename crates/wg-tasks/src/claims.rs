@@ -175,6 +175,17 @@ pub struct ReleasePlan {
     pub event_reason: Option<String>,
 }
 
+/// The refusal of an actor that does not hold the claim. It names the holder and the remedy: the
+/// claim and the report must come from the same actor, which the CLI sets with `--agent <name>` or
+/// `WORKGRAPH_AGENT` on both commands; the holder itself may act without `--agent`.
+pub fn holder_refusal(key: &str, holder: &str, action: &str) -> WgError {
+    WgError::permission_denied(format!(
+        "task {key} is claimed by {holder}, so only that actor can {action} it. Claim and report as \
+         the same actor: give both commands the same --agent <name> (or set WORKGRAPH_AGENT), or run \
+         as {holder} without --agent"
+    ))
+}
+
 /// The release decision of `release`. Only the holder, or an admin, may release a claim.
 pub fn plan_release(
     task: &Task,
@@ -191,10 +202,7 @@ pub fn plan_release(
         && holder != caller.actor
         && !caller.is_admin
     {
-        return Err(WgError::permission_denied(format!(
-            "task {} is claimed by {holder}",
-            task.key
-        )));
+        return Err(holder_refusal(&task.key.to_string(), holder, "release"));
     }
     check_task_transition(task.status, TaskStatus::Ready, false, false)?;
     Ok(ReleasePlan {
@@ -250,10 +258,7 @@ pub fn plan_complete(
         && !caller.actor.starts_with(SYSTEM_ACTOR_PREFIX)
         && !caller.is_admin
     {
-        return Err(WgError::permission_denied(format!(
-            "task {} is claimed by {holder}",
-            task.key
-        )));
+        return Err(holder_refusal(&task.key.to_string(), holder, "report on"));
     }
     let target = if has_checks {
         TaskStatus::AwaitingVerification

@@ -190,7 +190,7 @@ fn fast_forward_lands_past_unrelated_untracked_files() -> TestResult {
 #[test]
 fn fast_forward_refuses_untracked_collision_and_names_the_path() {
     let colliding = with_collisions(check("a", true, Some(("/co", true))), &["src/new.rs"]);
-    let err = fast_forward_plan(&[colliding]).err().expect("refused");
+    let err = fast_forward_plan(&[colliding]).expect_err("refused");
     assert_eq!(err.code, ErrorCode::ValidationFailed);
     assert!(err.message.contains("src/new.rs"), "{}", err.message);
     assert!(
@@ -203,7 +203,7 @@ fn fast_forward_refuses_untracked_collision_and_names_the_path() {
 #[test]
 fn fast_forward_still_refuses_tracked_modifications_with_untracked_files() {
     let dirty = with_collisions(check("a", true, Some(("/co", false))), &[]);
-    let err = fast_forward_plan(&[dirty]).err().expect("refused");
+    let err = fast_forward_plan(&[dirty]).expect_err("refused");
     assert_eq!(err.code, ErrorCode::ValidationFailed);
     assert!(
         err.message.contains("uncommitted changes"),

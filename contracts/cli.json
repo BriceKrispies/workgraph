@@ -8985,6 +8985,21 @@
           "choices": null,
           "default": null,
           "envvar": null,
+          "help": "Category from the classifier taxonomy, such as bug_fix or feature. Refused if unknown.",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--category"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
           "help": "Tag to add. Repeat for several.",
           "is_flag": false,
           "kind": "option",

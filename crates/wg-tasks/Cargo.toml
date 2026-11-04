@@ -16,6 +16,7 @@ rpds = { version = "1", features = ["serde"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 time = { version = "0.3", default-features = false }
 wg-hash = { path = "../wg-hash" }
+wg-intel = { path = "../wg-intel" }
 wg-jobs = { path = "../wg-jobs" }
 wg-json = { path = "../wg-json" }
 wg-registry = { path = "../wg-registry" }

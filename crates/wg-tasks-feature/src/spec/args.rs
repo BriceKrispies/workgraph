@@ -299,6 +299,7 @@ pub fn update_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliF
     if let Some(project) = one(m, "--project") {
         body.insert("projects".to_owned(), project_refs(&project));
     }
+    put(&mut body, "category", one(m, "--category"));
     put_list(&mut body, "add_tags", tag_values(&many(m, "--add-tag")));
     put_list(
         &mut body,
@@ -506,4 +507,39 @@ pub fn accept_flags(m: &ArgMatches) -> (bool, String, bool) {
 #[must_use]
 pub fn reject_reason(m: &ArgMatches) -> String {
     one(m, "--reason").unwrap_or_default()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use wg_tasks::edit::{read_update, validate_update};
+
+    /// The `task update` body the CLI builds for `argv`, read from the contract's command tree.
+    fn update_body_for(argv: &[&str]) -> Json {
+        let matches = command()
+            .try_get_matches_from(argv)
+            .unwrap_or_else(|e| panic!("{e}"));
+        let m = matches
+            .subcommand_matches("update")
+            .unwrap_or_else(|| panic!("the update subcommand"));
+        update_body(m, &|_| Err("no file".to_owned())).unwrap_or_else(|_| panic!("a body"))
+    }
+
+    #[test]
+    fn cli_category_is_checked_against_the_taxonomy() {
+        let body = update_body_for(&["task", "update", "WG-1", "--category", "bug_fix"]);
+        assert_eq!(body["category"], json!("bug_fix"));
+        let given = body.as_object().unwrap_or_else(|| panic!("an object"));
+        let dump = validate_update(&body).unwrap_or_else(|e| panic!("{e}"));
+        let read = read_update(&dump, given).unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(read.category.as_deref(), Some("bug_fix"));
+
+        let bad = update_body_for(&["task", "update", "WG-1", "--category", "nonsense"]);
+        let given = bad.as_object().unwrap_or_else(|| panic!("an object"));
+        let dump = validate_update(&bad).unwrap_or_else(|e| panic!("{e}"));
+        let err = read_update(&dump, given)
+            .err()
+            .unwrap_or_else(|| panic!("a refusal"));
+        assert_eq!(err.message, "unknown category 'nonsense'");
+    }
 }

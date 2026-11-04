@@ -9,6 +9,7 @@ use crate::shape::task_out;
 use crate::transition::{Applied, Change, transition};
 use crate::update::{TaskPatch, update_plan};
 use serde_json::{Map, Value, Value as Json, json};
+use wg_intel::CATEGORIES;
 use wg_jobs::queue::{NewJob, enqueue};
 use wg_model::RowKey;
 use wg_model::entity::TaskProject;
@@ -24,13 +25,14 @@ use wg_types::pyval::flag;
 use wg_types::{Id, TaskPriority, TaskStatus};
 use wg_types::{Timestamp, WgError};
 
-pub const UPDATE_ORDER: [&str; 22] = [
+pub const UPDATE_ORDER: [&str; 23] = [
     "expected_version",
     "title",
     "description",
     "acceptance_criteria",
     "status",
     "priority",
+    "category",
     "tags",
     "add_tags",
     "remove_tags",
@@ -64,6 +66,8 @@ pub struct UpdateRead {
     pub acceptance_criteria: Option<Vec<String>>,
     pub status: Option<TaskStatus>,
     pub priority: Option<TaskPriority>,
+    /// A category from the classifier taxonomy (`wg_intel::CATEGORIES`), already checked.
+    pub category: Option<String>,
     pub tags: Option<Vec<String>>,
     pub add_tags: Vec<String>,
     pub remove_tags: Vec<String>,
@@ -105,6 +109,7 @@ pub fn read_update(
         acceptance_criteria: strings_of(dump, "acceptance_criteria"),
         status: string_of(dump, "status").and_then(|text| TaskStatus::parse(&text)),
         priority: string_of(dump, "priority").and_then(|text| TaskPriority::parse(&text)),
+        category: category_of(dump)?,
         tags: strings_of(dump, "tags"),
         add_tags: strings_of(dump, "add_tags").unwrap_or_default(),
         remove_tags: strings_of(dump, "remove_tags").unwrap_or_default(),
@@ -122,6 +127,22 @@ pub fn read_update(
         metadata: object_of(dump, "metadata"),
         reason: string_of(dump, "reason"),
     })
+}
+
+/// The `category` of a `TaskUpdate`, when the request names one. It must be one of the classifier
+/// taxonomy's categories; any other value is refused with the list of valid ones.
+fn category_of(dump: &Map<String, Value>) -> Result<Option<String>, WgError> {
+    let Some(category) = string_of(dump, "category") else {
+        return Ok(None);
+    };
+    if CATEGORIES.contains(&category.as_str()) {
+        Ok(Some(category))
+    } else {
+        Err(
+            WgError::validation(format!("unknown category '{category}'"))
+                .detail("categories", json!(CATEGORIES)),
+        )
+    }
 }
 
 pub fn time_of(dump: &Map<String, Value>, key: &str) -> Result<Option<Timestamp>, WgError> {
@@ -296,6 +317,7 @@ pub fn update_task(
         due_at: read.due_at,
         scheduled_at: read.scheduled_at,
         priority: read.priority,
+        category: read.category,
         estimated_effort: read.estimated_effort,
         metadata: read.metadata,
         tags: read.tags,

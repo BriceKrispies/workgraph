@@ -3076,6 +3076,7 @@ dependencies = [
  "time",
  "uuid",
  "wg-hash",
+ "wg-intel",
  "wg-jobs",
  "wg-json",
  "wg-model",

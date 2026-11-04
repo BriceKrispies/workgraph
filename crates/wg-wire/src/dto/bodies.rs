@@ -101,6 +101,7 @@ pub const TASK_UPDATE: Body = body(
         "projects",
         "parent",
         "clear_parent",
+        "category",
         "assignee",
         "assigned_agent",
         "auto_execute",

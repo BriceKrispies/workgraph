@@ -16,6 +16,7 @@ use wg_tasks::create::{
     Allocation, NO_CRITERIA_WARNING, NewTask, acceptance_warning, create_plan, criteria_required,
     refuse_without_criteria,
 };
+use wg_tasks::edit::{read_update, validate_update};
 use wg_tasks::promote::{PromoteScope, promote_ready};
 use wg_tasks::update::{TaskPatch, bulk_patch, update_plan};
 use wg_types::{Actor, ErrorCode, TaskPriority, TaskStatus};
@@ -347,4 +348,47 @@ fn criteria_setting_refuses_promoting_a_task_without_criteria() {
         .map(|task| refuse_without_criteria(!task.acceptance_criteria.is_empty(), true))
         .find(Result::is_err);
     assert!(matches!(refused, Some(Err(_))));
+}
+
+#[test]
+fn category_change_is_recorded_in_the_update_event() {
+    let slice = tasks_slice(
+        vec![task("WG", 1, TaskStatus::Backlog, None)],
+        vec![],
+        vec![],
+    );
+    let row = slice.task(id(1)).unwrap_or_else(|| panic!("task 1"));
+    let stamp = stamp_for("human:brice");
+    let patch = TaskPatch {
+        category: Some("bug_fix".to_owned()),
+        ..empty_patch()
+    };
+    let plan = update_plan(&stamp, &slice, row, &patch).unwrap_or_else(|e| panic!("{e}"));
+    assert_eq!(plan.task.category.as_deref(), Some("bug_fix"));
+    assert_eq!(plan.task.version, row.version + 1);
+    let change = plan
+        .changes
+        .0
+        .iter()
+        .find(|change| change.field == "category")
+        .unwrap_or_else(|| panic!("a category change"));
+    assert_eq!(change.before, json!(null));
+    assert_eq!(change.after, json!("bug_fix"));
+
+    // Setting the same category again records nothing.
+    let again = update_plan(&stamp, &slice, &plan.task, &patch).unwrap_or_else(|e| panic!("{e}"));
+    assert!(again.event.is_none());
+}
+
+#[test]
+fn unknown_category_is_refused_on_the_update_request() {
+    let body = json!({"category": "nonsense"});
+    let dump = validate_update(&body).unwrap_or_else(|e| panic!("{e}"));
+    let given = body.as_object().unwrap_or_else(|| panic!("an object"));
+    let err = read_update(&dump, given)
+        .err()
+        .unwrap_or_else(|| panic!("a refusal"));
+    assert_eq!(err.code, ErrorCode::ValidationFailed);
+    assert_eq!(err.message, "unknown category 'nonsense'");
+    assert!(err.details.contains_key("categories"));
 }

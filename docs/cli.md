@@ -198,6 +198,7 @@ workgraph task update WG-12 --status blocked --reason "waiting for infra" --expe
 workgraph task create "Add token expiry" --file src/auth/token.rs:refresh --file docs/auth.md
 workgraph task update WG-12 --add-file src/auth/session.rs --expected-version 5
 workgraph task update WG-12 --add-criterion "no token leaks in logs"
+workgraph task update WG-12 --category bug_fix
 workgraph task list --file src/auth/token.rs
 workgraph task depend WG-13 WG-12
 workgraph task promote-ready --tag sprint-42 --dry-run

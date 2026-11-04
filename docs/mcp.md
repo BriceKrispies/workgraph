@@ -66,6 +66,12 @@ and checked with the same rules as `task_create`: a nonexistent or other-workspa
 parent that would close a cycle in the parent chain is refused with `dependency_cycle`, naming the task and
 the parent that would close the loop. The change is recorded in the task's history as a `parent_id` change.
 
+`task_update` takes `category` to set a task's category. It must be one of the classifier taxonomy's
+categories (`bug_fix`, `feature`, `refactor`, `maintenance`, `infrastructure`, `performance`, `security`,
+`testing`, `documentation`, `research`, `architecture`, `other`); any other value is refused with a validation
+error that lists them. The CLI spelling is `workgraph task update REF --category CATEGORY`. The change is
+recorded in the task's history as a `task.updated` change `category: [old, new]`.
+
 `experiment_next` creates the next planned trial of an experiment, so it needs the `experiment:write` permission
 (`workgraph mcp --grant experiment:write`), like `trial_classify`.
 

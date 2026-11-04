@@ -3965,6 +3965,18 @@
             ],
             "title": "Auto Execute"
           },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Sets the task's category; it must be one of the classifier's categories",
+            "title": "Category"
+          },
           "clear_parent": {
             "default": false,
             "title": "Clear Parent",

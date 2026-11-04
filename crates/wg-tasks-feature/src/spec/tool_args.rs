@@ -110,6 +110,7 @@ pub fn update_body(arguments: &Value) -> Value {
             "description",
             "status",
             "priority",
+            "category",
             "add_tags",
             "remove_tags",
             "acceptance_criteria",
@@ -250,6 +251,7 @@ pub fn promote_scope(arguments: &Value) -> Result<PromoteScope, WgError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use wg_tasks::edit::{read_update, validate_update};
 
     #[test]
     fn create_defaults_to_backlog_and_empty_lists() {
@@ -260,6 +262,24 @@ mod tests {
         assert_eq!(body["status"], json!("backlog"));
         assert_eq!(body["tags"], json!([]));
         assert_eq!(body["parent"], Value::Null);
+    }
+
+    #[test]
+    fn mcp_category_is_checked_against_the_taxonomy() {
+        let body = update_body(&json!({"task": "WG-1", "category": "bug_fix"}));
+        assert_eq!(body, json!({"category": "bug_fix"}));
+        let given = body.as_object().unwrap_or_else(|| panic!("an object"));
+        let dump = validate_update(&body).unwrap_or_else(|e| panic!("{e}"));
+        let read = read_update(&dump, given).unwrap_or_else(|e| panic!("{e}"));
+        assert_eq!(read.category.as_deref(), Some("bug_fix"));
+
+        let bad = update_body(&json!({"task": "WG-1", "category": "nonsense"}));
+        let given = bad.as_object().unwrap_or_else(|| panic!("an object"));
+        let dump = validate_update(&bad).unwrap_or_else(|e| panic!("{e}"));
+        let err = read_update(&dump, given)
+            .err()
+            .unwrap_or_else(|| panic!("a refusal"));
+        assert_eq!(err.message, "unknown category 'nonsense'");
     }
 
     #[test]

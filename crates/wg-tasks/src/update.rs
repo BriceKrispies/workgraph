@@ -33,6 +33,8 @@ pub struct TaskPatch {
     pub due_at: Option<Option<Timestamp>>,
     pub scheduled_at: Option<Option<Timestamp>>,
     pub priority: Option<TaskPriority>,
+    /// A category from the classifier taxonomy; the caller has checked it.
+    pub category: Option<String>,
     pub estimated_effort: Option<JsonObject>,
     /// Merged over the stored metadata: keys given replace, other keys stay.
     pub metadata: Option<JsonObject>,
@@ -100,6 +102,7 @@ pub fn update_plan(
     let due_at = pick(&patch.due_at, &task.due_at);
     let scheduled_at = pick(&patch.scheduled_at, &task.scheduled_at);
     let priority = pick(&patch.priority, &task.priority);
+    let category = patch.category.clone().or_else(|| task.category.clone());
     let estimated_effort = patch
         .estimated_effort
         .clone()
@@ -206,6 +209,7 @@ pub fn update_plan(
             timestamp_json,
         ),
         diff("priority", &task.priority, &priority, priority_json),
+        diff("category", &task.category, &category, opt_text),
         diff(
             "estimated_effort",
             &task.estimated_effort,
@@ -269,6 +273,7 @@ pub fn update_plan(
         due_at,
         scheduled_at,
         priority,
+        category,
         estimated_effort,
         metadata,
         parent_id,

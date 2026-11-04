@@ -89,6 +89,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -189,6 +192,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -290,6 +296,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -391,6 +400,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -491,6 +503,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -592,6 +607,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -693,6 +711,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {
@@ -843,6 +864,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "files": {

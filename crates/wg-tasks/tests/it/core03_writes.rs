@@ -5,12 +5,18 @@ use crate::common;
 
 use common::{id, stamp, task, tasks_slice};
 use rpds::VectorSync;
+use serde_json::json;
 use wg_model::entity::ExternalItem;
+use wg_model::slice::StackSlice;
 use wg_model::stamp::Stamp;
 use wg_model::{Row, TaskSlice, Write};
 use wg_tasks::archive::{ArchiveChange, archive_plan};
 use wg_tasks::bulk::bulk_results;
-use wg_tasks::create::{Allocation, NewTask, create_plan};
+use wg_tasks::create::{
+    Allocation, NO_CRITERIA_WARNING, NewTask, acceptance_warning, create_plan, criteria_required,
+    refuse_without_criteria,
+};
+use wg_tasks::promote::{PromoteScope, promote_ready};
 use wg_tasks::update::{TaskPatch, bulk_patch, update_plan};
 use wg_types::{Actor, ErrorCode, TaskPriority, TaskStatus};
 
@@ -291,4 +297,54 @@ fn only_the_sync_may_name_a_task_with_a_tracker_key() {
     let plan = create_plan(&stamp_for("system:tracker-sync"), allocation, new)
         .unwrap_or_else(|e| panic!("{e}"));
     assert_eq!(plan.task.key.to_string(), "ABC-9");
+}
+
+#[test]
+fn criteria_warning_is_given_for_a_task_without_criteria() {
+    assert_eq!(acceptance_warning(false), Some(NO_CRITERIA_WARNING));
+    assert_eq!(acceptance_warning(true), None);
+    assert!(refuse_without_criteria(false, false).is_ok());
+    let off = json!({"tasks": {"require_acceptance_criteria": false}});
+    assert!(!criteria_required(
+        off.as_object().unwrap_or(&serde_json::Map::new())
+    ));
+    assert!(!criteria_required(&serde_json::Map::new()));
+}
+
+#[test]
+fn criteria_setting_refuses_a_create_without_criteria() {
+    let on = json!({"tasks": {"require_acceptance_criteria": true}});
+    assert!(criteria_required(
+        on.as_object().unwrap_or(&serde_json::Map::new())
+    ));
+    let err = refuse_without_criteria(false, true).err();
+    assert_eq!(
+        err.as_ref().map(|e| e.code),
+        Some(ErrorCode::ValidationFailed)
+    );
+    assert_eq!(
+        err.and_then(|e| e.details.get("reason").cloned()),
+        Some(json!("acceptance_criteria_required"))
+    );
+    assert!(refuse_without_criteria(true, true).is_ok());
+}
+
+#[test]
+fn criteria_setting_refuses_promoting_a_task_without_criteria() {
+    let slice = tasks_slice(
+        vec![task("WG", 1, TaskStatus::Backlog, None)],
+        vec![],
+        vec![],
+    );
+    let scope = PromoteScope {
+        tags: &[],
+        project: None,
+    };
+    let moved = promote_ready(&slice, &StackSlice::default(), common::workspace(), scope);
+    assert_eq!(moved.len(), 1);
+    let refused = moved
+        .iter()
+        .map(|task| refuse_without_criteria(!task.acceptance_criteria.is_empty(), true))
+        .find(Result::is_err);
+    assert!(matches!(refused, Some(Err(_))));
 }

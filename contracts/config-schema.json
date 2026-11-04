@@ -697,6 +697,18 @@
       "title": "StacksConfig",
       "type": "object"
     },
+    "TasksConfig": {
+      "additionalProperties": false,
+      "properties": {
+        "require_acceptance_criteria": {
+          "default": false,
+          "title": "Require Acceptance Criteria",
+          "type": "boolean"
+        }
+      },
+      "title": "TasksConfig",
+      "type": "object"
+    },
     "VerificationConfig": {
       "additionalProperties": false,
       "properties": {
@@ -855,6 +867,12 @@
       "$ref": "#/$defs/StacksConfig",
       "default": {
         "auto_accept": true
+      }
+    },
+    "tasks": {
+      "$ref": "#/$defs/TasksConfig",
+      "default": {
+        "require_acceptance_criteria": false
       }
     },
     "trackers": {

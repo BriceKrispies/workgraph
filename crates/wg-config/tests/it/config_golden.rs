@@ -324,13 +324,14 @@ fn table_keys_match_golden() -> TestResult {
 
 #[test]
 fn key_table_covers_contract_section_13_5() -> TestResult {
-    // Section 13.5 has 41 rows: 38 leaf keys and 3 named-table families.
+    // Section 13.5 has 41 rows: 38 leaf keys and 3 named-table families. The 42nd row is
+    // tasks.require_acceptance_criteria, which the Rust port adds on top of the contract.
     let keys = golden("keys")?;
     let rows = keys.as_array().ok_or("keys.json is not an array")?;
     assert_eq!(
         rows.len(),
-        41,
-        "one golden row per row of contract section 13.5"
+        42,
+        "one golden row per row of contract section 13.5, plus tasks.require_acceptance_criteria"
     );
     Ok(())
 }

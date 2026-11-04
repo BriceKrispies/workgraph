@@ -217,6 +217,37 @@ pub fn create_plan(
     })
 }
 
+/// The warning a task created with no acceptance criteria carries.
+pub const NO_CRITERIA_WARNING: &str = "task has no acceptance criteria; acceptance criteria are expected (acceptance_criteria, or --criterion in the CLI)";
+
+/// Whether the workspace requires acceptance criteria (`tasks.require_acceptance_criteria`).
+#[must_use]
+pub fn criteria_required(config: &serde_json::Map<String, serde_json::Value>) -> bool {
+    config
+        .get("tasks")
+        .and_then(|tasks| tasks.get("require_acceptance_criteria"))
+        .and_then(serde_json::Value::as_bool)
+        .unwrap_or(false)
+}
+
+/// The warning for a task with no acceptance criteria, `None` when it has some.
+#[must_use]
+pub fn acceptance_warning(has_criteria: bool) -> Option<&'static str> {
+    (!has_criteria).then_some(NO_CRITERIA_WARNING)
+}
+
+/// Refuses a task with no acceptance criteria when the workspace requires them. Applies to a
+/// create and to every move of a task to ready.
+pub fn refuse_without_criteria(has_criteria: bool, required: bool) -> Result<(), WgError> {
+    if has_criteria || !required {
+        return Ok(());
+    }
+    Err(WgError::validation(
+        "acceptance criteria are required: this workspace sets tasks.require_acceptance_criteria",
+    )
+    .detail("reason", "acceptance_criteria_required"))
+}
+
 /// The values in first-seen order without repeats (`dict.fromkeys`).
 fn dedup<T: Clone + PartialEq>(values: &[T]) -> Vec<T> {
     values

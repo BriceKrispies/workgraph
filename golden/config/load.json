@@ -90,6 +90,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "empty_file",
@@ -187,6 +190,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "current_defaults_only",
@@ -347,6 +353,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "v1_agents_enabled_true",
@@ -444,6 +453,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "v1_agents_enabled_false_with_agent",
@@ -541,6 +553,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "v1_without_agents_table",
@@ -638,6 +653,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "v1_with_server_section",
@@ -840,6 +858,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "schema_version_3_accepted",
@@ -939,6 +960,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "json_style_list_in_toml",
@@ -1059,6 +1083,9 @@
       },
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "tracker_jira_valid",
@@ -1174,6 +1201,9 @@
       "trackers": {},
       "verification": {
         "auto_accept": true
+      },
+      "tasks": {
+        "require_acceptance_criteria": false
       }
     },
     "name": "execution_block_valid",

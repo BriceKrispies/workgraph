@@ -30,6 +30,7 @@ use wg_runtime::spec::RequestContext;
 use wg_runtime::{App, index_written};
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
+use wg_tasks::create::{acceptance_warning, criteria_required, refuse_without_criteria};
 use wg_tasks::edit::{self, read_update, validate_update};
 use wg_tasks::shape::{bulk_result_out, key_of};
 use wg_types::{Id, Permission, WgError, parse_id};
@@ -44,7 +45,10 @@ pub fn task_create(
     let read = read_create(&validate_create(body)?)?;
     let enrich = edit::enrichment_from(&app.config()?);
     let scope = app.workspace_or_default(workspace)?;
-    Ok(app
+    let has_criteria = !read.acceptance_criteria.is_empty();
+    let required = !has_criteria && criteria_required_in(app, scope)?;
+    refuse_without_criteria(has_criteria, required)?;
+    let reply = app
         .runtime
         .decide_then(
             context,
@@ -52,7 +56,42 @@ pub fn task_create(
             |world: &TaskWorld, stamp| writes::create_task(world, stamp, scope, read, enrich),
             index_written,
         )?
-        .reply)
+        .reply;
+    Ok(match acceptance_warning(has_criteria) {
+        Some(warning) => with_warning(reply, warning),
+        None => reply,
+    })
+}
+
+/// Whether the workspace's configuration requires acceptance criteria.
+fn criteria_required_in(app: &mut App, workspace: Id) -> Result<bool, WgError> {
+    let slug = app.workspace_slug(&workspace.to_string())?;
+    Ok(criteria_required(&app.effective_config(Some(&slug))?))
+}
+
+/// Adds the `warning` member to a created task's reply.
+fn with_warning(reply: Value, warning: &str) -> Value {
+    match reply {
+        Value::Dict(mut entries) => {
+            entries.push((
+                wg_json::PyStr::from("warning"),
+                Value::Str(wg_json::PyStr::from(warning)),
+            ));
+            Value::Dict(entries)
+        }
+        other => other,
+    }
+}
+
+/// The `warning` a `task_create` reply carries, if any.
+pub fn create_warning(reply: &Value) -> Option<String> {
+    let Value::Dict(entries) = reply else {
+        return None;
+    };
+    entries.iter().find_map(|(key, value)| match value {
+        Value::Str(text) if *key == wg_json::PyStr::from("warning") => text.to_text(),
+        _ => None,
+    })
 }
 
 /// `TaskService.update`.
@@ -80,6 +119,22 @@ fn update_checked(
 ) -> Result<Value, WgError> {
     let read = read_update(dump, given)?;
     let scope = app.workspace_or_all(workspace)?;
+    // A move to ready of a task with no acceptance criteria is refused when the workspace requires them.
+    if dump.get("status").and_then(Json::as_str) == Some("ready") {
+        let target = app.runtime.query(
+            |session| session.task_world(scope, &[]),
+            |world| {
+                Ok(resolve::task(&world.tasks, scope, reference)
+                    .ok()
+                    .map(|task| (task.workspace_id, !task.acceptance_criteria.is_empty())))
+            },
+        )?;
+        if let Some((owner, has_criteria)) = target
+            && !has_criteria
+        {
+            refuse_without_criteria(false, criteria_required_in(app, owner)?)?;
+        }
+    }
     Ok(app
         .runtime
         .decide_then(
@@ -309,12 +364,13 @@ pub fn task_promote_ready(
     dry_run: bool,
 ) -> Result<Value, WgError> {
     let scope = app.workspace_or_default(workspace)?;
+    let required = criteria_required_in(app, scope)?;
     if dry_run {
         let stamp = app.runtime.stamps.stamp(context)?;
         return app.runtime.query(
             |session| session.task_world(Some(scope), &[]),
             |world| {
-                writes::promote_ready(world, &stamp, scope, tags, project, true)
+                writes::promote_ready(world, &stamp, scope, tags, project, true, required)
                     .map(|decision| decision.reply)
             },
         );
@@ -325,7 +381,7 @@ pub fn task_promote_ready(
             context,
             |session| session.task_world(Some(scope), &[]),
             |world: &TaskWorld, stamp| {
-                writes::promote_ready(world, stamp, scope, tags, project, false)
+                writes::promote_ready(world, stamp, scope, tags, project, false, required)
             },
             index_written,
         )?

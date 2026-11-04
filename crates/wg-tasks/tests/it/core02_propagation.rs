@@ -361,6 +361,7 @@ fn acceptance_needs_every_direct_dependency_accepted() {
         .iter()
         .map(|t| t.key.to_string())
         .collect();
-    assert_eq!(keys, ["TAA-2", "TAA-3", "TAA-4"]);
+    // A cancelled dependency (TAA-4) never blocks acceptance.
+    assert_eq!(keys, ["TAA-2", "TAA-3"]);
     assert!(unaccepted_dependencies(&tasks, id(1)).is_empty());
 }

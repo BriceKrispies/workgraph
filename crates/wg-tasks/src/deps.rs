@@ -150,14 +150,16 @@ pub fn unsatisfied_dependencies_in<'a>(
         .collect()
 }
 
-/// The direct dependencies of `task_id` that are not accepted yet, by task number: the
-/// acceptance gate (`unaccepted_dependencies`). Only an accepted task counts: no
-/// cancelled or stack-sibling exception applies.
+/// The direct dependencies of `task_id` that block its acceptance, by task number: the acceptance
+/// gate (`unaccepted_dependencies`). A dependency blocks until it is accepted, except a cancelled
+/// one: cancelled work is never accepted, so waiting on it would block the dependent forever, and
+/// scheduling already treats it as satisfied ([`DEPENDENCY_SATISFIED_STATUSES`]). No stack-sibling
+/// exception applies.
 pub fn unaccepted_dependencies(tasks: &TaskSlice, task_id: Id) -> Vec<&Task> {
     dependency_ids(tasks, task_id)
         .into_iter()
         .filter_map(|dep| tasks.task(dep))
-        .filter(|task| task.status != TaskStatus::Accepted)
+        .filter(|task| !matches!(task.status, TaskStatus::Accepted | TaskStatus::Cancelled))
         .map(|task| (task.number, task))
         .collect::<BTreeMap<_, _>>()
         .into_values()

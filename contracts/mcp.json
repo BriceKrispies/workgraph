@@ -2198,6 +2198,77 @@
       }
     },
     {
+      "description": "Record a backlog, blocked or ready task as already delivered: an acceptance with the evidence as its reason, and the caller as its actor. Needs task.accept. It drops only the dependency edges named in drop_dependencies; any other unaccepted dependency refuses it.",
+      "input_schema": {
+        "properties": {
+          "commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Commit SHA the work is in, recorded on the status change",
+            "title": "Commit"
+          },
+          "drop_dependencies": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Task UUIDs or keys of the dependencies whose edges are dropped",
+            "title": "Drop Dependencies"
+          },
+          "reason": {
+            "description": "Evidence that the work was delivered (required, not blank)",
+            "title": "Reason",
+            "type": "string"
+          },
+          "task": {
+            "description": "Task UUID or key, e.g. WG-12",
+            "title": "Task",
+            "type": "string"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "reason",
+          "task"
+        ],
+        "title": "task_close_deliveredArguments",
+        "type": "object"
+      },
+      "name": "task_close_delivered",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_close_deliveredDictOutput",
+        "type": "object"
+      }
+    },
+    {
       "description": "Report completion. The task moves to awaiting verification/review, never to accepted.",
       "input_schema": {
         "properties": {

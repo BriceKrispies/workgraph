@@ -103,7 +103,7 @@ fn exit_and_interrupt_print_nothing() {
 fn snapshot_parses_the_contract_file() {
     let text = include_str!("../../../../contracts/cli.json");
     let snapshot = Snapshot::parse(text).expect("parses");
-    assert_eq!(snapshot.commands.len(), 198);
+    assert_eq!(snapshot.commands.len(), 199);
     assert_eq!(snapshot.top_level.len(), 32);
     assert_eq!(snapshot.root_options.len(), 2);
     let list = snapshot

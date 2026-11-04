@@ -6,6 +6,7 @@ mod core03_writes;
 mod core04_tasks;
 mod core05_rename;
 mod core05_triage;
+mod core06_close_delivered;
 mod duplicates;
 mod gv01_lifecycle;
 mod gv19_order;

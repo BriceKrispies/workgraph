@@ -189,6 +189,13 @@
    "reason",
    "workspace"
   ],
+  "task_close_delivered": [
+   "task",
+   "reason",
+   "commit",
+   "drop_dependencies",
+   "workspace"
+  ],
   "task_complete": [
    "task",
    "summary",

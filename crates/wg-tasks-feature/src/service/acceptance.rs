@@ -4,8 +4,8 @@
 //! a stack is run by the stacks feature (`wg_stacks_feature::service::exec`).
 
 use crate::spec::acceptance::{
-    AcceptWorld, Route, accept_task, acceptances_out, item_stack_id, land_request_of,
-    promote_dependents, reject_task, with_promoted,
+    AcceptWorld, Route, accept_task, acceptances_out, close_delivered, delivered_read,
+    item_stack_id, land_request_of, promote_dependents, reject_task, with_promoted,
 };
 use wg_json::Value;
 use wg_model::entity::AgentAttempt;
@@ -140,6 +140,30 @@ pub fn task_reject(
             context,
             |session| session.task_world(scope, &[]),
             |world: &TaskWorld, stamp| reject_task(world, stamp, scope, reference, reason),
+            index_written,
+        )?
+        .reply)
+}
+
+/// `task close-delivered` and `task_close_delivered`: records the task as already delivered, an
+/// acceptance with the evidence as its reason. `body` holds `reason`, `commit` and
+/// `drop_dependencies`; the reply is the acceptance, as `accept` returns it.
+pub fn task_close_delivered(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    reference: &str,
+    body: &serde_json::Value,
+) -> Result<Value, WgError> {
+    let read = delivered_read(body)?;
+    app.require_permission(context, Permission::TaskAccept)?;
+    let scope = app.workspace_or_all(workspace)?;
+    Ok(app
+        .runtime
+        .decide_then(
+            context,
+            |session| session.task_world(scope, &[]),
+            |world: &TaskWorld, stamp| close_delivered(world, stamp, scope, reference, &read),
             index_written,
         )?
         .reply)

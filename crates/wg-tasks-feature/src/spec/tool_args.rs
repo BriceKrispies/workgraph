@@ -59,6 +59,15 @@ fn picked(arguments: &Value, keys: &[&str]) -> Value {
     )
 }
 
+/// The body of `task_close_delivered`, which `task close-delivered` reads too.
+pub fn delivered_body(arguments: &Value) -> Value {
+    json!({
+        "reason": text(arguments, "reason"),
+        "commit": given(arguments, "commit"),
+        "drop_dependencies": list(arguments, "drop_dependencies"),
+    })
+}
+
 /// The `TaskCreate` body of `task_create`: `ready` chooses the status, and the lists default to
 /// empty (`acceptance_criteria or []` and so on).
 pub fn create_body(arguments: &Value) -> Value {

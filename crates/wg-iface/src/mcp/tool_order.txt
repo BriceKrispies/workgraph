@@ -32,6 +32,7 @@ task_update
 task_claim
 task_release
 task_complete
+task_close_delivered
 task_get_ready
 task_promote_ready
 task_import_breakdown

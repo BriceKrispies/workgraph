@@ -1094,6 +1094,7 @@ impl Page {
                 tracker: true,
                 claimable: false,
                 landed: false,
+                delivered: false,
                 caused_by: accepted,
                 attempt_id: None,
                 run_id: None,

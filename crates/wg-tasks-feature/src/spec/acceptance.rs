@@ -161,6 +161,84 @@ pub fn item_stack_id(stacks: &StackSlice, task: Id) -> Option<Id> {
     active_item(stacks, task).map(|(stack, _)| stack.id)
 }
 
+/// The body of `task close-delivered` (and of the `task_close_delivered` tool): the evidence, the
+/// commit, and the references of the dependencies to drop.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct DeliveredRead {
+    pub reason: String,
+    pub commit: Option<String>,
+    pub drop: Vec<String>,
+}
+
+/// Reads a `DeliveredRead` from its body: `reason`, `commit` (absent or empty when not given) and
+/// `drop_dependencies` (a list of task references, absent or `null` for none).
+pub fn delivered_read(body: &Json) -> Result<DeliveredRead, WgError> {
+    let drop = match body.get("drop_dependencies") {
+        None | Some(Json::Null) => Vec::new(),
+        Some(Json::Array(items)) => items
+            .iter()
+            .map(|item| {
+                item.as_str().map(str::to_owned).ok_or_else(|| {
+                    WgError::validation("drop_dependencies must hold task references")
+                })
+            })
+            .collect::<Result<Vec<_>, _>>()?,
+        Some(_) => return Err(WgError::validation("drop_dependencies must be a list")),
+    };
+    Ok(DeliveredRead {
+        reason: pyval::text(body.get("reason")).to_owned(),
+        commit: body
+            .get("commit")
+            .and_then(Json::as_str)
+            .filter(|sha| !sha.is_empty())
+            .map(str::to_owned),
+        drop,
+    })
+}
+
+/// `task close-delivered`: the decision that records a backlog, blocked or ready task as already
+/// delivered. Needs `task.accept`, as an acceptance does. Refuses the parent or an item of an
+/// active stack (its stack lands it) and tracker-synced tasks (the tracker closes those). The
+/// lifecycle and the dependency rules are in `wg_tasks::accept::deliver_task`.
+pub fn close_delivered(
+    world: &TaskWorld,
+    stamp: &Stamp,
+    workspace: Option<Id>,
+    reference: &str,
+    read: &DeliveredRead,
+) -> Result<Decision<Value>, WgError> {
+    stamp.require(&[Permission::TaskAccept])?;
+    let tasks = &world.tasks;
+    let task = resolve::task(tasks, workspace, reference)?;
+    if let Some(item) = tasks.external_item_of(task.id) {
+        return Err(WgError::permission_denied(format!(
+            "{} is tracked by {}; the tracker closes it when {} reaches done",
+            task.key, item.connection, item.external_key
+        ))
+        .detail("connection", item.connection.as_str())
+        .detail("external_key", item.external_key.as_str()));
+    }
+    if world.stacks.active_stack_of_parent(task.id).is_some()
+        || active_item(&world.stacks, task.id).is_some()
+    {
+        return Err(WgError::invalid_transition(format!(
+            "{} is part of an active stack; its stack lands it",
+            task.key
+        )));
+    }
+    let mut drop = Vec::with_capacity(read.drop.len());
+    for dependency in &read.drop {
+        drop.push(resolve::task(tasks, Some(task.workspace_id), dependency)?.id);
+    }
+    let close = DeliveredClose {
+        reason: read.reason.clone(),
+        commit: read.commit.clone(),
+        drop,
+    };
+    let (decision, acceptance) = deliver_task(tasks, &world.stacks, stamp, task.id, &close)?;
+    Ok(decision.with_reply(acceptance_from_model(&acceptance)))
+}
+
 /// `VerificationService.reject`: the task goes back to `ready`, with a recorded decision.
 pub fn reject_task(
     world: &TaskWorld,

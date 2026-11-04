@@ -12,18 +12,22 @@
 use std::collections::BTreeMap;
 
 use serde_json::Map;
-use wg_model::entity::TaskComment;
-use wg_model::event::TaskCommentRecorded;
+use wg_model::entity::{JsonObject, TaskComment};
+use wg_model::event::{TaskCommentRecorded, TaskDependencyChanged};
 use wg_model::stamp::{IdSeq, derive_id};
 use wg_types::CommentKind;
 
 use crate::comments::excerpt;
+use crate::deps::unaccepted_dependencies;
+use crate::lifecycle::check_delivered_close;
+use crate::ownership::SYNC_ACTOR;
+use crate::transition::Change;
 
 /// The attempts of a task, by task id, as the landing reads them.
 pub type Attempts = BTreeMap<Id, AgentAttempt>;
 
 use crate::promote::dependents;
-use crate::transition::{Applied, Change, refresh_one, transition};
+use crate::transition::{Applied, refresh_one, transition};
 use serde_json::{Value as Json, json};
 use wg_jobs::queue::{NewJob, enqueue};
 use wg_model::entity::{
@@ -34,7 +38,7 @@ use wg_model::event::{
 };
 use wg_model::slice::{QueueSlice, StackSlice};
 use wg_model::stamp::Stamp;
-use wg_model::{Decision, RowKey, Write};
+use wg_model::{Decision, RowKey, TaskSlice, Write};
 use wg_rows::task_world_sql::TaskWorld;
 use wg_types::{Id, StackItemState, StackStatus, TaskKey, TaskStatus, WgError};
 
@@ -226,6 +230,182 @@ pub fn accept_in(
         tasks: moved.tasks,
     };
     Ok((run.advanced(applied), acceptance))
+}
+
+/// The mode a delivered close records on its acceptance (`task close-delivered`).
+pub const DELIVERED_MODE: &str = "delivered";
+
+/// What a delivered close records besides the task itself.
+#[derive(Debug, Clone, Default)]
+pub struct DeliveredClose {
+    /// The evidence that the work was delivered. Required, and not blank.
+    pub reason: String,
+    /// The commit the work is in, a hexadecimal SHA. Recorded on the status change.
+    pub commit: Option<String>,
+    /// The direct dependencies whose edges the caller drops. Every other unaccepted dependency
+    /// still refuses the close.
+    pub drop: Vec<Id>,
+}
+
+/// Whether `sha` reads as a commit id: 4 to 64 hexadecimal digits.
+pub fn is_commit_sha(sha: &str) -> bool {
+    (4..=64).contains(&sha.len()) && sha.chars().all(|c| c.is_ascii_hexdigit())
+}
+
+/// The key of task `id` for a message, or its id when the slice does not hold it.
+fn key_or_id(tasks: &TaskSlice, id: Id) -> String {
+    tasks
+        .task(id)
+        .map_or_else(|| id.to_string(), |found| found.key.to_string())
+}
+
+/// `task close-delivered`: records a backlog, blocked or ready task as already delivered, the way
+/// `_accept` records a finished one, with the evidence as its reason and the caller as its actor.
+/// The named dependency edges are dropped first, each with its `task.dependency_removed` event; a
+/// tracker-made edge is dropped only by the tracker, as `remove_dependency` allows. Any unaccepted
+/// dependency that remains refuses the close. A cancelled dependency never blocks. The task then
+/// moves to `accepted` through the delivered path of the lifecycle, which refreshes its dependents.
+/// Returns the writes and the acceptance row.
+pub fn deliver_task(
+    tasks: &TaskSlice,
+    stacks: &StackSlice,
+    stamp: &Stamp,
+    task_id: Id,
+    close: &DeliveredClose,
+) -> Result<(Decision<()>, TaskAcceptance), WgError> {
+    let task = tasks.task(task_id).ok_or_else(|| gone(task_id))?;
+    let reason = close.reason.trim();
+    if reason.is_empty() {
+        return Err(WgError::validation(
+            "closing a task as delivered requires an evidence reason",
+        ));
+    }
+    if close
+        .commit
+        .as_deref()
+        .is_some_and(|sha| !is_commit_sha(sha))
+    {
+        return Err(WgError::validation(
+            "commit must be a hexadecimal SHA of 4 to 64 digits",
+        ));
+    }
+    check_delivered_close(task.status, TaskStatus::Accepted)?;
+
+    let mut drops = close.drop.clone();
+    drops.sort();
+    drops.dedup();
+    let mut applied = Applied {
+        decision: Decision::new(()),
+        ids: stamp.ids(),
+        tasks: tasks.clone(),
+    };
+    for dep in drops {
+        let (edge_id, edge_owner) = applied
+            .tasks
+            .dependencies_of(task_id)
+            .find(|row| row.depends_on_id == dep)
+            .map(|row| (row.id, row.created_by.clone()))
+            .ok_or_else(|| {
+                WgError::validation(format!(
+                    "{} is not a dependency of {}",
+                    key_or_id(tasks, dep),
+                    task.key
+                ))
+            })?;
+        if edge_owner == SYNC_ACTOR && stamp.actor.to_string() != SYNC_ACTOR {
+            return Err(WgError::permission_denied(format!(
+                "the dependency of {} on {} comes from the tracker; remove it there",
+                task.key,
+                key_or_id(tasks, dep)
+            )));
+        }
+        let depends_on_key = applied
+            .tasks
+            .task(dep)
+            .ok_or_else(|| gone(dep))?
+            .key
+            .clone();
+        let (event_id, ids) = applied.ids.next();
+        let step = Decision::new(())
+            .write(Write::delete(RowKey::TaskDependency(edge_id)))
+            .event(EventDraft::new(
+                stamp,
+                event_id,
+                Some(task.workspace_id),
+                task_id,
+                EventPayload::TaskDependencyRemoved(TaskDependencyChanged {
+                    depends_on: dep,
+                    depends_on_key,
+                }),
+            ));
+        applied = Applied {
+            tasks: applied.tasks.apply_all(step.writes.iter()),
+            decision: applied.decision.then(step),
+            ids,
+        };
+    }
+
+    let blockers = unaccepted_dependencies(&applied.tasks, task_id);
+    if !blockers.is_empty() {
+        let keys: Vec<String> = blockers.iter().map(|found| found.key.to_string()).collect();
+        return Err(WgError::conflict(format!(
+            "{} cannot be closed as delivered until its dependencies are accepted: {}; name them to drop their edges",
+            task.key,
+            keys.join(", ")
+        ))
+        .detail("blocked_by", keys));
+    }
+
+    let ([acceptance_id, accepted_event], ids) = applied.ids.take::<2>();
+    let acceptance = TaskAcceptance {
+        id: acceptance_id,
+        task_id,
+        attempt_id: None,
+        verification_run_id: None,
+        decision: "accepted".to_owned(),
+        mode: DELIVERED_MODE.to_owned(),
+        reason: reason.to_owned(),
+        actor: stamp.actor.to_string(),
+        manifest_id: None,
+        created_at: stamp.at,
+    };
+    let recorded = EventDraft::new(
+        stamp,
+        accepted_event,
+        Some(task.workspace_id),
+        task_id,
+        EventPayload::TaskAccepted(TaskAccepted {
+            mode: DELIVERED_MODE.to_owned(),
+            reason: reason.to_owned(),
+            verification_run_id: None,
+            manifest_id: None,
+        }),
+    );
+    let rows = Decision::new(())
+        .write(Write::insert(acceptance.clone()))
+        .event(recorded);
+    let commit: Option<JsonObject> = close
+        .commit
+        .as_ref()
+        .map(|sha| Map::from_iter([("commit".to_owned(), json!(sha))]));
+    let status_reason = format!("already delivered: {reason}");
+    let moved = transition(
+        &applied.tasks,
+        stacks,
+        stamp,
+        ids,
+        task_id,
+        TaskStatus::Accepted,
+        Change {
+            reason: Some(&status_reason),
+            delivered: true,
+            caused_by: Some(accepted_event),
+            extra: commit.as_ref(),
+            ..Change::default()
+        },
+    )?;
+    let decision = applied.decision.then(rows).then(moved.decision);
+    Ok((decision, acceptance))
 }
 
 /// `_enqueue_surface`: the `compute_change_surface` job an acceptance queues. Its idempotency key

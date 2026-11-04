@@ -19,7 +19,7 @@ use wg_types::{Id, TaskStatus, WgError};
 use crate::deps::{
     BLOCKED_BY_DEPENDENCIES, CLAIMABLE_DEPENDENCY_STATUSES, DEPENDENCY_SATISFIED_STATUSES,
 };
-use crate::lifecycle::{LAND_REVIEW_SOURCES, check_task_transition};
+use crate::lifecycle::{LAND_REVIEW_SOURCES, check_delivered_close, check_task_transition};
 use crate::promote::{Gated, dependency_gate_in, dependents, refresh_blocked_state};
 use wg_types::pyval::truthy;
 
@@ -29,6 +29,9 @@ pub struct Change<'a> {
     pub reason: Option<&'a str>,
     /// The acceptance service's flag: entering `accepted` is allowed.
     pub privileged: bool,
+    /// A delivered close (`task close-delivered`): `accepted` from backlog, blocked or ready, under
+    /// [`check_delivered_close`] instead of the ordinary lifecycle table.
+    pub delivered: bool,
     /// A tracker-driven close.
     pub tracker: bool,
     /// A manual claim: blockers awaiting review or verification satisfy the dependency gate.
@@ -195,7 +198,9 @@ pub fn transition(
             ids,
         });
     }
-    if !direct {
+    if change.delivered {
+        check_delivered_close(current, target)?;
+    } else if !direct {
         check_task_transition(current, target, change.privileged, change.tracker)?;
     }
 

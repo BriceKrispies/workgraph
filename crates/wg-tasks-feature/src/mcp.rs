@@ -40,6 +40,7 @@ pub fn call(
         "task_claim" => claim(app, agent, arguments),
         "task_release" => release(app, agent, arguments),
         "task_complete" => complete(app, agent, arguments),
+        "task_close_delivered" => close_delivered(app, agent, arguments),
         "task_get_ready" => get_ready(app, agent, arguments),
         "task_promote_ready" => promote_ready(app, agent, arguments),
         "task_import_breakdown" => import_breakdown(app, agent, arguments),
@@ -140,6 +141,19 @@ fn complete(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
         text_argument(a, "workspace"),
         &args::text(a, "task"),
         &args::complete_body(a),
+    )
+}
+
+/// `task close-delivered` for `task_close_delivered`: records the task as already delivered. The
+/// caller needs `task.accept`, so an agent without it is refused by the service.
+fn close_delivered(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    service::acceptance::task_close_delivered(
+        app,
+        &context,
+        text_argument(a, "workspace"),
+        &args::text(a, "task"),
+        &args::delivered_body(a),
     )
 }
 

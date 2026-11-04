@@ -84,7 +84,7 @@ fn missing_and_valid_arguments() {
 #[test]
 fn every_recorded_tool_is_registered() {
     let catalog = Catalog::embedded().expect("catalog");
-    assert_eq!(catalog.tools.len(), 70);
+    assert_eq!(catalog.tools.len(), 71);
     for row in transcript() {
         if let Some(name) = row["tool"].as_str()
             && name != "no_such_tool"

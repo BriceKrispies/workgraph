@@ -503,6 +503,17 @@ pub fn accept_flags(m: &ArgMatches) -> (bool, String, bool) {
     )
 }
 
+/// The body of `task close-delivered`: the evidence (`--reason`, required by the command), the
+/// optional `--commit`, and the references given to `--drop-dependency`.
+#[must_use]
+pub fn delivered_body(m: &ArgMatches) -> Json {
+    json!({
+        "reason": one(m, "--reason").unwrap_or_default(),
+        "commit": one(m, "--commit").filter(|sha| !sha.is_empty()),
+        "drop_dependencies": many(m, "--drop-dependency"),
+    })
+}
+
 /// The reason of `task reject` (required by the command).
 #[must_use]
 pub fn reject_reason(m: &ArgMatches) -> String {

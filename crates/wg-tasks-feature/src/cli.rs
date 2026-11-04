@@ -282,6 +282,18 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 service::acceptance::task_reject(state.app()?, &context, ws, &reference, &reason)?;
             state.emit(&out, Some(&|c| rejected_line(c)))
         }
+        Some("close-delivered") => {
+            let body = delivered_body(m);
+            let reference = option_text(m, "ref").unwrap_or_default();
+            let out = service::acceptance::task_close_delivered(
+                state.app()?,
+                &context,
+                ws,
+                &reference,
+                &body,
+            )?;
+            state.emit(&out, Some(&|c| accepted_line(c, &out, false)))
+        }
         Some("result") => {
             let body = result_body(m)?;
             let reference = option_text(m, "ref").unwrap_or_default();

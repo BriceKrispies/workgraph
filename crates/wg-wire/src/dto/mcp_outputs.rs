@@ -23,7 +23,7 @@ use super::{
     coupling_out, dependency_state, estimate_out, event, experiment, failures_out,
     metric_definition, page, predictor, relation, search_result, stack, stack_item,
     stack_repository, subagents_out, task, task_changes, task_detail, task_diff, task_file,
-    task_history_row, task_rollup, trial,
+    task_history_row, task_rollup, trial, verification,
 };
 use crate::convention::{counts, int, optional_text, text, texts};
 
@@ -402,6 +402,10 @@ static SHAPES: &[(&str, Shape)] = &[
     ("task_claim", TASK),
     ("task_release", TASK),
     ("task_complete", TASK),
+    (
+        "task_close_delivered",
+        dto(verification::AcceptanceOut::FIELDS),
+    ),
     ("task_report_result", TASK),
     ("task_add_dependency", TASK),
     ("task_remove_dependency", TASK),

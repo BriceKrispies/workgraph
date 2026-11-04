@@ -182,6 +182,30 @@ pub fn check_task_transition(
     Ok(())
 }
 
+/// The statuses a delivered close (`task close-delivered`) moves to `accepted`: work that was done
+/// outside Workgraph and never went through a claim, a run or review. Awaiting, running, claimed,
+/// failed and cancelled tasks keep their own paths: awaiting work is accepted with `task accept`,
+/// cancelled work is reopened first.
+pub const DELIVERED_CLOSE_SOURCES: &[TaskStatus] = &[S::Backlog, S::Blocked, S::Ready];
+
+/// Checks a delivered close of a task in `current` to `target`. The only target is `accepted`,
+/// and only from [`DELIVERED_CLOSE_SOURCES`]; the caller records the evidence and the actor.
+pub fn check_delivered_close(current: TaskStatus, target: TaskStatus) -> Result<(), WgError> {
+    if target == S::Accepted && DELIVERED_CLOSE_SOURCES.contains(&current) {
+        return Ok(());
+    }
+    let message = if current == S::Accepted {
+        "the task is already accepted".to_owned()
+    } else {
+        format!(
+            "only backlog, blocked or ready tasks can be closed as delivered, not {current} ones;              accepted work goes through task accept"
+        )
+    };
+    Err(WgError::invalid_transition(message)
+        .detail("from", current.as_str())
+        .detail("to", target.as_str()))
+}
+
 /// Checks one attempt status change.
 pub fn check_attempt_transition(
     current: AttemptStatus,

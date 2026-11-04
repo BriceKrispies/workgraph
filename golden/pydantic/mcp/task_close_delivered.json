@@ -1,0 +1,104 @@
+{
+  "base": {
+    "reason": "Shipped in abc1234.",
+    "task": "WG-1"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "reason": "Shipped in abc1234.",
+        "task": "WG-1"
+      },
+      "output": {
+        "ok": {
+          "commit": null,
+          "drop_dependencies": null,
+          "reason": "Shipped in abc1234.",
+          "task": "WG-1",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:reason",
+      "input": {
+        "task": "WG-1"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "task": "WG-1"
+            },
+            "loc": [
+              "reason"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "missing:task",
+      "input": {
+        "reason": "done"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "reason": "done"
+            },
+            "loc": [
+              "task"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:int",
+      "input": {
+        "reason": 5,
+        "task": "WG-1"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 5,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:task:int",
+      "input": {
+        "reason": "done",
+        "task": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "task"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_close_delivered"
+}

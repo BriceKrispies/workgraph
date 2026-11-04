@@ -7023,6 +7023,82 @@
       ]
     },
     {
+      "command": "workgraph task close-delivered",
+      "params": [
+        {
+          "default": null,
+          "help": "Task to act on: a key such as WG-12, or a UUID.",
+          "kind": "argument",
+          "name": "ref",
+          "nargs": 1,
+          "required": true,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "help": "Evidence that the work was delivered, recorded with the acceptance. Required.",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--reason",
+            "-m"
+          ],
+          "required": true,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "help": "The commit the work is in, as a hexadecimal SHA. Recorded on the status change.",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--commit"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": null,
+          "help": "A dependency edge to drop, by key such as WG-12. Repeat for each one; each dropped edge is recorded.",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": true,
+          "opts": [
+            "--drop-dependency"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "help": "Workspace to act in. Defaults to WORKGRAPH_WORKSPACE, then the default workspace.",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
       "command": "workgraph task comment",
       "params": [
         {
@@ -10041,7 +10117,7 @@
       ]
     }
   ],
-  "leaf_count": 197,
+  "leaf_count": 198,
   "root_options": [
     {
       "choices": null,

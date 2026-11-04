@@ -16,7 +16,9 @@ use crate::spec::view::*;
 use clap::ArgMatches;
 use wg_iface::cli::args::*;
 use wg_iface::cli::{CliFailure, PathKind, PathProblem, not_implemented_message};
-use wg_runtime::{CliGroup, CliState, human_context};
+use wg_runtime::spec::RequestContext;
+use wg_runtime::{CliGroup, CliState, agent_context, human_context};
+use wg_types::WgError;
 
 /// The `task` group.
 pub const GROUP: CliGroup = CliGroup {
@@ -24,6 +26,16 @@ pub const GROUP: CliGroup = CliGroup {
     command,
     run,
 };
+
+/// The actor a report (`complete`, `result`, `progress`) runs as. With `--agent NAME` (or the
+/// `WORKGRAPH_AGENT` variable) it is `agent:NAME`, the claimant `task claim --agent NAME` records,
+/// so the claim holder and the reporter match. An empty name is no agent: the human's own context.
+pub fn agent_actor(agent: Option<&str>, human: &RequestContext) -> Result<RequestContext, WgError> {
+    match agent.filter(|name| !name.is_empty()) {
+        Some(name) => agent_context(name, None),
+        None => Ok(human.clone()),
+    }
+}
 
 fn read_file(path: &str) -> Result<String, String> {
     std::fs::read_to_string(path).map_err(|err| format!("cannot read {path}: {err}"))
@@ -130,7 +142,8 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("complete") => {
             let body = complete_body(m);
             let reference = option_text(m, "ref").unwrap_or_default();
-            let out = service::task_complete(state.app()?, &context, ws, &reference, &body)?;
+            let actor = agent_actor(option_text(m, "--agent").as_deref(), &context)?;
+            let out = service::task_complete(state.app()?, &actor, ws, &reference, &body)?;
             state.emit(&out, Some(&|c| status_line(c, &out)))
         }
         Some("accept") => {
@@ -158,13 +171,15 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("result") => {
             let body = result_body(m)?;
             let reference = option_text(m, "ref").unwrap_or_default();
-            let out = service::task_result(state.app()?, &context, ws, &reference, &body)?;
+            let actor = agent_actor(option_text(m, "--agent").as_deref(), &context)?;
+            let out = service::task_result(state.app()?, &actor, ws, &reference, &body)?;
             state.emit(&out, Some(&|c| status_line(c, &out)))
         }
         Some("progress") => {
             let body = progress_body(m)?;
             let reference = option_text(m, "ref").unwrap_or_default();
-            let out = service::task_progress(state.app()?, &context, ws, &reference, &body)?;
+            let actor = agent_actor(option_text(m, "--agent").as_deref(), &context)?;
+            let out = service::task_progress(state.app()?, &actor, ws, &reference, &body)?;
             state.emit(&out, Some(&|c| note_line(c, "progress recorded")))
         }
         Some("comment") => {

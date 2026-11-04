@@ -7,6 +7,7 @@
 | `--json` (anywhere) | Machine-readable JSON on stdout; errors as `{"error": {"code","message","details"}}` |
 | `--home DIR` | Use an isolated Workgraph home (same as `WORKGRAPH_HOME`) |
 | `-w/--workspace SLUG` | Default workspace for the invocation (same as `WORKGRAPH_WORKSPACE`) |
+| `--agent NAME` (on `task claim`, `task progress`, `task result`, `task complete`) | Act as `agent:NAME`; default from `WORKGRAPH_AGENT` (see [Acting as an agent](#acting-as-an-agent)) |
 
 Exit codes: `0` success, `1` unexpected error, `2` validation, `3` conflict (state, version,
 busy resource), `4` not found, `5` permission denied, `6` provider unavailable, `7` configuration.
@@ -127,6 +128,24 @@ workgraph --json task import-breakdown docs/rust-rewrite.md --section "9. Task b
 - Output is a table (key, verdict, action, new keys or error). With `--json` the output is `{"applied": [...], "skipped": [...], "errors": [...]}`. The command exits 1 if any element errored.
 - Each service call commits on its own, so an element that fails part way through keeps the steps before the failure; it is reported as an error.
 - `TaskCreate` has no `category` field, so created tasks do not carry the original's category.
+
+## Acting as an agent
+
+`task claim --agent NAME` records the claim as `agent:NAME`. A report on that claim must come from the same
+actor: `task result`, `task complete` and `task progress` take the same `--agent NAME` and act as `agent:NAME`,
+so they match the holder. Without `--agent`, a command acts as the human running it, which is the holder of a
+plain `task claim`. The variable `WORKGRAPH_AGENT` is the default for `--agent` on these four commands, so a
+subagent sets it once and claims and reports as the same actor:
+
+```sh
+WORKGRAPH_AGENT=claude-code-haiku workgraph task claim WG-12
+WORKGRAPH_AGENT=claude-code-haiku workgraph task progress WG-12 "half way" --percent 50
+WORKGRAPH_AGENT=claude-code-haiku workgraph task result WG-12 succeeded -m "tests pass"
+```
+
+An empty `WORKGRAPH_AGENT` or `--agent ""` is no agent. A report by an actor other than the holder is
+refused with `permission_denied` (exit 5). The message names the holder and the remedy: give both commands the
+same `--agent <name>` (or `WORKGRAPH_AGENT`), or run as the holder without `--agent`.
 
 ## Showing several tasks
 

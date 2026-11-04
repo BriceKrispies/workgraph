@@ -381,7 +381,8 @@ pub fn bulk_failed(result: &Value) -> bool {
 /// The `ClaimRequest` of `task claim`.
 pub fn claim_body(m: &ArgMatches) -> Result<Json, CliFailure> {
     Ok(json!({
-        "agent": one(m, "--agent"),
+        // An empty name is no agent, as for the reports (`agent_actor`).
+        "agent": one(m, "--agent").filter(|name| !name.is_empty()),
         "lease_minutes": number(m, "--lease-minutes", 120, CLAIM)?,
     }))
 }

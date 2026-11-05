@@ -1,6 +1,8 @@
 //! Pure: the settings of one tracker connection as a sync reads them, and the documents of a sync
 //! report (`tracker sync` in `cli/commands/tracker.py`, and the job result of `tracker_sync`).
 
+use std::collections::BTreeMap;
+
 use serde_json::{Map, Value as Json};
 use wg_json::{Value, dict};
 use wg_netspec::TrackerError;
@@ -28,14 +30,34 @@ pub struct TrackerSettings {
     pub flavour: String,
     pub workspace: String,
     pub projects: Vec<String>,
+    /// Where issues are browsed, when `base_url` is an API gateway.
+    pub site_url: Option<String>,
+    /// `basic` or `bearer` (Cloud only; Data Center always sends a Bearer token).
+    pub auth: String,
     pub email_env: Option<String>,
-    pub token_env: String,
+    pub token_env: Option<String>,
+    /// A command that prints the token on stdout; re-run when Jira rejects the token.
+    pub token_command: Option<Vec<String>>,
+    pub token_command_timeout_seconds: f64,
     pub overlap_seconds: i64,
     pub missing_grace_seconds: i64,
     pub dev_panel: bool,
     pub pr_fields: Vec<String>,
+    pub pr_default_repos: BTreeMap<String, String>,
+    pub assignee_field: Option<String>,
     pub cancelled_resolutions: Vec<String>,
     pub timeout_seconds: f64,
+    /// Extra JQL ANDed onto every search.
+    pub jql: Option<String>,
+    pub min_request_interval_seconds: f64,
+}
+
+impl TrackerSettings {
+    /// Where issues are browsed: `site_url`, else `base_url`.
+    #[must_use]
+    pub fn browse_url(&self) -> &str {
+        self.site_url.as_deref().unwrap_or(&self.base_url)
+    }
 }
 
 /// `TrackerSyncService.connection`: the settings of the named connection, or the `not_found` the
@@ -61,6 +83,9 @@ pub fn settings_of(config: &Map<String, Json>, name: &str) -> Result<TrackerSett
             .unwrap_or_default()
     };
     let int = |key: &str, default: i64| int_or(tracker.get(key), default);
+    let optional = |key: &str| tracker.get(key).and_then(Json::as_str).map(str::to_owned);
+    let float =
+        |key: &str, default: f64| tracker.get(key).and_then(Json::as_f64).unwrap_or(default);
     let flavour = match tracker.get("flavour").and_then(Json::as_str) {
         Some(flavour) => flavour.to_owned(),
         None => "cloud".to_owned(),
@@ -71,11 +96,15 @@ pub fn settings_of(config: &Map<String, Json>, name: &str) -> Result<TrackerSett
         flavour,
         workspace: text("workspace"),
         projects: texts("projects"),
-        email_env: tracker
-            .get("email_env")
-            .and_then(Json::as_str)
-            .map(str::to_owned),
-        token_env: text("token_env"),
+        site_url: optional("site_url"),
+        auth: optional("auth").unwrap_or_else(|| "basic".to_owned()),
+        email_env: optional("email_env"),
+        token_env: optional("token_env"),
+        token_command: tracker
+            .get("token_command")
+            .and_then(Json::as_array)
+            .map(|_| texts("token_command")),
+        token_command_timeout_seconds: float("token_command_timeout_seconds", 60.0),
         overlap_seconds: int("overlap_seconds", 120),
         missing_grace_seconds: int("missing_grace_seconds", 86_400),
         dev_panel: tracker
@@ -83,11 +112,18 @@ pub fn settings_of(config: &Map<String, Json>, name: &str) -> Result<TrackerSett
             .and_then(Json::as_bool)
             .unwrap_or(true),
         pr_fields: texts("pr_fields"),
+        pr_default_repos: tracker
+            .get("pr_default_repos")
+            .and_then(Json::as_object)
+            .into_iter()
+            .flatten()
+            .filter_map(|(field, url)| Some((field.clone(), url.as_str()?.to_owned())))
+            .collect(),
+        assignee_field: optional("assignee_field"),
         cancelled_resolutions: texts("cancelled_resolutions"),
-        timeout_seconds: tracker
-            .get("timeout_seconds")
-            .and_then(Json::as_f64)
-            .unwrap_or(30.0),
+        timeout_seconds: float("timeout_seconds", 30.0),
+        jql: optional("jql"),
+        min_request_interval_seconds: float("min_request_interval_seconds", 0.0),
     })
 }
 

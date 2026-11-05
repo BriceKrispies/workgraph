@@ -3,25 +3,44 @@
 //! sleeps and asks the system for the user's time zone.
 
 use serde_json::Value;
+use wg_model::{EffectError, HttpResponse};
 use wg_netspec::TrackerError;
 use wg_netspec::jira::{
     self as spec, DEV_STATUS_PATH, Flavour, NO_TIME_ZONE_WARNING, dev_status_warning,
     unknown_time_zone_warning,
 };
 use wg_netspec::jql;
-use wg_netspec::retry::jira_step;
+use wg_netspec::retry::{
+    Attempt, JiraStep, header, jira_request_gap, jira_step, retry_after_too_long,
+};
 
-use crate::client::send_with_retries;
 use crate::host::Net;
+
+/// Where a connection's token comes from. Tokens are never logged or put in an error message.
+pub trait TokenSource: Send {
+    /// The current token.
+    fn token(&mut self) -> Result<String, TrackerError>;
+    /// Replaces the token after Jira rejected it; `Ok(false)` when there is nothing new to try.
+    fn refresh(&mut self) -> Result<bool, TrackerError>;
+}
 
 /// A read-only client for one Jira site. It sends only GET requests.
 pub struct JiraClient {
     pub base_url: String,
+    /// The flavour, holding the token currently in use.
     pub flavour: Flavour,
     pub timeout_seconds: f64,
     pub net: Net,
     /// The user's zone name, once read: `Some(None)` is UTC (no zone, or an unknown one).
     pub zone: Option<Option<String>>,
+    /// Where a new token comes from after a 401; `None` keeps the flavour's token.
+    pub tokens: Option<Box<dyn TokenSource>>,
+    /// Extra JQL ANDed onto every search.
+    pub scope_jql: Option<String>,
+    /// The smallest gap between two requests, in seconds.
+    pub min_interval_seconds: f64,
+    /// When the next request may go, on [`Net::monotonic_ms`]'s clock; 0 for a new client.
+    pub next_request_ms: u64,
 }
 
 impl JiraClient {
@@ -42,7 +61,7 @@ impl JiraClient {
             }
             None => None,
         };
-        let query_text = jql::updated_jql(projects, minute.as_deref());
+        let query_text = jql::updated_jql(projects, self.scope_jql.as_deref(), minute.as_deref());
         self.search_all(&query_text, "*all")
     }
 
@@ -51,7 +70,7 @@ impl JiraClient {
         &mut self,
         projects: &[String],
     ) -> Result<Vec<(String, String)>, TrackerError> {
-        let query_text = jql::project_jql(projects);
+        let query_text = jql::scoped_jql(projects, self.scope_jql.as_deref());
         let fields = self.flavour.key_list_fields();
         let issues = self.search_all(&query_text, fields)?;
         Ok(spec::key_pairs(&issues))
@@ -122,19 +141,77 @@ impl JiraClient {
         Ok(zone)
     }
 
-    /// One GET with retries on 429 and 5xx, read as a JSON object.
+    /// One GET, read as a JSON object. 429 and 5xx are retried, and a 401 is retried once with a
+    /// new token when the token source has one.
     fn get(&mut self, path: &str, query: &[(String, String)]) -> Result<Value, TrackerError> {
-        let call = spec::get_call(
-            &self.base_url,
-            &self.flavour,
-            path,
-            query,
-            self.timeout_seconds,
-        );
-        let (result, _) = send_with_retries(&mut self.net, &call, jira_step);
-        match result {
-            Err(err) => Err(spec::transport_error(path, &err.message)),
-            Ok(response) => spec::read_response(path, response.status, &response.body),
+        let mut attempt_no = 1;
+        let mut refreshed = false;
+        loop {
+            self.pace();
+            let call = spec::get_call(
+                &self.base_url,
+                &self.flavour,
+                path,
+                query,
+                self.timeout_seconds,
+            );
+            let result = self.net.perform(&call);
+            self.schedule_next(&result);
+            let attempt = Attempt::of(&result);
+            match jira_step(&attempt, attempt_no, refreshed) {
+                JiraStep::Finished => return spec::read_result(path, result),
+                JiraStep::Retry { delay_seconds } => {
+                    self.net.pause(delay_seconds);
+                    attempt_no += 1;
+                }
+                JiraStep::Reauthenticate => {
+                    refreshed = true;
+                    if !self.refresh_token()? {
+                        return spec::read_result(path, result);
+                    }
+                }
+                JiraStep::RetryAfterTooLong => {
+                    let status = result.as_ref().map_or(0, |response| response.status);
+                    return Err(retry_after_too_long(path, status));
+                }
+            }
         }
+    }
+
+    /// Asks the token source for a new token and puts it in the flavour.
+    fn refresh_token(&mut self) -> Result<bool, TrackerError> {
+        let Some(tokens) = self.tokens.as_mut() else {
+            return Ok(false);
+        };
+        if !tokens.refresh()? {
+            return Ok(false);
+        }
+        self.flavour = self.flavour.with_token(tokens.token()?);
+        Ok(true)
+    }
+
+    /// Waits until the gap after the last response has passed.
+    fn pace(&mut self) {
+        let now = self.net.monotonic_ms();
+        if self.next_request_ms > now {
+            let wait_ms = self.next_request_ms - now;
+            self.net.pause(wait_ms as f64 / 1000.0);
+        }
+    }
+
+    /// When the next request may go, from the configured gap and the response's rate-limit hint.
+    fn schedule_next(&mut self, result: &Result<HttpResponse, EffectError>) {
+        let Ok(response) = result else {
+            return;
+        };
+        let near_limit = header(&response.headers, "X-RateLimit-NearLimit");
+        let gap = jira_request_gap(self.min_interval_seconds, near_limit.as_deref());
+        if gap > self.min_interval_seconds {
+            self.net.warn(&format!(
+                "Jira reports the rate limit is near; pausing {gap}s between requests"
+            ));
+        }
+        let gap_ms = (gap * 1000.0).round().max(0.0) as u64;
+        self.next_request_ms = self.net.monotonic_ms().saturating_add(gap_ms);
     }
 }

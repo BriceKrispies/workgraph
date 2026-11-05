@@ -15,7 +15,7 @@ use std::collections::HashSet;
 
 use serde_json::Value as Json;
 use wg_model::slice::QueueSlice;
-use wg_net::{Flavour, JiraClient, Net};
+use wg_net::{Flavour, JiraClient, Net, TokenSource};
 use wg_netspec::TrackerError;
 use wg_rows::Raw;
 use wg_rows::task_world_sql::TaskWorld;
@@ -33,6 +33,7 @@ use wg_trackers::{
 use wg_types::pyval::{text, truthy};
 use wg_types::{Correlation, Id, TaskKey, WgError};
 
+use crate::service::credentials::{CommandToken, StaticToken};
 use crate::spec;
 use crate::spec::run::{TrackerSettings, settings_of, sync_json};
 use crate::spec::sql;
@@ -80,19 +81,32 @@ impl IssueSource for JiraClient {
     }
 }
 
-/// The Jira client of a connection (`make_jira_client`): the credentials come from the variables
-/// the connection names, and Cloud also needs the account email.
+/// The Jira client of a connection (`make_jira_client`). The token comes from the variable or the
+/// command the connection names; Cloud with `basic` auth also needs the account email.
 pub fn jira_client(settings: &TrackerSettings) -> Result<JiraClient, WgError> {
-    let token = credential(&settings.token_env)?;
-    let flavour = match settings.flavour.as_str() {
-        "cloud" => {
+    let mut tokens: Box<dyn TokenSource> = match (&settings.token_command, &settings.token_env) {
+        (Some(argv), _) => Box::new(CommandToken::new(
+            argv.clone(),
+            settings.token_command_timeout_seconds,
+        )),
+        (None, Some(name)) => Box::new(StaticToken(credential(name)?)),
+        (None, None) => {
+            return Err(WgError::config(
+                "a Jira connection needs token_env or token_command",
+            ));
+        }
+    };
+    let token = tokens.token().map_err(|err| WgError::config(err.message))?;
+    let flavour = match (settings.flavour.as_str(), settings.auth.as_str()) {
+        ("cloud", "bearer") => Flavour::Cloud { email: None, token },
+        ("cloud", _) => {
             let Some(email_env) = settings.email_env.as_deref() else {
                 return Err(WgError::config(
-                    "Jira Cloud needs email_env: the variable holding the account email",
+                    "Jira Cloud with basic auth needs email_env: the variable holding the account email",
                 ));
             };
             Flavour::Cloud {
-                email: credential(email_env)?,
+                email: Some(credential(email_env)?),
                 token,
             }
         }
@@ -104,9 +118,12 @@ pub fn jira_client(settings: &TrackerSettings) -> Result<JiraClient, WgError> {
         timeout_seconds: settings.timeout_seconds,
         net: Net::default(),
         zone: None,
+        tokens: Some(tokens),
+        scope_jql: settings.jql.clone(),
+        min_interval_seconds: settings.min_request_interval_seconds,
+        next_request_ms: 0,
     })
 }
-
 /// `tracker sync CONNECTION [--full]` run now: the connection's settings, the Jira client, and one
 /// sync.
 pub fn run_now(
@@ -266,8 +283,10 @@ fn map_one<S: IssueSource>(
         Vec::new()
     };
     let config = MappingConfig {
-        base_url: settings.base_url.clone(),
+        base_url: settings.browse_url().to_owned(),
         pr_fields: settings.pr_fields.clone(),
+        pr_default_repos: settings.pr_default_repos.clone(),
+        assignee_field: settings.assignee_field.clone(),
         dev_panel: settings.dev_panel,
     };
     map_issue(issue, &pull_requests, &config).map_err(|err| WgError::workgraph(err.message()))
@@ -394,7 +413,11 @@ fn reconcile_listing<S: IssueSource>(
     let keys = source
         .list_keys(&settings.projects)
         .map_err(spec::run::tracker_failure)?;
-    let listed: HashSet<String> = listed_ids(&keys);
+    let mut listed: HashSet<String> = listed_ids(&keys);
+    if settings.jql.is_some() {
+        let present = outside_scope_but_present(app, source, settings, workspace, &listed)?;
+        listed.extend(present);
+    }
     let counts: ReconcileCounts = app
         .runtime
         .decide_then(
@@ -416,6 +439,31 @@ fn reconcile_listing<S: IssueSource>(
     report.missing = counts.missing;
     report.archived += counts.archived;
     Ok(())
+}
+
+/// The tracked items a `jql`-scoped listing left out that still exist in the configured projects.
+/// They were fetched by key as parents or blockers, so they must not be marked missing.
+fn outside_scope_but_present<S: IssueSource>(
+    app: &mut App,
+    source: &mut S,
+    settings: &TrackerSettings,
+    workspace: Id,
+    listed: &HashSet<String>,
+) -> Result<Vec<String>, WgError> {
+    let unlisted = app.runtime.query(
+        |session| session.task_world(Some(workspace), &[]),
+        |world: &TaskWorld| Ok(spec::sync::unlisted_items(world, &settings.name, listed)),
+    )?;
+    let mut present = Vec::new();
+    for (external_id, key) in unlisted {
+        let issue = source.get_issue(&key).map_err(spec::run::tracker_failure)?;
+        if issue.is_some_and(|issue| {
+            spec::sync::still_present(&issue, &external_id, &key, &settings.projects)
+        }) {
+            present.push(external_id);
+        }
+    }
+    Ok(present)
 }
 
 /// `_finish`: `last_sync` (and `last_full_sync` for a full sync) move to now, and the report takes

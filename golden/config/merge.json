@@ -30,7 +30,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 7
+        "max_concurrent_runs": 7,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -130,7 +131,8 @@
         "enabled": true,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 3
+        "max_concurrent_runs": 3,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -231,7 +233,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -332,7 +335,8 @@
         "enabled": true,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -432,7 +436,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -533,7 +538,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -634,7 +640,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 2
+        "max_concurrent_runs": 2,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,
@@ -784,7 +791,8 @@
         "enabled": false,
         "isolation": "worktree",
         "max_attempts_per_task": 3,
-        "max_concurrent_runs": 1
+        "max_concurrent_runs": 1,
+        "worktree_root": null
       },
       "jobs": {
         "default_max_attempts": 5,

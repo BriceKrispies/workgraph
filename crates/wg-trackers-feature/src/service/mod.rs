@@ -2,6 +2,7 @@
 //! external item readers. Free functions over `&mut App`, the load-decide-apply glue; the decisions
 //! are in [`crate::spec`] and the sync decisions in the `wg-trackers` core crate.
 
+pub mod credentials;
 pub mod reads;
 pub mod sync;
 

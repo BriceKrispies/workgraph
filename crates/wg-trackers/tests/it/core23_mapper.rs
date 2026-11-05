@@ -23,6 +23,8 @@ fn config() -> MappingConfig {
     MappingConfig {
         base_url: "https://acme.atlassian.net".to_string(),
         pr_fields: vec!["customfield_10042".to_string()],
+        pr_default_repos: Default::default(),
+        assignee_field: None,
         dev_panel: true,
     }
 }
@@ -31,6 +33,8 @@ fn with_config(base_url: &str, pr_fields: &[&str], dev_panel: bool) -> MappingCo
     MappingConfig {
         base_url: base_url.to_string(),
         pr_fields: pr_fields.iter().map(|field| field.to_string()).collect(),
+        pr_default_repos: Default::default(),
+        assignee_field: None,
         dev_panel,
     }
 }

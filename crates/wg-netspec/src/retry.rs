@@ -11,8 +11,12 @@ use wg_types::pyval::prefix;
 pub const PROVIDER_RETRYABLE: [u16; 7] = [408, 425, 429, 500, 502, 503, 504];
 /// One request plus up to three retries for Jira (`MAX_ATTEMPTS`).
 pub const JIRA_MAX_ATTEMPTS: u32 = 4;
-/// The longest Jira waits between two attempts, in seconds (`MAX_BACKOFF_SECONDS`).
+/// Cap on Jira's exponential backoff when the server sends no `Retry-After`, in seconds.
 pub const JIRA_MAX_BACKOFF_SECONDS: f64 = 30.0;
+/// A `Retry-After` up to this is honoured in full; a longer one fails the request.
+pub const JIRA_MAX_RETRY_AFTER_SECONDS: f64 = 300.0;
+/// The pause after a response marked `X-RateLimit-NearLimit: true`, in seconds.
+pub const JIRA_NEAR_LIMIT_PAUSE_SECONDS: f64 = 5.0;
 /// The first Jira backoff, in seconds; it doubles per attempt.
 pub const JIRA_BASE_BACKOFF_SECONDS: f64 = 0.5;
 
@@ -103,29 +107,73 @@ pub fn jira_retryable(attempt: &Attempt) -> bool {
     }
 }
 
-/// The step after attempt number `attempt_no` of a Jira request.
-pub fn jira_step(attempt: &Attempt, attempt_no: u32) -> Step {
+/// What a Jira request does after one attempt.
+#[derive(Debug, Clone, PartialEq)]
+pub enum JiraStep {
+    /// The attempt's result is final.
+    Finished,
+    /// Sleep for `delay_seconds`, then attempt again.
+    Retry { delay_seconds: f64 },
+    /// The token was rejected: get a new one and, if there is one, attempt again.
+    Reauthenticate,
+    /// The server asked to wait longer than [`JIRA_MAX_RETRY_AFTER_SECONDS`]; retrying sooner
+    /// would ignore it.
+    RetryAfterTooLong,
+}
+
+/// The step after attempt number `attempt_no` of a Jira request. `refreshed` is whether the token
+/// was already replaced once for this request.
+pub fn jira_step(attempt: &Attempt, attempt_no: u32, refreshed: bool) -> JiraStep {
+    if matches!(attempt, Attempt::Status { code: 401, .. }) && !refreshed {
+        return JiraStep::Reauthenticate;
+    }
     if !jira_retryable(attempt) || attempt_no >= JIRA_MAX_ATTEMPTS {
-        return Step::Finished;
+        return JiraStep::Finished;
     }
     let retry_after = match attempt {
         Attempt::Status { retry_after, .. } => retry_after.as_deref(),
         Attempt::Transport(_) | Attempt::Failed(_) => None,
     };
-    Step::Retry {
-        delay_seconds: jira_delay(retry_after, attempt_no),
+    match jira_delay(retry_after, attempt_no) {
+        Some(delay_seconds) => JiraStep::Retry { delay_seconds },
+        None => JiraStep::RetryAfterTooLong,
     }
 }
 
 /// The wait before the next Jira attempt: `Retry-After` in seconds when the server sent a number,
-/// else exponential backoff; both capped at [`JIRA_MAX_BACKOFF_SECONDS`].
-pub fn jira_delay(retry_after: Option<&str>, attempt_no: u32) -> f64 {
-    let from_header = retry_after
-        .and_then(|raw| raw.trim().parse::<f64>().ok())
-        .map(|seconds| seconds.clamp(0.0, JIRA_MAX_BACKOFF_SECONDS));
-    from_header.unwrap_or_else(|| {
-        (JIRA_BASE_BACKOFF_SECONDS * exponent(attempt_no)).min(JIRA_MAX_BACKOFF_SECONDS)
-    })
+/// else exponential backoff capped at [`JIRA_MAX_BACKOFF_SECONDS`]. `None` when `Retry-After`
+/// exceeds [`JIRA_MAX_RETRY_AFTER_SECONDS`].
+pub fn jira_delay(retry_after: Option<&str>, attempt_no: u32) -> Option<f64> {
+    match retry_after.and_then(|raw| raw.trim().parse::<f64>().ok()) {
+        Some(seconds) => {
+            let seconds = seconds.max(0.0);
+            (seconds <= JIRA_MAX_RETRY_AFTER_SECONDS).then_some(seconds)
+        }
+        None => {
+            Some((JIRA_BASE_BACKOFF_SECONDS * exponent(attempt_no)).min(JIRA_MAX_BACKOFF_SECONDS))
+        }
+    }
+}
+
+/// The smallest gap before the next Jira request: the configured interval, or
+/// [`JIRA_NEAR_LIMIT_PAUSE_SECONDS`] when the response said the rate limit is near.
+pub fn jira_request_gap(min_interval_seconds: f64, near_limit_header: Option<&str>) -> f64 {
+    let near = near_limit_header.is_some_and(|value| value.trim().eq_ignore_ascii_case("true"));
+    if near {
+        min_interval_seconds.max(JIRA_NEAR_LIMIT_PAUSE_SECONDS)
+    } else {
+        min_interval_seconds
+    }
+}
+
+/// The error of a request whose server asked to wait too long before retrying.
+pub fn retry_after_too_long(path: &str, status: u16) -> crate::TrackerError {
+    crate::TrackerError {
+        message: format!(
+            "Jira GET {path} asked to retry after more than {JIRA_MAX_RETRY_AFTER_SECONDS}s"
+        ),
+        status: Some(status),
+    }
 }
 
 /// The provider's final answer once its retries are spent. A transport failure, or a retryable

@@ -8,10 +8,12 @@
 //! `integrations/git/worktrees.py`.
 
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use super::store;
 use super::sync::{ingest_batch, repo_state};
+use super::worktree_remove::remove_empty_attempt_dir;
+use super::worktree_root::{configured_roots, in_attempt_dir};
 use crate::spec::analysis::{self, FileResult, manifest_shas};
 use crate::spec::links::{self, ExplicitLinkIds};
 use crate::spec::reads::{
@@ -1104,9 +1106,16 @@ pub fn git_cleanup_worktrees(
         return Ok(worktrees::cleanup_dry_run_value(&views));
     }
     let root = app.paths.worktrees_dir().to_string();
+    let roots = configured_roots(app)?;
     let mut results = Vec::new();
     for row in rows {
-        results.push(remove_released_worktree(app, context, row.worktree, &root)?);
+        results.push(remove_released_worktree(
+            app,
+            context,
+            row.worktree,
+            &root,
+            &roots,
+        )?);
     }
     Ok(Value::List(results))
 }
@@ -1117,6 +1126,7 @@ fn remove_released_worktree(
     context: &RequestContext,
     worktree: ManagedWorktree,
     root: &str,
+    roots: &[PathBuf],
 ) -> Result<Value, WgError> {
     let path = PathBuf::from(&worktree.path);
     let source = app.runtime.store.read(|session| {
@@ -1127,7 +1137,7 @@ fn remove_released_worktree(
             .map(|checkout| checkout.path))
     })?;
     let id = worktree.id.to_string();
-    if !is_within(&path.to_string_lossy(), root) {
+    if !is_within(&path.to_string_lossy(), root) && !in_attempt_dir(&path, roots) {
         return Err(WgError::validation(format!(
             "refusing to remove {}: not inside Workgraph's worktree directory",
             path.display()
@@ -1205,7 +1215,7 @@ fn remove_released_worktree(
             Ok(decision)
         },
     )?;
-    remove_empty_parent(&path, root);
+    remove_empty_attempt_dir(&path, Path::new(root), roots);
     Ok(removal_result(&id, true, None))
 }
 
@@ -1316,29 +1326,4 @@ fn surface_inputs(
         paths,
         existing_surfaces,
     })
-}
-
-/// Removes the parent directory of a removed worktree when nothing but the manifest is left in it.
-fn remove_empty_parent(path: &std::path::Path, root: &str) {
-    let Some(parent) = path.parent() else {
-        return;
-    };
-    let root_path = PathBuf::from(root);
-    if !parent.exists()
-        || !is_within(&parent.to_string_lossy(), root)
-        || parent == root_path.as_path()
-    {
-        return;
-    }
-    let leftovers = std::fs::read_dir(parent)
-        .map(|entries| {
-            entries
-                .flatten()
-                .filter(|entry| entry.file_name() != "workgraph-manifest.json")
-                .count()
-        })
-        .unwrap_or(1);
-    if leftovers == 0 {
-        let _ = std::fs::remove_dir_all(parent);
-    }
 }

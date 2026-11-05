@@ -9,7 +9,7 @@ use wg_proc::{CaptureLimits, ProcessSpec, run_capture};
 
 use crate::spec::credentials::token_command_error;
 
-/// A command is re-run at most this often, so an endpoint that always answers 401 cannot loop it.
+/// A command is re-run on 401 at most this often, so an endpoint that always answers 401 cannot loop it.
 const MIN_REFRESH_INTERVAL: Duration = Duration::from_secs(60);
 
 /// A token read once from the environment; it cannot be refreshed.
@@ -32,7 +32,9 @@ pub struct CommandToken {
     name: String,
     timeout: Duration,
     token: Option<String>,
-    fetched_at: Option<Instant>,
+    /// The last re-run after a 401. The first fetch does not count, so a token that expires mid-sync
+    /// can still be replaced.
+    refreshed_at: Option<Instant>,
 }
 
 impl CommandToken {
@@ -43,7 +45,7 @@ impl CommandToken {
             argv,
             timeout: Duration::from_secs_f64(timeout_seconds.max(0.0)),
             token: None,
-            fetched_at: None,
+            refreshed_at: None,
         }
     }
 
@@ -90,7 +92,6 @@ impl CommandToken {
             ));
         }
         self.token = Some(token.to_owned());
-        self.fetched_at = Some(Instant::now());
         Ok(token.to_owned())
     }
 }
@@ -105,11 +106,12 @@ impl TokenSource for CommandToken {
 
     fn refresh(&mut self) -> Result<bool, TrackerError> {
         if self
-            .fetched_at
+            .refreshed_at
             .is_some_and(|at| at.elapsed() < MIN_REFRESH_INTERVAL)
         {
             return Ok(false);
         }
+        self.refreshed_at = Some(Instant::now());
         self.fetch().map(|_| true)
     }
 }

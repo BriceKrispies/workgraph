@@ -8,7 +8,8 @@ use std::path::PathBuf;
 use rpds::VectorSync;
 use serde_json::{Map, json};
 use wg_exec::attempt::{
-    ACTIVE_STATUSES, abandon_plan, adopt_check, is_terminal, next_attempt_number, start_plan,
+    ACTIVE_STATUSES, VERIFIER_PID_KEY, abandon_plan, adopt_check, is_terminal, killed_adoption,
+    next_attempt_number, start_plan,
 };
 use wg_exec::run::EarlyEnd;
 use wg_git::Git;
@@ -18,6 +19,7 @@ use wg_model::Write;
 use wg_model::entity::{AgentAttempt, ChangeSet, ChangeSetItem, Repository};
 use wg_model::stamp::py_repr_str;
 use wg_model::write::RowKey;
+use wg_proc::process_alive;
 use wg_registry::checkout::primary_checkout;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_runtime::spec::RequestContext;
@@ -39,6 +41,7 @@ use crate::spec::attempt_writes::{
     Finish, NewAttempt, attempt_limit, claimed, claimed_chain, created, escalated, failures,
     finished, gone, reason_text, start_chain, start_out, status_set, task_moved,
 };
+use crate::spec::conclude::fail_verification;
 use crate::spec::worktrees::PrepareRequest;
 
 /// `decide` for decisions that may write tasks: the search index follows the writes in the same
@@ -534,6 +537,42 @@ pub fn attempt_finish(
     Ok(attempt::from_model(&row))
 }
 
+/// The failure an adopted attempt gets when the process that verified it was killed (WG-4285).
+const KILLED_VERIFIER: &str = "the process verifying this adopted ref was killed before the verification finished; adopt the ref again to verify it";
+
+/// WG-4285: a killed `attempt adopt` leaves its attempt in `verifying`, which holds the task for
+/// good. The task's adopted attempts whose verifying process is gone fail first, so adopting the
+/// ref again can run.
+fn fail_killed_adoptions(
+    app: &mut App,
+    context: &RequestContext,
+    scope: Option<Id>,
+    task_ref: &str,
+) -> Result<(), WgError> {
+    let stuck: Vec<Id> = app.runtime.store.read(|session| {
+        let task = find_task(session, scope, task_ref)?;
+        Ok(session
+            .attempts_of_task(task.id, &[AttemptStatus::Verifying])?
+            .into_iter()
+            .filter(|row| killed_adoption(row.status, &row.config_snapshot, process_alive))
+            .map(|row| row.id)
+            .collect())
+    })?;
+    for attempt_id in stuck {
+        app.runtime.decide_then(
+            context,
+            |session| {
+                session
+                    .attempt_by_id(attempt_id)?
+                    .ok_or_else(|| WgError::not_found(format!("attempt {attempt_id} not found")))
+            },
+            |attempt, stamp| fail_verification(attempt, KILLED_VERIFIER, stamp),
+            index_written,
+        )?;
+    }
+    Ok(())
+}
+
 /// `AttemptService.adopt` (WG-4067): records a succeeded attempt whose head in one repository is
 /// `reference`, so work made outside Workgraph can enter a stack without a manual merge. The
 /// attempt's baseline is the merge-base of `reference` with the stack base (or the repository's
@@ -558,6 +597,7 @@ pub fn attempt_adopt(
         return Err(WgError::validation("adopt needs a ref to adopt"));
     }
     let scope = app.workspace_or_all(workspace)?;
+    fail_killed_adoptions(app, context, scope, task_ref)?;
     let actor = context.actor.to_string();
     let (task, world, repo, checkouts, has_active, covering) =
         app.runtime.store.read(|session| {
@@ -682,6 +722,7 @@ pub fn attempt_adopt(
                 let config: Map<String, serde_json::Value> = [
                     ("external", json!(true)),
                     ("adopted", json!(true)),
+                    (VERIFIER_PID_KEY, json!(std::process::id())),
                     ("ref", json!(reference)),
                     ("repository", json!(repo.name)),
                     ("baseline_ref", json!(base_ref)),

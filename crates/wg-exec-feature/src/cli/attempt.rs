@@ -104,6 +104,12 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let task = option_text(m, "task").unwrap_or_default();
             let reference = option_text(m, "--ref").unwrap_or_default();
             let repository = option_text(m, "--repository");
+            // WG-4285: the adopt blocks until its verification finishes, so say so before it starts.
+            state.eprint(&format!(
+                "{}
+",
+                view::ADOPT_WAIT_NOTICE
+            ));
             let out = runs::attempt_adopt(
                 state.app()?,
                 &context,

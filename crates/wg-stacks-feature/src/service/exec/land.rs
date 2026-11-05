@@ -5,7 +5,7 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 use crate::spec::exec::land::{
-    AcceptFacts, GitFacts, LandBase, Moved, decide, finish_landing, integration_removed,
+    AcceptFacts, GitFacts, LandBase, Landed, Moved, decide, finish_landing, integration_removed,
     is_refusal, land_base, landing_refused, move_bases, parse_land_request, precheck, verified,
 };
 use crate::spec::exec::worktree::{IntegrationTarget, integration_path};
@@ -206,7 +206,7 @@ impl Exec<'_> {
         mode: &str,
         reason: &str,
         guard: bool,
-    ) -> Result<Option<Id>, WgError> {
+    ) -> Result<Option<Landed>, WgError> {
         match self.land_inner(context, stack_id, mode, reason, guard) {
             Err(err) if is_refusal(err.code) => {
                 self.0.runtime.decide(
@@ -229,7 +229,7 @@ impl Exec<'_> {
         mode: &str,
         reason: &str,
         guard: bool,
-    ) -> Result<Option<Id>, WgError> {
+    ) -> Result<Option<Landed>, WgError> {
         let (world, event) = self.0.runtime.query(
             |session| {
                 let world = stack_world(session, stack_id)?;
@@ -266,10 +266,10 @@ impl Exec<'_> {
                     .map(|target| (target.repository_name.clone(), target.source_path.clone()))
                     .collect();
                 self.fast_forward(&plans, &sources)?;
-                let acceptance =
+                let landed =
                     self.finish_landing_rows(context, stack_id, run_id, &tips, mode, reason)?;
                 self.remove_integration(context, stack_id, &targets)?;
-                Ok(Some(acceptance))
+                Ok(Some(landed))
             }
         }
     }
@@ -495,7 +495,7 @@ impl Exec<'_> {
         tips: &BTreeMap<String, String>,
         mode: &str,
         reason: &str,
-    ) -> Result<Id, WgError> {
+    ) -> Result<Landed, WgError> {
         let loaded = self.0.runtime.query(
             |session| {
                 let world = stack_world(session, stack_id)?;

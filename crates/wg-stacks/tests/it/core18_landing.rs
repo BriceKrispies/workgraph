@@ -11,8 +11,8 @@ use wg_stacks::landing::{
     AfterVerified, Dependent, FfCheck, FfStep, JobRef, LandDecision, LandItem, LandRepo,
     LandRequest, LandState, Refusal, after_verified_outcome, after_verified_request,
     blockers_first, fast_forward_plan, guard_child, guard_defer, integration_busy, land_decision,
-    move_args, move_bases_event, release_plan, release_unverified, rollback_args, rollback_order,
-    stale_heads, untracked_collisions, verified_run,
+    move_args, move_bases_event, open_children, release_plan, release_unverified, rollback_args,
+    rollback_order, stale_heads, untracked_collisions, verified_run,
 };
 use wg_types::{ErrorCode, StackItemState, StackStatus, TaskStatus};
 
@@ -424,4 +424,21 @@ fn blockers_first_lands_each_task_after_the_tasks_it_depends_on() {
         (id(2), BTreeSet::from([id(1)])),
     ]);
     assert_eq!(blockers_first(vec![1_u128, 2], |n| id(*n), &cycle), [1, 2]);
+}
+
+/// WG-4285: a parent's children outside the stack keep it open unless they are accepted or
+/// cancelled, and the open ones are named in key order.
+#[test]
+fn open_children_are_the_outside_children_neither_accepted_nor_cancelled() {
+    let children = vec![
+        ("WG-9".to_owned(), TaskStatus::Ready),
+        ("WG-3".to_owned(), TaskStatus::Accepted),
+        ("WG-5".to_owned(), TaskStatus::Cancelled),
+        ("WG-4".to_owned(), TaskStatus::Running),
+    ];
+    assert_eq!(
+        open_children(&children),
+        vec!["WG-4".to_owned(), "WG-9".to_owned()]
+    );
+    assert!(open_children(&children[1..3]).is_empty());
 }

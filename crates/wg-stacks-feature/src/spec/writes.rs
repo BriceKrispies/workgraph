@@ -27,9 +27,10 @@ use wg_stacks::item::{check_item_transition, merge_order_after, satisfies_stack_
 use wg_stacks::membership::{
     check_add_item, check_readmit, check_remove_item, outside_repositories, readmit_task_path,
 };
+use wg_stacks::queue::is_settled;
 use wg_stacks::verify::{verify_job_key, verify_resource_keys};
 use wg_tasks::transition::{Applied, Change, refresh_dependents, transition};
-use wg_types::{Id, Permission, StackItemState, StackStatus, TaskStatus, WgError};
+use wg_types::{ErrorCode, Id, Permission, StackItemState, StackStatus, TaskStatus, WgError};
 use wg_wire::convention::{id as id_value, text};
 
 use super::out::{Tips, stack_out};
@@ -56,11 +57,17 @@ pub fn create_plan<'a>(
     parent_ref: &str,
 ) -> Result<CreatePlan<'a>, WgError> {
     let parent = task_in(world, scope, parent_ref)?;
+    // Children already accepted or cancelled belong to an earlier stack; a second stack on the
+    // parent takes only the rest (WG-4285).
     let mut children: Vec<&Task> = world
         .tasks
         .tasks
         .values()
-        .filter(|task| task.parent_id == Some(parent.id) && task.archived_at.is_none())
+        .filter(|task| {
+            task.parent_id == Some(parent.id)
+                && task.archived_at.is_none()
+                && !matches!(task.status, TaskStatus::Accepted | TaskStatus::Cancelled)
+        })
         .collect();
     children.sort_by_key(|task| task.number);
     if children.is_empty() {
@@ -933,6 +940,42 @@ pub fn verification_key(queued: &Queued, tips: &[(String, String)], version: Id)
     )
 }
 
+/// `StackVerifier.request` refuses a stack that has not settled (WG-4285): a child still pending
+/// or ready is named, since the verification would wait on it and report success without running.
+/// A stack with nothing merged yet is refused too.
+pub fn ensure_settled(world: &TaskWorld, stack_id: Id, parent_key: &str) -> Result<(), WgError> {
+    let states: Vec<(Id, StackItemState)> = world
+        .stacks
+        .items_of(stack_id)
+        .map(|item| (item.task_id, item.state))
+        .collect();
+    let unsettled: Vec<String> = states
+        .iter()
+        .filter(|(_, state)| matches!(state, StackItemState::Pending | StackItemState::Ready))
+        .filter_map(|(task, _)| world.tasks.task(*task).map(|row| row.key.to_string()))
+        .collect();
+    if !unsettled.is_empty() {
+        return Err(WgError::new(
+            ErrorCode::Conflict,
+            format!(
+                "{parent_key}'s stack has children still pending or ready: {}; integrate them or remove them from the stack before verifying",
+                unsettled.join(", ")
+            ),
+        )
+        .detail("parent", parent_key)
+        .detail("unsettled", unsettled));
+    }
+    let states: Vec<StackItemState> = states.into_iter().map(|(_, state)| state).collect();
+    if !is_settled(&states) {
+        return Err(WgError::new(
+            ErrorCode::Conflict,
+            format!("{parent_key}'s stack has nothing merged yet; integrate it before verifying"),
+        )
+        .detail("parent", parent_key));
+    }
+    Ok(())
+}
+
 /// `StackVerifier.request`: one `stack_verify` job for the active stack's integration tips.
 pub fn request_verification(
     stamp: &Stamp,
@@ -1275,5 +1318,137 @@ mod verified_tests {
         .unwrap_or_else(|e| panic!("integrate: {}", e.message));
         let writes: Vec<Write> = decision.writes.iter().cloned().collect();
         assert_unique_jobs(&inserted_job_ids(&writes));
+    }
+
+    /// The parent `WG-1` in the stack `id(100)` with children `WG-2` and `WG-3`, in the given
+    /// item states.
+    fn stack_with(states: [StackItemState; 2]) -> TaskWorld {
+        let parent = id(10);
+        let stack = Stack {
+            id: id(100),
+            workspace_id: id(1),
+            parent_task_id: parent,
+            status: StackStatus::Open,
+            created_at: at(1),
+            updated_at: at(1),
+            land_request: None,
+        };
+        let mut rows = vec![
+            Row::from(task(10, 1, None)),
+            Row::from(task(11, 2, Some(parent))),
+            Row::from(task(12, 3, Some(parent))),
+            Row::from(stack),
+        ];
+        for (item, child, state) in [(20, 11, states[0]), (21, 12, states[1])] {
+            rows.push(Row::from(StackItem {
+                id: id(item),
+                stack_id: id(100),
+                task_id: id(child),
+                state,
+                merge_order: None,
+                detail: None,
+                created_at: at(1),
+                updated_at: at(1),
+            }));
+        }
+        TaskWorld::default().with_rows(rows)
+    }
+
+    #[test]
+    fn a_verify_request_names_the_children_still_pending() {
+        let world = stack_with([StackItemState::Verified, StackItemState::Pending]);
+        let error = ensure_settled(&world, id(100), "WG-1").err();
+        assert_eq!(error.as_ref().map(|e| e.code), Some(ErrorCode::Conflict));
+        let message = error.map(|e| e.message).unwrap_or_default();
+        assert!(message.contains("WG-3"), "{message}");
+        assert!(!message.contains("WG-2"), "{message}");
+    }
+
+    #[test]
+    fn a_verify_request_names_the_children_still_ready() {
+        let world = stack_with([StackItemState::Ready, StackItemState::Merged]);
+        let message = ensure_settled(&world, id(100), "WG-1")
+            .err()
+            .map(|e| e.message)
+            .unwrap_or_default();
+        assert!(message.contains("pending or ready: WG-2"), "{message}");
+    }
+
+    #[test]
+    fn a_verify_request_on_a_stack_with_nothing_merged_is_refused() {
+        let world = stack_with([StackItemState::Ejected, StackItemState::Ejected]);
+        let message = ensure_settled(&world, id(100), "WG-1")
+            .err()
+            .map(|e| e.message)
+            .unwrap_or_default();
+        assert!(message.contains("nothing merged yet"), "{message}");
+    }
+
+    #[test]
+    fn a_settled_stack_may_verify() {
+        let world = stack_with([StackItemState::Merged, StackItemState::Verified]);
+        assert!(ensure_settled(&world, id(100), "WG-1").is_ok());
+    }
+
+    #[test]
+    fn a_second_stack_takes_only_the_children_not_yet_accepted() {
+        let mut accepted = task(11, 2, Some(id(10)));
+        accepted.status = TaskStatus::Accepted;
+        let parent = task(10, 1, None);
+        let rows = vec![
+            Row::from(parent),
+            Row::from(accepted),
+            Row::from(task(12, 3, Some(id(10)))),
+            Row::from(Repository {
+                id: id(40),
+                workspace_id: id(1),
+                name: "svc".into(),
+                description: String::new(),
+                identity_fingerprint: None,
+                default_branch: Some("main".into()),
+                tracked_branches: VectorSync::new_sync(),
+                access_mode: AccessMode::ReadWrite,
+                health_status: "ok".into(),
+                health_detail: Default::default(),
+                health_checked_at: None,
+                is_shallow: false,
+                last_scanned_at: None,
+                archived_at: None,
+                metadata: Default::default(),
+                created_at: at(1),
+                updated_at: at(1),
+            }),
+            Row::from(TaskRepository {
+                task_id: id(11),
+                repository_id: id(40),
+                access: "read_write".into(),
+                created_at: at(1),
+            }),
+            Row::from(TaskRepository {
+                task_id: id(12),
+                repository_id: id(40),
+                access: "read_write".into(),
+                created_at: at(1),
+            }),
+        ];
+        let world = TaskWorld::default().with_rows(rows);
+        let decision = create(
+            &world,
+            &stamp(),
+            id(1),
+            "WG-1",
+            &[("svc".to_owned(), "base".to_owned())],
+            &BTreeSet::new(),
+        )
+        .unwrap_or_else(|e| panic!("create: {}", e.message));
+        let stacks = world.stacks.apply_all(decision.writes.iter());
+        let stack_id = stacks
+            .stacks
+            .keys()
+            .next()
+            .copied()
+            .unwrap_or_else(|| panic!("no stack"));
+        let children: Vec<Id> = stacks.items_of(stack_id).map(|row| row.task_id).collect();
+        assert_eq!(children, vec![id(12)]);
     }
 }

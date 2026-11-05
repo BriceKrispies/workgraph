@@ -289,6 +289,26 @@ fn python_repr(text: &str) -> String {
     }
 }
 
+/// The config key an `adopt` records the adopting process under (WG-4285).
+pub const VERIFIER_PID_KEY: &str = "verifier_pid";
+
+/// Whether an attempt is an adopted one stuck in `verifying` because the process that ran its
+/// verification is gone. `alive` answers whether a process id still runs. An attempt without a
+/// recorded verifier is not treated as killed.
+pub fn killed_adoption(
+    attempt: A,
+    config: &Map<String, Value>,
+    alive: impl Fn(u32) -> bool,
+) -> bool {
+    attempt == A::Verifying
+        && config.get("adopted").and_then(Value::as_bool) == Some(true)
+        && config
+            .get(VERIFIER_PID_KEY)
+            .and_then(Value::as_u64)
+            .and_then(|pid| u32::try_from(pid).ok())
+            .is_some_and(|pid| !alive(pid))
+}
+
 /// Checks an `adopt` before its attempt is recorded. The task must be ready, claimed or awaiting
 /// verification, and must have no attempt in an active status.
 pub fn adopt_check(task_key: &str, task: S, has_active_attempt: bool) -> Result<(), WgError> {

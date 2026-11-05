@@ -62,3 +62,33 @@ fn adopt_outside_a_stack_runs_the_full_tier() {
     );
     assert!(!marks_ready(Gate::NoStack, "passed"));
 }
+
+/// WG-4285: an adopted attempt stuck in `verifying` is recovered only when the process that
+/// verified it is gone.
+#[test]
+fn a_killed_adoption_is_recovered_only_when_its_verifier_is_gone() {
+    use serde_json::{Map, Value, json};
+    use wg_exec::attempt::{VERIFIER_PID_KEY, killed_adoption};
+    use wg_types::AttemptStatus as A;
+
+    let mut config: Map<String, Value> = Map::new();
+    config.insert("adopted".to_owned(), json!(true));
+    config.insert(VERIFIER_PID_KEY.to_owned(), json!(4242));
+    assert!(killed_adoption(A::Verifying, &config, |_| false));
+    assert!(!killed_adoption(A::Verifying, &config, |_| true));
+    assert!(!killed_adoption(A::Running, &config, |_| false));
+
+    config.insert("adopted".to_owned(), json!(false));
+    assert!(!killed_adoption(A::Verifying, &config, |_| false));
+}
+
+#[test]
+fn an_adoption_without_a_recorded_verifier_is_not_treated_as_killed() {
+    use serde_json::{Map, Value, json};
+    use wg_exec::attempt::killed_adoption;
+    use wg_types::AttemptStatus as A;
+
+    let mut config: Map<String, Value> = Map::new();
+    config.insert("adopted".to_owned(), json!(true));
+    assert!(!killed_adoption(A::Verifying, &config, |_| false));
+}

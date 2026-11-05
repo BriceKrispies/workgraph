@@ -29,7 +29,7 @@ mod verification;
 mod verify;
 mod worktrees;
 
-use serde_json::Value;
+use serde_json::{Value, json};
 use wg_git::{Git, RunOptions};
 use wg_rows::task_world_sql::TaskWorld;
 use wg_runtime::{App, RequestContext};
@@ -38,6 +38,7 @@ use wg_store::Session;
 use wg_types::{Id, WgError};
 
 use crate::service::load_world;
+use crate::spec::exec::land::Landed;
 use crate::spec::git_failure;
 
 /// The executor's view of the application: the steps of a stack job, as methods.
@@ -155,7 +156,7 @@ pub fn land_stack(
     mode: &str,
     reason: &str,
     guard: bool,
-) -> Result<Option<Id>, WgError> {
+) -> Result<Option<Landed>, WgError> {
     Exec(app).land_stack(context, stack_id, mode, reason, guard)
 }
 
@@ -193,13 +194,23 @@ pub fn land_stack_accepted(
     reason: &str,
     guard: bool,
 ) -> Result<wg_json::Value, WgError> {
-    let Some(acceptance_id) = land_stack(app, context, stack_id, mode, reason, guard)? else {
+    let Some(landed) = land_stack(app, context, stack_id, mode, reason, guard)? else {
         return Err(WgError::conflict(
             "the default branch moved since the stack was verified; the stack was rebuilt on the \
              new branch and lands automatically once it verifies",
         )
         .detail("stack_id", stack_id.to_string())
         .detail("landing", "deferred"));
+    };
+    let Some(acceptance_id) = landed.acceptance else {
+        // WG-4285: the children were landed, but the parent stays in review until the children
+        // outside the stack are accepted or cancelled.
+        return Ok(wg_json::to_value(&json!({
+            "stack": stack_id.to_string(),
+            "landed": true,
+            "parent_accepted": false,
+            "open_children": landed.open_children,
+        })));
     };
     app.runtime.query(
         |session| {

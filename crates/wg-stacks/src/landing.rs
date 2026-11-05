@@ -237,6 +237,19 @@ impl Refusal {
     }
 }
 
+/// The children of a parent that are outside its stack and neither accepted nor cancelled, by key
+/// and sorted. A stack landing does not accept the parent while any remain (WG-4285): the parent
+/// stays in review until a later stack, or a manual step, clears them.
+pub fn open_children(children: &[(String, TaskStatus)]) -> Vec<String> {
+    sorted_by(
+        children
+            .iter()
+            .filter(|(_, status)| !matches!(status, TaskStatus::Accepted | TaskStatus::Cancelled))
+            .map(|(key, _)| key.clone()),
+        String::clone,
+    )
+}
+
 /// The branch `_land` takes once every precondition holds.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LandDecision {

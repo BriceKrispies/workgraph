@@ -13,12 +13,14 @@
 //!
 //! This crate is one of the two that may use `unsafe` (FD-01); every block is documented.
 
+mod alive;
 mod env;
 mod resolve;
 mod run;
 mod sink;
 mod tree;
 
+pub use alive::process_alive;
 pub use env::base_environment;
 pub use resolve::{resolve_executable, resolve_executable_in};
 pub use run::{Cancel, run_capture, run_process};

@@ -490,6 +490,7 @@ pub fn verify(
             |session| -> Result<(Pending, Vec<(String, String)>), WgError> {
                 let world = load_world(session, scope)?;
                 let queued = writes::queued(&world, scope, parent)?;
+                writes::ensure_settled(&world, queued.stack.id, &queued.parent_key)?;
                 let version = latest_event_id(session, queued.stack.id)?;
                 let found = read_tips(&worktrees, &writes::verification_targets(&queued));
                 let tips = writes::tips_or_bases(&queued, &found);

@@ -21,8 +21,8 @@ use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::landing::blockers_first;
 use wg_stacks::landing::{
     ACCEPTABLE_TASK_STATUSES, LandDecision, LandItem, LandRepo, LandState, Refusal,
-    UnverifiedRelease, child_accept_reason, land_decision, landed_reason, release_plan,
-    release_unverified, verified_run,
+    UnverifiedRelease, child_accept_reason, land_decision, landed_reason, open_children,
+    release_plan, release_unverified, verified_run,
 };
 use wg_stacks::landing::{Dependent, ReleasePlan};
 use wg_stacks::rebuild::{StackTask, dependents};
@@ -543,8 +543,16 @@ fn release_unverified_children<'a>(
         })
 }
 
-/// `_finish`: the acceptances are recorded and the stack is marked landed. The reply is the
-/// parent's acceptance id.
+/// What a landing that landed reports: the parent's acceptance, or `None` when children outside
+/// the stack are still open and the parent stays in review (WG-4285), and those children.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Landed {
+    pub acceptance: Option<Id>,
+    pub open_children: Vec<String>,
+}
+
+/// `_finish`: the acceptances are recorded and the stack is marked landed. The parent is accepted
+/// only when no child outside the stack is open; otherwise it stays in review.
 pub fn finish_landing(
     world: &TaskWorld,
     stamp: &Stamp,
@@ -553,7 +561,7 @@ pub fn finish_landing(
     mode: &str,
     reason: &str,
     facts: &AcceptFacts,
-) -> Result<Decision<Id>, WgError> {
+) -> Result<Decision<Landed>, WgError> {
     let chain = Chain::start(world, stamp);
     let stack = chain.stack(stack_id)?.clone();
     let parent = chain.task(stack.parent_task_id)?.clone();
@@ -589,30 +597,56 @@ pub fn finish_landing(
                 accepted.push(task.key.clone());
                 Ok((chain, accepted))
             })?;
-    let chain = accept_task(chain, parent.id, mode, reason, facts)?;
-    let acceptance = chain
+    let outside: Vec<(String, TaskStatus)> = chain
         .step
-        .decision
-        .writes
-        .iter()
-        .rev()
-        .find_map(|write| match write {
-            Write::Insert(wg_model::Row::TaskAcceptance(row)) if row.task_id == parent.id => {
-                Some(row.id)
-            }
-            _ => None,
+        .tasks
+        .tasks
+        .values()
+        .filter(|task| {
+            task.parent_id == Some(parent.id)
+                && task.archived_at.is_none()
+                && !in_stack.contains(&task.id)
         })
-        .ok_or_else(|| {
-            WgError::workgraph(format!(
-                "acceptance of {} vanished from the slice",
-                parent.id
-            ))
-        })?;
+        .map(|task| (task.key.to_string(), task.status))
+        .collect();
+    let open = open_children(&outside);
+    let (chain, acceptance) = if open.is_empty() {
+        let chain = accept_task(chain, parent.id, mode, reason, facts)?;
+        let acceptance = chain
+            .step
+            .decision
+            .writes
+            .iter()
+            .rev()
+            .find_map(|write| match write {
+                Write::Insert(wg_model::Row::TaskAcceptance(row)) if row.task_id == parent.id => {
+                    Some(row.id)
+                }
+                _ => None,
+            })
+            .ok_or_else(|| {
+                WgError::workgraph(format!(
+                    "acceptance of {} vanished from the slice",
+                    parent.id
+                ))
+            })?;
+        (chain, Some(acceptance))
+    } else {
+        (chain, None)
+    };
+    let landed_text = if open.is_empty() {
+        landed_reason(&parent_key)
+    } else {
+        format!(
+            "{parent_key} stays awaiting review: children outside the stack are open: {}",
+            open.join(", ")
+        )
+    };
     let released_keys: Vec<wg_types::TaskKey> = released
         .iter()
         .filter_map(|key| wg_types::TaskKey::parse(key).ok())
         .collect();
-    let chain = chain.stack_status(stack_id, StackStatus::Landed, &landed_reason(&parent_key));
+    let chain = chain.stack_status(stack_id, StackStatus::Landed, &landed_text);
     let current = chain.stack(stack_id)?.clone();
     let chain = chain
         .write(Write::update(Stack {
@@ -633,7 +667,10 @@ pub fn finish_landing(
                 released: released_keys.into_iter().collect(),
             }),
         );
-    Ok(chain.finish(acceptance))
+    Ok(chain.finish(Landed {
+        acceptance,
+        open_children: open,
+    }))
 }
 
 /// `_remove_integration`: an integration branch was removed after landing.
@@ -662,4 +699,163 @@ pub fn integration_removed(
 #[must_use]
 pub fn acceptable(status: TaskStatus) -> bool {
     ACCEPTABLE_TASK_STATUSES.contains(&status)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rpds::VectorSync;
+    use wg_model::Row;
+    use wg_model::entity::{Repository, StackItem, Task, TaskRepository};
+    use wg_model::stamp::Stamp;
+    use wg_types::{AccessMode, Actor, Permission, TaskKey, TaskPriority, Timestamp};
+
+    fn id(n: u128) -> Id {
+        wg_model::derive_id(&[9; 32], u32::try_from(n).unwrap_or(0))
+    }
+
+    fn at(second: u32) -> Timestamp {
+        Timestamp::from_components(2026, 11, 5, 12, 0, u8::try_from(second).unwrap_or(0), 0)
+            .unwrap_or_else(|e| panic!("timestamp: {e}"))
+    }
+
+    fn stamp() -> Stamp {
+        Stamp {
+            at: at(0),
+            entropy: [7; 32],
+            actor: Actor::parse("human:brice").unwrap_or_else(|e| panic!("{e}")),
+            permissions: [Permission::StackWrite, Permission::TaskAccept]
+                .into_iter()
+                .collect(),
+            correlation: id(99).into(),
+            causation: None,
+            attempt: None,
+            automation_depth: 0,
+        }
+    }
+
+    fn task(n: u128, number: i64, parent: Option<Id>, status: TaskStatus) -> Task {
+        Task {
+            id: id(n),
+            workspace_id: id(1),
+            number,
+            key: TaskKey::parse(&format!("WG-{number}")).unwrap_or_else(|e| panic!("{e}")),
+            title: format!("Task {number}"),
+            description: String::new(),
+            description_hash: String::new(),
+            acceptance_criteria: VectorSync::new_sync(),
+            status,
+            priority: TaskPriority::Medium,
+            category: None,
+            parent_id: parent,
+            assignee: None,
+            assigned_agent: None,
+            claimed_by: None,
+            claim_expires_at: None,
+            auto_execute: false,
+            estimated_effort: None,
+            metadata: Default::default(),
+            due_at: None,
+            scheduled_at: None,
+            created_by: "human:brice".into(),
+            version: 1,
+            created_at: at(1),
+            updated_at: at(1),
+            started_at: None,
+            completed_at: None,
+            accepted_at: None,
+            archived_at: None,
+            current_classification_id: None,
+        }
+    }
+
+    /// The parent `WG-1` in review, its verified child `WG-2` in the stack `id(100)`, and a child
+    /// `WG-3` outside the stack in `outside`.
+    fn landing_world(outside: TaskStatus) -> TaskWorld {
+        let parent = id(10);
+        let stack = Stack {
+            id: id(100),
+            workspace_id: id(1),
+            parent_task_id: parent,
+            status: StackStatus::Verified,
+            created_at: at(1),
+            updated_at: at(1),
+            land_request: None,
+        };
+        let rows = vec![
+            Row::from(task(10, 1, None, TaskStatus::AwaitingReview)),
+            Row::from(task(11, 2, Some(parent), TaskStatus::AwaitingReview)),
+            Row::from(task(12, 3, Some(parent), outside)),
+            Row::from(Repository {
+                id: id(40),
+                workspace_id: id(1),
+                name: "svc".into(),
+                description: String::new(),
+                identity_fingerprint: None,
+                default_branch: Some("main".into()),
+                tracked_branches: VectorSync::new_sync(),
+                access_mode: AccessMode::ReadWrite,
+                health_status: "ok".into(),
+                health_detail: Default::default(),
+                health_checked_at: None,
+                is_shallow: false,
+                last_scanned_at: None,
+                archived_at: None,
+                metadata: Default::default(),
+                created_at: at(1),
+                updated_at: at(1),
+            }),
+            Row::from(TaskRepository {
+                task_id: id(11),
+                repository_id: id(40),
+                access: "read_write".into(),
+                created_at: at(1),
+            }),
+            Row::from(stack),
+            Row::from(StackItem {
+                id: id(20),
+                stack_id: id(100),
+                task_id: id(11),
+                state: StackItemState::Verified,
+                merge_order: Some(1),
+                detail: None,
+                created_at: at(1),
+                updated_at: at(1),
+            }),
+        ];
+        TaskWorld::default().with_rows(rows)
+    }
+
+    fn land(outside: TaskStatus) -> Landed {
+        let world = landing_world(outside);
+        let decision = finish_landing(
+            &world,
+            &stamp(),
+            id(100),
+            &BTreeMap::new(),
+            "automated",
+            "stack.auto_accept",
+            &AcceptFacts::default(),
+        )
+        .unwrap_or_else(|e| panic!("finish: {}", e.message));
+        let landed = decision.reply.clone();
+        let accepted_parent = decision.writes.iter().any(|write| {
+            matches!(write, Write::Insert(Row::TaskAcceptance(row)) if row.task_id == id(10))
+        });
+        assert_eq!(accepted_parent, landed.acceptance.is_some());
+        landed
+    }
+
+    #[test]
+    fn a_landing_keeps_the_parent_in_review_while_a_child_outside_the_stack_is_open() {
+        let landed = land(TaskStatus::Ready);
+        assert_eq!(landed.acceptance, None);
+        assert_eq!(landed.open_children, vec!["WG-3".to_owned()]);
+    }
+
+    #[test]
+    fn a_landing_accepts_the_parent_once_the_children_outside_are_accepted_or_cancelled() {
+        assert!(land(TaskStatus::Accepted).acceptance.is_some());
+        assert!(land(TaskStatus::Cancelled).acceptance.is_some());
+    }
 }

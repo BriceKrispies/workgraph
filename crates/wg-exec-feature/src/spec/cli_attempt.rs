@@ -325,6 +325,10 @@ fn truthy(value: &Value) -> bool {
     }
 }
 
+/// Printed before `attempt adopt` blocks on its verification (WG-4285): a stack child runs its
+/// fast checks, and a task outside a stack runs the full suite, in this process.
+pub const ADOPT_WAIT_NOTICE: &str = "attempt adopt runs the task's verification before it returns: a stack child's fast checks, or the full suite for a task outside a stack; it waits for that run in this process";
+
 /// The human view of `attempt adopt`: the adopted attempt, its repository and the head it records.
 #[must_use]
 pub fn adopt_line(console: &Console, out: &Value) -> String {

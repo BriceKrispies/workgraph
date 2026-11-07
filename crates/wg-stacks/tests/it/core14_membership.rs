@@ -12,9 +12,10 @@ use wg_stacks::item::{
     check_item_transition, is_removable, merge_order_after, satisfies_stack_dependency,
 };
 use wg_stacks::membership::{
-    check_add_item, check_readmit, check_remove_item, outside_repositories, readmit_task_path,
+    check_add_item, check_close, check_readmit, check_remove_item, outside_repositories,
+    readmit_task_path,
 };
-use wg_types::{ErrorCode, StackItemState as S, TaskStatus};
+use wg_types::{ErrorCode, StackItemState as S, StackStatus, TaskStatus};
 
 fn id(n: u128) -> Uuid {
     Uuid::from_u128(n)
@@ -231,4 +232,25 @@ fn stack_dependency_satisfaction() {
     assert!(satisfies_stack_dependency(S::Verified));
     assert!(!satisfies_stack_dependency(S::Pending));
     assert!(!satisfies_stack_dependency(S::Ejected));
+}
+
+/// `stack close`: a stack that still has children is refused, whatever its status, and names the
+/// count; an `open` stack with no children is refused too; only an `integrating` stack with no
+/// children is accepted.
+#[test]
+fn close_refused_while_children_remain_and_only_when_integrating() {
+    let err = check_close("WG-1", StackStatus::Integrating, 2)
+        .err()
+        .unwrap_or_else(|| panic!("closing a stack with children must be refused"));
+    assert_eq!(err.code, ErrorCode::Conflict);
+    assert_eq!(err.details["items"], json!(2));
+    assert!(check_close("WG-1", StackStatus::Open, 1).is_err());
+
+    let err = check_close("WG-1", StackStatus::Open, 0)
+        .err()
+        .unwrap_or_else(|| panic!("closing an open stack must be refused"));
+    assert_eq!(err.code, ErrorCode::Conflict);
+    assert_eq!(err.details["status"], json!("open"));
+
+    assert!(check_close("WG-1", StackStatus::Integrating, 0).is_ok());
 }

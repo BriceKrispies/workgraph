@@ -1,4 +1,4 @@
-//! `workgraph stack create, show, list, add, remove, readmit, integrate, verify, eject, history`:
+//! `workgraph stack create, show, list, add, remove, close, readmit, integrate, verify, eject, history`:
 //! a parent task's children integrated as one unit.
 //!
 //! The clap command is the snapshot's own tree, so help and parameters match `contracts/cli.json`;
@@ -49,6 +49,11 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         Some("remove") => {
             let context = human_context(None)?;
             let out = service::remove(state.app()?, &context, ws, &parent, &task)?;
+            state.emit(&out, Some(&|c| view::stack_view(c, &out)))
+        }
+        Some("close") => {
+            let context = human_context(None)?;
+            let out = service::close(state.app()?, &context, ws, &parent)?;
             state.emit(&out, Some(&|c| view::stack_view(c, &out)))
         }
         Some("readmit") => {

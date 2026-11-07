@@ -16,7 +16,7 @@ use wg_json::{Value, dict};
 use wg_model::entity::{Repository, RepositoryCheckout, Stack, StackItem, StackRepository, Task};
 use wg_model::event::{
     EventDraft, EventPayload, StackCreated, StackItemAdded, StackItemRemoved,
-    StackItemStateChanged, StrMap,
+    StackItemStateChanged, StackStatusChanged, StrMap,
 };
 use wg_model::slice::{QueueSlice, StackSlice};
 use wg_model::stamp::{IdSeq, Stamp};
@@ -25,7 +25,8 @@ use wg_registry::checkout::primary_checkout;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_stacks::item::{check_item_transition, merge_order_after, satisfies_stack_dependency};
 use wg_stacks::membership::{
-    check_add_item, check_readmit, check_remove_item, outside_repositories, readmit_task_path,
+    check_add_item, check_close, check_readmit, check_remove_item, outside_repositories,
+    readmit_task_path,
 };
 use wg_stacks::queue::is_settled;
 use wg_stacks::verify::{verify_job_key, verify_resource_keys};
@@ -439,6 +440,47 @@ pub fn remove_item(
         &Tips::new(),
     )?;
     Ok(applied.decision.with_reply(reply))
+}
+
+/// `StackService.close`: the parent's active stack, `integrating` with no children, is abandoned.
+/// Nothing is written unless the check passes.
+pub fn close(
+    world: &TaskWorld,
+    stamp: &Stamp,
+    scope: Id,
+    parent_ref: &str,
+) -> Result<Decision<Value>, WgError> {
+    stamp.require(&[Permission::StackWrite])?;
+    let parent = task_in(world, scope, parent_ref)?;
+    let stack = active_stack(world, parent)?;
+    let items = world.stacks.items_of(stack.id).count();
+    check_close(&parent.key.to_string(), stack.status, items)?;
+    let (event_id, _) = stamp.ids().next();
+    let previous = stack.status;
+    let closed = Stack {
+        status: StackStatus::Abandoned,
+        updated_at: stamp.at,
+        ..stack.clone()
+    };
+    let decision = Decision::new(())
+        .write(Write::update(closed.clone()))
+        .event(EventDraft::new(
+            stamp,
+            event_id,
+            Some(stack.workspace_id),
+            stack.id,
+            EventPayload::StackStatusChanged(StackStatusChanged {
+                from: previous,
+                to: StackStatus::Abandoned,
+                reason: "closed with no children".to_owned(),
+            }),
+        ));
+    let after = TaskWorld {
+        tasks: world.tasks.clone(),
+        stacks: world.stacks.apply_all(decision.writes.iter()),
+    };
+    let reply = stack_out(&after, &closed, &Tips::new())?;
+    Ok(decision.with_reply(reply))
 }
 
 // ---------------------------------------------------------------- the item transition

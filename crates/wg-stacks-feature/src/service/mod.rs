@@ -1,6 +1,6 @@
 //! The stack services (IF-53): the entry points behind `stack create`, `show`, `list`, `add`,
-//! `remove`, `readmit`, `integrate`, `verify`, `history` and `eject`, the `/stacks` routes and the
-//! stack tools (`StackService`, `StackVerifier.request`).
+//! `remove`, `close`, `readmit`, `integrate`, `verify`, `history` and `eject`, the `/stacks` routes
+//! and the stack tools (`StackService`, `StackVerifier.request`).
 //!
 //! Each one resolves the workspace, loads the task world with the stacks' repository rows in the
 //! transaction of the call, asks git what only git knows (the base commits of a new stack, the
@@ -350,6 +350,26 @@ pub fn remove(
             context,
             |session| load_world(session, scope),
             |world, stamp| writes::remove_item(world, stamp, scope, parent, task),
+            index_written,
+        )?
+        .reply)
+}
+
+/// `StackService.close`: the parent's stack, integrating with no children, is closed as abandoned.
+pub fn close(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    parent: &str,
+) -> Result<Value, WgError> {
+    require_stack_write(app, context)?;
+    let scope = app.workspace_or_default(workspace)?;
+    Ok(app
+        .runtime
+        .decide_then(
+            context,
+            |session| load_world(session, scope),
+            |world, stamp| writes::close(world, stamp, scope, parent),
             index_written,
         )?
         .reply)

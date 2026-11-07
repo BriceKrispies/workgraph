@@ -1,11 +1,11 @@
 //! The Pure half of the stacks feature: the clap tree of the `stack` group, the human views of its
 //! results, and the stack commands as pure functions of the task world (IF-53): `stack create`,
-//! `show`, `list`, `add`, `remove`, `readmit`, `integrate`, `verify` and `history`, the `/stacks`
+//! `show`, `list`, `add`, `remove`, `close`, `readmit`, `integrate`, `verify` and `history`, the `/stacks`
 //! routes (`api/routes/stacks.py`) and the stacks service (`core/services/stacks.py`).
 //!
 //! * [`out`]: `StackOut` assembled from the world, with the integration tips the worktrees report;
 //! * [`reads`]: list, show, the stacks containing a task, and the history;
-//! * [`writes`]: create, add, remove and readmit as decisions, and the integration and
+//! * [`writes`]: create, add, remove, close and readmit as decisions, and the integration and
 //!   verification jobs they queue;
 //! * [`sql`]: the statement text of the stack readers (SH-07);
 //! * [`view`]: the human views of the results.

@@ -4,7 +4,7 @@
 
 use std::collections::BTreeSet;
 
-use wg_types::{Id, StackItemState, TaskStatus, WgError};
+use wg_types::{Id, StackItemState, StackStatus, TaskStatus, WgError};
 
 use crate::item::is_removable;
 
@@ -85,6 +85,30 @@ pub fn check_readmit(task_key: &str, state: StackItemState) -> Result<(), WgErro
     ))
     .detail("task", task_key)
     .detail("state", state.as_str()))
+}
+
+/// Checks closing a stack: only an `integrating` stack with no children can be closed. A stack
+/// that still has children is refused whatever its status, so no child is left on it unseen.
+pub fn check_close(
+    parent_key: &str,
+    status: StackStatus,
+    item_count: usize,
+) -> Result<(), WgError> {
+    if item_count > 0 {
+        return Err(WgError::conflict(format!(
+            "{parent_key}'s stack still has {item_count} child(ren); remove them before closing it"
+        ))
+        .detail("parent", parent_key)
+        .detail("items", item_count));
+    }
+    if status == StackStatus::Integrating {
+        return Ok(());
+    }
+    Err(WgError::conflict(format!(
+        "{parent_key}'s stack is {status}; only an integrating stack with no children can be closed"
+    ))
+    .detail("parent", parent_key)
+    .detail("status", status.as_str()))
 }
 
 /// The task statuses a readmit walks the task through.

@@ -304,10 +304,11 @@ pub struct ResultPlan {
 /// The decision of `report_result`. `succeeded` is the attempt outcome; `summary` is the
 /// agent's summary (possibly empty). `has_checks` as in [`plan_complete`].
 ///
-/// A task that is not claimed or running is refused for either outcome: nobody holds it, so
-/// there is no attempt to report on. This covers every unclaimed status (backlog, ready,
-/// blocked, and the rest). Callers must claim it first (`task claim` / `task_claim`), exactly
-/// as for `plan_complete`.
+/// A task that has not been claimed yet (backlog, ready or blocked) is refused for either
+/// outcome: nobody holds it, so there is no attempt to report on. Callers must claim it first
+/// (`task claim` / `task_claim`), exactly as for `plan_complete`. A task past its claim
+/// (awaiting review or verification, accepted, failed, cancelled) still records a late result
+/// as a comment.
 pub fn plan_report_result(
     task: &Task,
     caller: Caller<'_>,
@@ -316,7 +317,10 @@ pub fn plan_report_result(
     has_checks: bool,
 ) -> Result<ResultPlan, WgError> {
     let live = matches!(task.status, TaskStatus::Claimed | TaskStatus::Running);
-    if !live {
+    if matches!(
+        task.status,
+        TaskStatus::Backlog | TaskStatus::Ready | TaskStatus::Blocked
+    ) {
         return Err(WgError::invalid_transition(format!(
             "task {} is {}; claim it before reporting a result",
             task.key, task.status

@@ -299,31 +299,35 @@ fn result_reports_complete_claimed_work_or_record_a_comment() {
             failed: true,
         })
     );
-
-    let backlog = task("TAA", 2, TaskStatus::Backlog, None);
-    let recorded = plan_report_result(&backlog, caller(AGENT_ONE), true, "", false)
-        .unwrap_or_else(|e| panic!("{e}"));
-    assert_eq!(recorded.completion, None);
-    assert!(!recorded.fail);
-    assert_eq!(
-        recorded.comment.map(|c| c.body),
-        Some("succeeded".to_owned())
-    );
 }
 
 #[test]
-fn a_result_on_an_unclaimed_ready_task_is_refused_naming_the_state() {
-    // Regression for WG-4072: `task result` on a ready task used to return the task unchanged
-    // with no error. It must now refuse, for either outcome, and name the required state.
-    let ready = task("TAA", 1, TaskStatus::Ready, None);
-    for succeeded in [true, false] {
-        let error = plan_report_result(&ready, caller(AGENT_ONE), succeeded, "", false)
-            .err()
-            .unwrap_or_else(|| panic!("a ready task must refuse a result (succeeded={succeeded})"));
-        assert_eq!(error.code, ErrorCode::InvalidTransition);
-        assert!(error.message.contains("ready"), "{}", error.message);
-        assert!(error.message.contains("claim"), "{}", error.message);
+fn a_result_on_an_unclaimed_task_is_refused_naming_the_state() {
+    // Regression for WG-4072 (ready) and WG-4426 (backlog): `task result` on an unclaimed task
+    // used to return the task unchanged, or record a comment, with no error. Every unclaimed
+    // status must refuse, for either outcome, and name the actual status and the required state.
+    for status in [TaskStatus::Backlog, TaskStatus::Ready, TaskStatus::Blocked] {
+        let unclaimed = task("TAA", 1, status, None);
+        for succeeded in [true, false] {
+            let error = plan_report_result(&unclaimed, caller(AGENT_ONE), succeeded, "", false)
+                .err()
+                .unwrap_or_else(|| {
+                    panic!("a {status} task must refuse a result (succeeded={succeeded})")
+                });
+            assert_eq!(error.code, ErrorCode::InvalidTransition);
+            assert!(error.message.contains(status.as_str()), "{}", error.message);
+            assert!(error.message.contains("claim"), "{}", error.message);
+        }
     }
+}
+
+#[test]
+fn a_result_on_a_claimed_task_succeeds() {
+    let claimed = holder(task("TAA", 3, TaskStatus::Claimed, None), AGENT_ONE, 9999);
+    let plan = plan_report_result(&claimed, caller(AGENT_ONE), true, "", false)
+        .unwrap_or_else(|e| panic!("{e}"));
+    assert!(plan.completion.is_some());
+    assert!(!plan.fail);
 }
 
 #[test]

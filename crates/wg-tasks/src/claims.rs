@@ -304,9 +304,10 @@ pub struct ResultPlan {
 /// The decision of `report_result`. `succeeded` is the attempt outcome; `summary` is the
 /// agent's summary (possibly empty). `has_checks` as in [`plan_complete`].
 ///
-/// A `ready` task is refused for either outcome: nobody holds it, so there is no attempt to
-/// report on. Callers must claim it first (`task claim` / `task_claim`), exactly as for
-/// `plan_complete`. Other non-live statuses still record the result as a comment.
+/// A task that is not claimed or running is refused for either outcome: nobody holds it, so
+/// there is no attempt to report on. This covers every unclaimed status (backlog, ready,
+/// blocked, and the rest). Callers must claim it first (`task claim` / `task_claim`), exactly
+/// as for `plan_complete`.
 pub fn plan_report_result(
     task: &Task,
     caller: Caller<'_>,
@@ -314,14 +315,14 @@ pub fn plan_report_result(
     summary: &str,
     has_checks: bool,
 ) -> Result<ResultPlan, WgError> {
-    if task.status == TaskStatus::Ready {
+    let live = matches!(task.status, TaskStatus::Claimed | TaskStatus::Running);
+    if !live {
         return Err(WgError::invalid_transition(format!(
-            "task {} is ready; claim it before reporting a result",
-            task.key
+            "task {} is {}; claim it before reporting a result",
+            task.key, task.status
         ))
         .detail("status", task.status.as_str()));
     }
-    let live = matches!(task.status, TaskStatus::Claimed | TaskStatus::Running);
     if succeeded {
         if live {
             let completion = plan_complete(task, caller, has_checks)?;

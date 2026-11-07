@@ -6394,6 +6394,34 @@
       ]
     },
     {
+      "command": "workgraph stack close",
+      "params": [
+        {
+          "default": null,
+          "kind": "argument",
+          "name": "parent",
+          "nargs": 1,
+          "required": true,
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
+          "envvar": "WORKGRAPH_WORKSPACE",
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--workspace",
+            "-w"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        }
+      ]
+    },
+    {
       "command": "workgraph stack create",
       "params": [
         {
@@ -9542,7 +9570,7 @@
       ]
     }
   ],
-  "leaf_count": 192,
+  "leaf_count": 193,
   "root_options": [
     {
       "choices": null,

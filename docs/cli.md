@@ -82,14 +82,18 @@ into tasks. The section runs from its heading to the next heading of the same or
 - `Depends on:` or `Deps:` lists name other ids (`SC-01 to SC-36` expands) or existing task keys (`WG-12`).
   Anything else in such a list (`Q1 answered`) stays in the description and is reported as unresolved.
   A task with an unresolved item stays in `backlog`.
+- An `Acceptance:` line followed by `- ` bullet lines, inside a task's text, gives the task its acceptance
+  criteria, one per bullet. The list ends at the first line that is not a bullet, and those lines are not repeated in
+  the description. A ranged table may have an `Acceptance` column; its cell is split on `;` into that row's criteria.
 - `Tier: mid` and `Tier: top` add the tags `tier-mid` and `tier-top`. `--tag` adds a tag to every task, `--parent`
   sets the parent of every task, and `--project` and `--repo` apply to the tasks this run creates.
 - A task whose dependencies are all accepted (or that has none) is `ready`; the rest are `backlog`.
 - Each task stores `metadata.breakdown_id` (its id) and `metadata.breakdown_doc` (the file's absolute path, a `#`,
   then the section heading). A re-run finds those tasks and updates their title, description, tier and `--tag`
-  tags, parent and new dependencies; unchanged tasks are left alone, and a `backlog` task whose dependencies are now
-  accepted becomes `ready`. A re-run never creates a duplicate and never removes a dependency or changes the status
-  of a task that has started (remove a stale dependency with `task depend --remove`).
+  tags, parent, acceptance criteria and new dependencies; unchanged tasks are left alone, and a `backlog` task whose
+  dependencies are now accepted becomes `ready`. Acceptance criteria are updated only for a task still in `backlog` or
+  `ready`; a started task keeps its own. A re-run never creates a duplicate and never removes a dependency or changes the
+  status of a task that has started (remove a stale dependency with `task depend --remove`).
 - The whole section is validated before any write (a missing heading, a ranged block without a table, or a repeated
   id is refused). `--dry-run` prints the plan with `key` empty for tasks it would create and changes nothing.
 - Output is a table of id, key, action (`created`, `updated`, `unchanged`), status and title, followed by the

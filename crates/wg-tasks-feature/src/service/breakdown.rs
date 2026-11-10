@@ -127,6 +127,7 @@ fn apply(
                 "title": entry.item.title,
                 "description": entry.item.description,
                 "tags": entry.desired_tags,
+                "acceptance_criteria": entry.item.acceptance,
                 "parent": request.parent,
                 "projects": projects,
                 "repositories": repositories,

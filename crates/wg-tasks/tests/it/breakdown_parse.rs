@@ -361,6 +361,7 @@ fn task(id: &str, key: &str, status: &str, item: &Item) -> Existing {
         parent_id: Some("P".to_owned()),
         depends_on: Vec::new(),
         digest: Some(description_digest(&item.description)),
+        acceptance_criteria: Vec::new(),
     }
 }
 
@@ -399,6 +400,7 @@ fn seed(status: &str) -> Existing {
         parent_id: None,
         depends_on: Vec::new(),
         digest: None,
+        acceptance_criteria: Vec::new(),
     }
 }
 
@@ -541,4 +543,96 @@ fn tier_tags_that_left_the_document_are_removed() {
     let p = plan_for(&items, &existing, &HashMap::new());
     assert_eq!(p.entries[0].add_tags, strs(&["tier-mid"]));
     assert_eq!(p.entries[0].remove_tags, strs(&["tier-top"]));
+}
+
+const ACCEPTANCE_BULLETS_DOC: &str = "\
+## S
+
+**A1 Bullets**
+
+Build the thing.
+
+Acceptance:
+- `cargo check` passes
+- the report lists both files
+
+Next paragraph stays.
+
+**A2 Bullets end at prose**
+Acceptance:
+- first
+Prose ends the list.
+- not a criterion
+";
+
+#[test]
+fn acceptance_bullets_become_criteria_and_leave_the_description() {
+    let items = items_of(ACCEPTANCE_BULLETS_DOC, "S");
+    let a1 = by_id(&items)["A1"];
+    assert_eq!(
+        a1.acceptance,
+        strs(&["`cargo check` passes", "the report lists both files"])
+    );
+    assert!(!a1.description.contains("Acceptance:"));
+    assert!(!a1.description.contains("cargo check"));
+    assert!(a1.description.contains("Build the thing."));
+    assert!(a1.description.contains("Next paragraph stays."));
+
+    let a2 = by_id(&items)["A2"];
+    assert_eq!(a2.acceptance, strs(&["first"]));
+    assert!(a2.description.contains("Prose ends the list."));
+    assert!(a2.description.contains("- not a criterion"));
+}
+
+const ACCEPTANCE_COLUMN_DOC: &str = "\
+## S
+
+**GV-01 to GV-02 Golden** (each: a script)
+
+| Id | Name | Acceptance |
+| --- | --- | --- |
+| GV-01 | one | file exists; output matches |
+| GV-02 | two |  |
+";
+
+#[test]
+fn acceptance_column_splits_each_row_on_semicolons() {
+    let items = items_of(ACCEPTANCE_COLUMN_DOC, "S");
+    let index = by_id(&items);
+    assert_eq!(
+        index["GV-01"].acceptance,
+        strs(&["file exists", "output matches"])
+    );
+    assert!(index["GV-02"].acceptance.is_empty());
+}
+
+#[test]
+fn rerun_updates_criteria_only_for_backlog_and_ready_tasks() {
+    let items = items_of(ACCEPTANCE_BULLETS_DOC, "S");
+    for (status, expected) in [
+        (
+            "backlog",
+            Some(strs(&[
+                "`cargo check` passes",
+                "the report lists both files",
+            ])),
+        ),
+        (
+            "ready",
+            Some(strs(&[
+                "`cargo check` passes",
+                "the report lists both files",
+            ])),
+        ),
+        ("in_progress", None),
+    ] {
+        let mut current = task("id-a1", "K-1", status, &items[0]);
+        current.acceptance_criteria = strs(&["old criterion"]);
+        let existing = HashMap::from([("A1".to_owned(), current)]);
+        let p = plan_for(&items, &existing, &HashMap::new());
+        assert_eq!(
+            p.entries[0].changes.acceptance_criteria, expected,
+            "status {status}"
+        );
+    }
 }

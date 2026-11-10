@@ -29,6 +29,10 @@ pub fn existing_of(task: &Value) -> Existing {
         digest: get(task, "metadata")
             .and_then(|metadata| get(metadata, DESCRIPTION_DIGEST))
             .and_then(|digest| opt(Some(digest))),
+        acceptance_criteria: items(get(task, "acceptance_criteria"))
+            .iter()
+            .map(python)
+            .collect(),
     }
 }
 
@@ -184,6 +188,9 @@ pub fn update_body(entry: &Entry) -> Json {
     }
     if let Some(digest) = &changes.digest {
         fields.insert("metadata".to_owned(), json!({ DESCRIPTION_DIGEST: digest }));
+    }
+    if let Some(criteria) = &changes.acceptance_criteria {
+        fields.insert("acceptance_criteria".to_owned(), json!(criteria));
     }
     if !entry.add_tags.is_empty() {
         fields.insert("add_tags".to_owned(), json!(entry.add_tags));

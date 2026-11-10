@@ -40,6 +40,8 @@ static HEADER_RE: LazyLock<Regex> = LazyLock::new(|| {
 static DEPS_RE: LazyLock<Regex> = LazyLock::new(|| re(r"(?i)\b(?:depends on|deps)\s*:\s*(.*)$"));
 static TIER_RE: LazyLock<Regex> = LazyLock::new(|| re(r"(?i)\bTier\s*:\s*(mid|top)\b"));
 static TIER_CUT_RE: LazyLock<Regex> = LazyLock::new(|| re(r"(?i)\bTier\s*:"));
+static ACCEPTANCE_RE: LazyLock<Regex> = LazyLock::new(|| re(r"(?i)^\s*acceptance\s*:\s*$"));
+static BULLET_RE: LazyLock<Regex> = LazyLock::new(|| re(r"^\s*-\s+(\S.*?)\s*$"));
 static PAREN_RE: LazyLock<Regex> = LazyLock::new(|| re(r"^(.*?)\s*\((.*)\)\s*$"));
 // Python's `\.(?=\s|$)` has no lookahead here: the dot takes the one space after it, which the
 // pieces are trimmed of anyway.
@@ -70,6 +72,9 @@ pub struct Item {
     pub tier_tags: Vec<String>,
     /// Ids, or free text that is reported unresolved.
     pub deps: Vec<String>,
+    /// The acceptance criteria: one per `Acceptance:` bullet and per `;`-separated entry of an
+    /// Acceptance column. They are kept out of the description.
+    pub acceptance: Vec<String>,
 }
 
 fn norm(text: &str) -> String {
@@ -358,6 +363,21 @@ fn row_fields(cells: &[String], columns: &Columns) -> (Vec<String>, Vec<String>)
     (deps, tiers)
 }
 
+/// The criteria of one table row: the entries of its Acceptance column, split on `;`.
+fn row_acceptance(cells: &[String], columns: &Columns) -> Vec<String> {
+    columns
+        .get("acceptance")
+        .and_then(|index| cells.get(*index))
+        .map(|cell| {
+            cell.split(';')
+                .map(str::trim)
+                .filter(|entry| !entry.is_empty())
+                .map(str::to_owned)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
 struct Block {
     id: String,
     range_end: Option<String>,
@@ -425,19 +445,51 @@ fn is_table_line(line: &str) -> bool {
     line.trim_start().starts_with('|')
 }
 
+/// Splits each `Acceptance:` block out of the lines: the block is the line `Acceptance:` (outside
+/// a code fence) followed by `- ` bullet lines, which ends at the first line that is not a bullet.
+/// Returns the bullets' texts, in order, and the lines without the blocks. An `Acceptance:` line
+/// with no bullet under it is not a block and stays in the text.
+fn acceptance_split(lines: &[String]) -> (Vec<String>, Vec<String>) {
+    let fenced = fence_flags(lines);
+    let mut criteria = Vec::new();
+    let mut kept = Vec::new();
+    let mut index = 0;
+    while index < lines.len() {
+        if !fenced[index] && ACCEPTANCE_RE.is_match(&lines[index]) {
+            let bullets: Vec<&str> = (index + 1..lines.len())
+                .take_while(|&other| !fenced[other] && BULLET_RE.is_match(&lines[other]))
+                .filter_map(|other| BULLET_RE.captures(&lines[other]))
+                .map(|caps| caps.get(1).map_or("", |m| m.as_str()))
+                .collect();
+            if !bullets.is_empty() {
+                criteria.extend(bullets.iter().map(|text| (*text).to_owned()));
+                index += 1 + bullets.len();
+                continue;
+            }
+        }
+        kept.push(lines[index].clone());
+        index += 1;
+    }
+    (criteria, kept)
+}
+
 /// One item per table row: the row's own cells, under the prose of the subsection that holds it.
+/// `criteria` are the criteria the row's block or subsection gives every row; the row's Acceptance
+/// column adds its own.
 fn row_items(
     rows: &[TableRow],
     prose: &str,
     title_prefix: &str,
     deps: &[String],
     tiers: &[String],
+    criteria: &[String],
 ) -> Vec<Item> {
     rows.iter()
         .map(|row| {
             let name = row.cells.get(1).map_or("", String::as_str);
             // A "Deps" or "Tier" column, when the table has one, applies to its row only.
             let (row_deps, row_tiers) = row_fields(&row.cells, &row.columns);
+            let row_criteria = row_acceptance(&row.cells, &row.columns);
             let title = if !title_prefix.is_empty() && !name.is_empty() {
                 format!("{title_prefix}: {name}")
             } else if name.is_empty() {
@@ -451,6 +503,7 @@ fn row_items(
                 description: format!("{prose}\n\n{}", row.line.trim()).trim().to_owned(),
                 tier_tags: unique(tiers.iter().cloned().chain(row_tiers)),
                 deps: unique(deps.iter().cloned().chain(row_deps)),
+                acceptance: unique(criteria.iter().cloned().chain(row_criteria)),
             }
         })
         .collect()
@@ -497,29 +550,35 @@ pub fn parse_items(lines: &[String]) -> Result<Vec<Item>, WgError> {
             .into_iter()
             .filter(|row| row.columns.get("id") == Some(&0))
             .collect();
-        let shared = if heading.is_empty() {
-            String::new()
+        let (shared_criteria, shared) = if heading.is_empty() {
+            (Vec::new(), String::new())
         } else {
-            let prose: Vec<&str> = lead
-                .iter()
-                .filter(|l| !is_table_line(l))
-                .map(String::as_str)
-                .collect();
-            prose.join("\n").trim().to_owned()
+            let prose: Vec<String> = lead.iter().filter(|l| !is_table_line(l)).cloned().collect();
+            let (criteria, kept) = acceptance_split(&prose);
+            (criteria, kept.join("\n").trim().to_owned())
         };
         if !lead_rows.is_empty() {
             let (deps, tiers) = text_fields(&lines_of(&shared));
-            items.extend(row_items(&lead_rows, &shared, &heading, &deps, &tiers));
+            items.extend(row_items(
+                &lead_rows,
+                &shared,
+                &heading,
+                &deps,
+                &tiers,
+                &shared_criteria,
+            ));
         }
         for block in blocks_of(&body) {
             let Some(range_end) = &block.range_end else {
-                let (deps, tiers) = text_fields(&block.body);
+                let (criteria, kept) = acceptance_split(&block.body);
+                let (deps, tiers) = text_fields(&kept);
                 items.push(Item {
                     id: block.id,
                     title: block.name,
-                    description: block.body.join("\n").trim().to_owned(),
+                    description: kept.join("\n").trim().to_owned(),
                     tier_tags: tiers,
                     deps,
+                    acceptance: unique(criteria),
                 });
                 continue;
             };
@@ -529,13 +588,14 @@ pub fn parse_items(lines: &[String]) -> Result<Vec<Item>, WgError> {
                 .filter(|l| is_table_line(l))
                 .cloned()
                 .collect();
-            let block_prose = block
+            let block_lines: Vec<String> = block
                 .body
                 .iter()
                 .filter(|l| !is_table_line(l))
                 .cloned()
-                .collect::<Vec<_>>()
-                .join("\n");
+                .collect();
+            let (block_criteria, block_kept) = acceptance_split(&block_lines);
+            let block_prose = block_kept.join("\n");
             let prose = [shared.as_str(), block_prose.trim()]
                 .into_iter()
                 .filter(|text| !text.is_empty())
@@ -549,7 +609,19 @@ pub fn parse_items(lines: &[String]) -> Result<Vec<Item>, WgError> {
                     block.id, range_end, block.name
                 )));
             }
-            items.extend(row_items(&rows, &prose, &block.name, &deps, &tiers));
+            let criteria: Vec<String> = shared_criteria
+                .iter()
+                .cloned()
+                .chain(block_criteria)
+                .collect();
+            items.extend(row_items(
+                &rows,
+                &prose,
+                &block.name,
+                &deps,
+                &tiers,
+                &criteria,
+            ));
         }
     }
     expand_phrases(&mut items);
@@ -585,6 +657,7 @@ pub struct Existing {
     pub depends_on: Vec<String>,
     /// The digest of the description the import last wrote, when the task records one.
     pub digest: Option<String>,
+    pub acceptance_criteria: Vec<String>,
 }
 
 /// What a plan reads of the world: the items, the tasks already imported from this section by
@@ -605,7 +678,7 @@ pub enum Ref {
     /// Another item of the section, by breakdown id.
     Section(String),
     /// A task of the workspace named by key.
-    Task(Existing),
+    Task(Box<Existing>),
 }
 
 /// The fields of an existing task the import changes.
@@ -617,6 +690,8 @@ pub struct Changes {
     pub digest: Option<String>,
     /// The parent, as given.
     pub parent: Option<String>,
+    /// The acceptance criteria, as given. Set only for a task that has not started.
+    pub acceptance_criteria: Option<Vec<String>>,
 }
 
 /// What the import does with one item.
@@ -703,7 +778,7 @@ fn resolve(input: &PlanInput<'_>) -> (Vec<Vec<Ref>>, Vec<Unresolved>) {
             } else if ids.contains(token.as_str()) {
                 found.push(Ref::Section(token.clone()));
             } else if let Some(Some(target)) = input.lookups.get(token) {
-                found.push(Ref::Task(target.clone()));
+                found.push(Ref::Task(Box::new(target.clone())));
             } else {
                 unresolved.push(Unresolved {
                     id: item.id.clone(),
@@ -805,6 +880,12 @@ fn plan_existing(
         && current.parent_id.as_deref() != Some(parent_id)
     {
         changes.parent = Some(given.to_owned());
+    }
+    // The criteria follow the document while the task has not started; a started task keeps its own.
+    if matches!(current.status.as_str(), "backlog" | "ready")
+        && current.acceptance_criteria != item.acceptance
+    {
+        changes.acceptance_criteria = Some(item.acceptance.clone());
     }
     let add_tags: Vec<String> = desired
         .iter()

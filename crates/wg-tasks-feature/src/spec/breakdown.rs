@@ -44,6 +44,32 @@ pub fn imported_id(task: &Value, doc_ref: &str) -> Option<String> {
         .then(|| s(get(metadata, "breakdown_id")))
 }
 
+/// The description the task holds after the import: the pending change, else the stored text
+/// (a started or edited task keeps its own), else the parsed one for a new task.
+fn planned_description(entry: &Entry) -> &str {
+    entry
+        .changes
+        .description
+        .as_deref()
+        .or_else(|| entry.current.as_ref().map(|c| c.description.as_str()))
+        .unwrap_or(&entry.item.description)
+}
+
+/// The acceptance criteria the task holds after the import, by the same rule as the description.
+fn planned_criteria(entry: &Entry) -> &[String] {
+    entry
+        .changes
+        .acceptance_criteria
+        .as_deref()
+        .or_else(|| {
+            entry
+                .current
+                .as_ref()
+                .map(|c| c.acceptance_criteria.as_slice())
+        })
+        .unwrap_or(&entry.item.acceptance)
+}
+
 /// The answer of an import: the plan as it stands once the shell has applied it (or not).
 #[must_use]
 pub fn answer(plan: &Plan, source: &str, dry_run: bool) -> Value {
@@ -69,6 +95,7 @@ pub fn answer(plan: &Plan, source: &str, dry_run: bool) -> Value {
                 })
                 .collect();
             let tags: Vec<&str> = entry.desired_tags.iter().map(String::as_str).collect();
+            let criteria: Vec<&str> = planned_criteria(entry).iter().map(String::as_str).collect();
             breakdown_row(
                 &entry.item.id,
                 entry.key.as_deref(),
@@ -77,6 +104,8 @@ pub fn answer(plan: &Plan, source: &str, dry_run: bool) -> Value {
                 &entry.status,
                 &depends,
                 &tags,
+                planned_description(entry),
+                &criteria,
             )
         })
         .collect();
@@ -125,6 +154,7 @@ pub fn import_view(console: &Console, result: &Value) -> String {
                 opt(get(t, "key")).unwrap_or_else(|| "-".to_owned()),
                 s(get(t, "action")),
                 s(get(t, "status")),
+                items(get(t, "acceptance_criteria")).len().to_string(),
                 s(get(t, "title")).chars().take(60).collect(),
             ]
         })
@@ -136,7 +166,7 @@ pub fn import_view(console: &Console, result: &Value) -> String {
     let mut out = console
         .table(
             &rows,
-            &["id", "key", "action", "status", "title"],
+            &["id", "key", "action", "status", "criteria", "title"],
             Some(&title),
         )
         .text;
@@ -199,4 +229,73 @@ pub fn update_body(entry: &Entry) -> Json {
         fields.insert("remove_tags".to_owned(), json!(entry.remove_tags));
     }
     Json::Object(fields)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use wg_tasks::breakdown::{PlanInput, parse_items, plan, section_lines};
+
+    const DOC: &str = "\
+## Plan
+
+**A1 Build it**
+Build the thing.
+Acceptance:
+- `cargo check` passes
+- the report lists both files
+
+**A2 Second**
+Second prose.
+";
+
+    fn dry_run_answer() -> Value {
+        let parsed = parse_items(&section_lines(DOC, "Plan").expect("section")).expect("items");
+        let existing = HashMap::new();
+        let lookups = HashMap::new();
+        let tags: Vec<String> = Vec::new();
+        let planned = plan(&PlanInput {
+            items: &parsed,
+            existing: &existing,
+            lookups: &lookups,
+            parent: Some(("WG-1", "parent-id")),
+            tags: &tags,
+        });
+        answer(&planned, "doc#Plan", true)
+    }
+
+    #[test]
+    fn dry_run_plan_lists_description_and_criteria_per_task() {
+        let result = dry_run_answer();
+        let tasks = items(get(&result, "tasks"));
+        let first = &tasks[0];
+        assert_eq!(s(get(first, "id")), "A1");
+        assert_eq!(opt(get(first, "key")), None);
+        let criteria: Vec<String> = items(get(first, "acceptance_criteria"))
+            .iter()
+            .map(python)
+            .collect();
+        assert_eq!(
+            criteria,
+            vec![
+                "`cargo check` passes".to_owned(),
+                "the report lists both files".to_owned()
+            ]
+        );
+        let description = s(get(first, "description"));
+        assert!(description.contains("Build the thing."));
+        assert!(!description.contains("Acceptance:"));
+        assert!(!description.contains("cargo check"));
+        let second = &tasks[1];
+        assert!(items(get(second, "acceptance_criteria")).is_empty());
+        assert!(s(get(second, "description")).contains("Second prose."));
+    }
+
+    #[test]
+    fn human_view_has_a_criteria_count_column() {
+        let text = import_view(&Console::new(120), &dry_run_answer());
+        assert!(text.contains("2"));
+        assert!(text.contains("criteria"));
+        assert!(text.contains("dry run"));
+    }
 }

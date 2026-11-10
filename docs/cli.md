@@ -96,8 +96,11 @@ into tasks. The section runs from its heading to the next heading of the same or
   status of a task that has started (remove a stale dependency with `task depend --remove`).
 - The whole section is validated before any write (a missing heading, a ranged block without a table, or a repeated
   id is refused). `--dry-run` prints the plan with `key` empty for tasks it would create and changes nothing.
-- Output is a table of id, key, action (`created`, `updated`, `unchanged`), status and title, followed by the
-  unresolved dependencies. With `--json` it is `{"tasks": [...], "map": {id: key}, "unresolved": [...], "counts": {...}, "dry_run", "source"}`.
+- Output is a table of id, key, action (`created`, `updated`, `unchanged`), status, criteria (the number of
+  acceptance criteria) and title, followed by the unresolved dependencies. With `--json` it is `{"tasks": [...], "map": {id: key}, "unresolved": [...], "counts": {...}, "dry_run", "source"}`.
+  Each entry of `tasks` has `id`, `key`, `title`, `action`, `status`, `depends_on`, `tags`, `description` and
+  `acceptance_criteria` (a list). These are the values the task holds after the import, or would hold on a dry run:
+  for a task that has started, its own stored criteria and description are shown.
 
 The MCP tool `task_import_breakdown` takes the document text (`markdown`), `section`, a `source` name for the
 metadata, `parent`, optional `tags`, `project`, `repository` and `dry_run`.

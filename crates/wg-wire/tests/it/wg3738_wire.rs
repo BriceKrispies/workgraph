@@ -213,6 +213,8 @@ fn wrapper_builders_produce_the_shapes_the_tools_declare() {
                     "ready",
                     &[],
                     &["t"],
+                    "Body text.",
+                    &["the check passes"],
                 )],
                 &[("CF-1", None)],
                 vec![mcp_outputs::breakdown_unresolved("CF-1", "X-1", "no task")],

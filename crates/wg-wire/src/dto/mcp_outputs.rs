@@ -240,6 +240,8 @@ const IMPORT_TASKS: Shape = list(&Shape::Object(&[
     ("status", Shape::Any),
     ("depends_on", Shape::Any),
     ("tags", Shape::Any),
+    ("description", Shape::Any),
+    ("acceptance_criteria", Shape::Any),
 ]));
 
 const IMPORT_UNRESOLVED: Shape = list(&Shape::Object(&[
@@ -699,7 +701,9 @@ pub fn run_get(
     })
 }
 
-/// One planned task of a `task_import_breakdown` answer.
+/// One planned task of a `task_import_breakdown` answer: the description and the acceptance
+/// criteria the task holds once the import has run (or would hold, for a dry run).
+#[allow(clippy::too_many_arguments)]
 pub fn breakdown_row(
     id: &str,
     key: Option<&str>,
@@ -708,6 +712,8 @@ pub fn breakdown_row(
     status: &str,
     depends_on: &[&str],
     tags: &[&str],
+    description: &str,
+    acceptance_criteria: &[&str],
 ) -> Value {
     dict!({
         "id": text(id),
@@ -717,6 +723,8 @@ pub fn breakdown_row(
         "status": text(status),
         "depends_on": texts(depends_on.iter().copied()),
         "tags": texts(tags.iter().copied()),
+        "description": text(description),
+        "acceptance_criteria": texts(acceptance_criteria.iter().copied()),
     })
 }
 

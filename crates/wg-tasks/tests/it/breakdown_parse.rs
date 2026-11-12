@@ -636,3 +636,26 @@ fn rerun_updates_criteria_only_for_backlog_and_ready_tasks() {
         );
     }
 }
+
+#[test]
+fn id_may_end_in_one_lowercase_letter_but_a_spaced_letter_is_title() {
+    let doc = "\
+## S
+
+**PKG-00a Title**
+
+**PKG-01 Second**
+
+**PKG-02 Third**
+Depends on: PKG-00a, PKG-01.
+
+**V1 a title**
+";
+    let items = items_of(doc, "S");
+    assert_eq!(ids(&items), ["PKG-00a", "PKG-01", "PKG-02", "V1"]);
+    assert_eq!(by_id(&items)["PKG-00a"].title, "Title");
+    assert_eq!(by_id(&items)["V1"].title, "a title");
+    assert_eq!(by_id(&items)["PKG-02"].deps, strs(&["PKG-00a", "PKG-01"]));
+    let p = plan_for(&items, &HashMap::new(), &HashMap::new());
+    assert!(p.unresolved.is_empty());
+}

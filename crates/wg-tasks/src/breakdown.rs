@@ -22,7 +22,7 @@ use wg_hash::sha256_hex;
 use wg_json::py_splitlines;
 use wg_types::WgError;
 
-const ID: &str = r"[A-Z][A-Z]*-?\d+";
+const ID: &str = r"[A-Z][A-Z]*-?\d+[a-z]?";
 
 fn re(pattern: &str) -> Regex {
     Regex::new(pattern).unwrap_or_else(|err| unreachable!("breakdown pattern {pattern}: {err}"))

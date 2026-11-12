@@ -73,8 +73,8 @@ after the acceptance, with the same skip rules. Its JSON output is the acceptanc
 `task import-breakdown FILE.md --section "HEADING" --parent KEY` turns one section of a planning document
 into tasks. The section runs from its heading to the next heading of the same or a higher level.
 
-- A task is a bold line at the start of a line: `**V12 Title**`, `**V1. Title**`, `**FD-01 Title**`. The text
-  under it, up to the next task header, is the description.
+- A task is a bold line at the start of a line: `**V12 Title**`, `**V1. Title**`, `**FD-01 Title**`. An id may end
+  in one lowercase letter, as in `**PKG-00a Title**`. The text under it, up to the next task header, is the description.
 - A ranged header, `**GV-01 to GV-21 Name**`, is followed by a markdown table whose first column holds one id per
   row. Each row becomes a task titled `Name: <second column>`; its description is the block text plus the row.
   A table may also have `Deps` and `Tier` columns (as the interface tables of `docs/rust-rewrite.md` do); those

@@ -6,6 +6,7 @@
 //! is `null` after validation, and a `null` is an absent field, as Python's `is not None` checks
 //! read it.
 
+use crate::spec::args::project_refs;
 use serde_json::{Map, Value, json};
 use wg_types::WgError;
 use wg_types::pyval;
@@ -86,7 +87,7 @@ pub fn filter_body(arguments: &Value) -> Value {
 
 /// The `TaskUpdate` body of `task_update`: the fields the call gave, `files: []` included.
 pub fn update_body(arguments: &Value) -> Value {
-    picked(
+    let mut body = picked(
         arguments,
         &[
             "expected_version",
@@ -101,7 +102,12 @@ pub fn update_body(arguments: &Value) -> Value {
             "add_files",
             "reason",
         ],
-    )
+    );
+    // `project` is one slug or id, or `none` to clear; it sets the task's `projects`.
+    if let Some(project) = arguments.get("project").and_then(Value::as_str) {
+        body["projects"] = project_refs(project);
+    }
+    body
 }
 
 /// The `ClaimRequest` body of `task_claim`.
@@ -240,6 +246,16 @@ mod tests {
     fn update_keeps_only_given_fields() {
         let body = update_body(&json!({"task": "WG-1", "title": "x", "files": [], "status": null}));
         assert_eq!(body, json!({"title": "x", "files": []}));
+    }
+
+    #[test]
+    fn update_project_sets_or_clears_projects() {
+        let set = update_body(&json!({"task": "WG-1", "project": "exegra"}));
+        assert_eq!(set, json!({"projects": ["exegra"]}));
+        let clear = update_body(&json!({"task": "WG-1", "project": "none"}));
+        assert_eq!(clear, json!({"projects": []}));
+        let untouched = update_body(&json!({"task": "WG-1", "project": null}));
+        assert_eq!(untouched, json!({}));
     }
 
     #[test]

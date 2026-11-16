@@ -239,6 +239,20 @@ pub fn bulk_view(console: &Console, result: &Value) -> String {
         .text
 }
 
+/// The human view of `task update --tag --dry-run`: the tasks the update would change.
+#[must_use]
+pub fn would_change_view(console: &Console, preview: &Value) -> String {
+    let keys: Vec<String> = items(get(preview, "would_change"))
+        .iter()
+        .map(python)
+        .collect();
+    let mut line = format!("would update {}", keys.len());
+    if !keys.is_empty() {
+        line.push_str(&format!(": {}", keys.join(", ")));
+    }
+    console.print(&line).text
+}
+
 /// The human view of `task archive`.
 #[must_use]
 pub fn archived_line(console: &Console, task: &Value, undo: bool) -> String {

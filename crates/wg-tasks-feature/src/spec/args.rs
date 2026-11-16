@@ -259,6 +259,17 @@ fn parse_json_arg(value: &str, what: &str, read_file: ReadFile<'_>) -> Result<Js
         .map_err(|why| CliFailure::fail(format!("{what} is not valid JSON: {why}"), 2))
 }
 
+/// The `projects` of a `TaskUpdate` for `--project` and the MCP `project` argument: the one slug
+/// or id the task is in, or `none` for no project at all.
+#[must_use]
+pub fn project_refs(project: &str) -> Json {
+    if project == "none" {
+        json!([])
+    } else {
+        json!([project])
+    }
+}
+
 /// The `TaskUpdate` body of `task update`.
 pub fn update_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliFailure> {
     let clear_files = flag(m, "--clear-files");
@@ -274,6 +285,9 @@ pub fn update_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliF
     put(&mut body, "description", one(m, "--description"));
     put(&mut body, "status", one(m, "--status"));
     put(&mut body, "priority", one(m, "--priority"));
+    if let Some(project) = one(m, "--project") {
+        body.insert("projects".to_owned(), project_refs(&project));
+    }
     put_list(&mut body, "add_tags", tag_values(&many(m, "--add-tag")));
     put_list(
         &mut body,

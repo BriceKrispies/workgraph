@@ -41,6 +41,52 @@ fn read_file(path: &str) -> Result<String, String> {
     std::fs::read_to_string(path).map_err(|err| format!("cannot read {path}: {err}"))
 }
 
+/// `task update`: one task by its reference, or with `--tag` every live task that carries the tag
+/// (see [`service::task_update_by_tag`], which takes `--project` only).
+fn update(
+    state: &mut CliState,
+    context: &RequestContext,
+    ws: Option<&str>,
+    m: &ArgMatches,
+) -> Result<(), CliFailure> {
+    let body = update_body(m, &read_file)?;
+    let reference = option_text(m, "ref");
+    let tags = tag_values(&many(m, "--tag"));
+    let dry_run = option_flag(m, "--dry-run");
+    match (reference, tags.as_slice()) {
+        (Some(reference), []) => {
+            if dry_run {
+                return Err(CliFailure::fail("--dry-run needs --tag", 1));
+            }
+            let out = service::task_update(state.app()?, context, ws, &reference, &body)?;
+            state.emit(&out, Some(&|c| updated_line(c, &out)))
+        }
+        (None, [tag]) => {
+            let out = service::task_update_by_tag(state.app()?, context, ws, tag, &body, dry_run)?;
+            state.emit(
+                &out,
+                Some(&|c| {
+                    if dry_run {
+                        would_change_view(c, &out)
+                    } else {
+                        bulk_view(c, &out)
+                    }
+                }),
+            )?;
+            if !dry_run && bulk_failed(&out) {
+                return Err(CliFailure::Exit(3));
+            }
+            Ok(())
+        }
+        (Some(_), _) => Err(CliFailure::fail("give a task REF or --tag, not both", 1)),
+        (None, []) => Err(CliFailure::fail(
+            "give a task REF to update, or --tag to update the tasks that carry a tag",
+            1,
+        )),
+        (None, _) => Err(CliFailure::fail("give one --tag", 1)),
+    }
+}
+
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     let workspace = state.workspace_ref(option_text(m, "--workspace").as_deref());
     let ws = workspace.as_deref();
@@ -76,12 +122,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             state.emit(&out, Some(&|c| ready_view(c, &out)))
         }
         Some("show") => show(state, &context, ws, m),
-        Some("update") => {
-            let body = update_body(m, &read_file)?;
-            let reference = option_text(m, "ref").unwrap_or_default();
-            let out = service::task_update(state.app()?, &context, ws, &reference, &body)?;
-            state.emit(&out, Some(&|c| updated_line(c, &out)))
-        }
+        Some("update") => update(state, &context, ws, m),
         Some("bulk-update") => {
             let out = service::task_bulk_update(state.app()?, &context, ws, &bulk_body(m))?;
             state.emit(&out, Some(&|c| bulk_view(c, &out)))?;

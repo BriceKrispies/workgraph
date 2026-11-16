@@ -3758,6 +3758,19 @@
             ],
             "default": null
           },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "One project slug or id the task is in; none clears it",
+            "title": "Project"
+          },
           "reason": {
             "anyOf": [
               {

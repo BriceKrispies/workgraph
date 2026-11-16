@@ -166,6 +166,7 @@
    "description",
    "status",
    "priority",
+   "project",
    "add_tags",
    "remove_tags",
    "acceptance_criteria",

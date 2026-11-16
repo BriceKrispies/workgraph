@@ -22,6 +22,7 @@ use crate::spec::requests::{
 };
 use crate::spec::writes;
 use serde_json::{Map, Value as Json};
+use std::collections::BTreeSet;
 use wg_json::Value;
 use wg_model::slice::QueueSlice;
 use wg_model::{Decision, Row, Stamp};
@@ -199,6 +200,115 @@ pub fn task_bulk_update(
         })
         .collect::<Vec<_>>();
     Ok(bulk_result_out(&bulk_results(outcomes)?))
+}
+
+/// `task update --tag`: the `projects` of one update applied to every live task that carries
+/// `tag`. Only `projects` may be given. A task whose projects already match is left out. A dry run
+/// names the tasks the update would change; an apply updates exactly those, each in its own
+/// transaction, and reports as `task_bulk_update` does.
+pub fn task_update_by_tag(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    tag: &str,
+    body: &Json,
+    dry_run: bool,
+) -> Result<Value, WgError> {
+    let dump = validate_update(body)?;
+    let given = body.as_object().cloned().unwrap_or_default();
+    if given.keys().any(|key| key.as_str() != "projects") {
+        return Err(WgError::validation(
+            "task update --tag changes only the project: give --project",
+        ));
+    }
+    let projects = read_update(&dump, &given)?
+        .projects
+        .ok_or_else(|| WgError::validation("task update --tag needs --project"))?;
+    let enrich = edit::enrichment_from(&app.config()?);
+    let scope = app.workspace_or_default(workspace)?;
+    let (would_change, unchanged) = app.runtime.query(
+        |session| session.task_world(Some(scope), &[]),
+        |world| project_targets(world, scope, tag, &projects),
+    )?;
+    if dry_run {
+        let keys = |list: &[String]| {
+            Value::List(
+                list.iter()
+                    .map(|key| wg_wire::convention::text(key))
+                    .collect(),
+            )
+        };
+        return Ok(wg_json::dict(vec![
+            ("dry_run", Value::Bool(true)),
+            ("would_change", keys(&would_change)),
+            ("unchanged", keys(&unchanged)),
+        ]));
+    }
+    let scope_text = scope.to_string();
+    let mut shared = dump.clone();
+    shared.insert("expected_version".to_owned(), Json::Null);
+    let outcomes = would_change
+        .into_iter()
+        .map(|reference| {
+            let done = update_checked(
+                app,
+                context,
+                Some(&scope_text),
+                &reference,
+                &shared,
+                &given,
+                enrich,
+            )
+            .and_then(|out| {
+                key_of(&out).ok_or_else(|| WgError::workgraph("a task output has no key"))
+            });
+            (reference, done)
+        })
+        .collect::<Vec<_>>();
+    Ok(bulk_result_out(&bulk_results(outcomes)?))
+}
+
+/// The keys of the live tasks in `scope` that carry `tag`, split into those whose projects differ
+/// from `projects` (would change) and those that already match (unchanged), in number order. An
+/// unknown project is an error.
+fn project_targets(
+    world: &TaskWorld,
+    scope: Id,
+    tag: &str,
+    projects: &[String],
+) -> Result<(Vec<String>, Vec<String>), WgError> {
+    let tasks = &world.tasks;
+    let targets = projects
+        .iter()
+        .map(|reference| {
+            resolve::project(&tasks.registry, scope, reference).map(|project| project.id)
+        })
+        .collect::<Result<BTreeSet<Id>, WgError>>()?;
+    let mut matched = tasks
+        .tasks
+        .values()
+        .filter(|task| {
+            task.workspace_id == scope
+                && task.archived_at.is_none()
+                && tasks.tags_of(task.id).any(|have| have == tag)
+        })
+        .collect::<Vec<_>>();
+    matched.sort_by_key(|task| task.number);
+    let mut would_change = Vec::new();
+    let mut unchanged = Vec::new();
+    for task in matched {
+        let current: BTreeSet<Id> = tasks
+            .projects_of(task.id)
+            .map(|row| row.project_id)
+            .collect();
+        let key = task.key.to_string();
+        if current == targets {
+            unchanged.push(key);
+        } else {
+            would_change.push(key);
+        }
+    }
+    Ok((would_change, unchanged))
 }
 
 /// `TaskService.archive`.

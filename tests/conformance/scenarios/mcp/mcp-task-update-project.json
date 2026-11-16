@@ -1,0 +1,22 @@
+{
+  "id": "mcp-task-update-project",
+  "covers": [],
+  "setup": [],
+  "steps": [
+    {"cli": ["init"], "json": true},
+    {"cli": ["project", "create", "exegra", "--name", "Exegra"], "json": true},
+    {"mcp": "task_create", "args": {"title": "Old title"}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "project": "exegra"}},
+    {"assert": {"exit": 0}},
+    {"cli": ["task", "list", "--project", "exegra"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 1}}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "project": "none"}},
+    {"assert": {"exit": 0}},
+    {"cli": ["task", "list", "--project", "exegra"], "json": true},
+    {"assert": {"json": {"path": "/total", "equals": 0}}},
+    {"mcp": "task_update", "args": {"task": "WG-1", "project": "nothing"}},
+    {"assert": {"exit": 1}},
+    {"assert": {"stderr_contains": "not_found"}}
+  ],
+  "not_observable": []
+}

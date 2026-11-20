@@ -117,9 +117,9 @@ fn adf_description_is_flattened() {
 }
 
 #[test]
-fn blocked_by_keys_come_from_inward_blocks_links_only() {
-    // ABC-122 and ABC-118 (listed twice) are "is blocked by"; ABC-124 is an outward "blocks";
-    // ABC-130 is a "Relates" link.
+fn blocked_by_keys_come_from_the_blockers_of_blocks_links_only() {
+    // ABC-122 and ABC-118 (listed twice) block this issue, so Jira names them as outwardIssue;
+    // this issue blocks ABC-124 (named as inwardIssue); ABC-130 is a "Relates" link.
     assert_eq!(story().blocked_by_keys, vec!["ABC-118", "ABC-122"]);
 }
 
@@ -350,11 +350,11 @@ fn base_url_trailing_slash_is_not_doubled() {
 #[test]
 fn blocked_by_is_sorted_and_deduplicated() {
     let links = json!([
-        {"type": {"name": "Blocks"}, "inwardIssue": {"key": "ABC-9"}},
-        {"type": {"name": "Blocks"}, "inwardIssue": {"key": "ABC-2"}},
-        {"type": {"name": "Blocks"}, "inwardIssue": {"key": "ABC-9"}},
-        {"type": {"name": "Blocks"}, "outwardIssue": {"key": "ABC-5"}},
-        {"type": {"name": "Duplicate"}, "inwardIssue": {"key": "ABC-7"}},
+        {"type": {"name": "Blocks"}, "outwardIssue": {"key": "ABC-9"}},
+        {"type": {"name": "Blocks"}, "outwardIssue": {"key": "ABC-2"}},
+        {"type": {"name": "Blocks"}, "outwardIssue": {"key": "ABC-9"}},
+        {"type": {"name": "Blocks"}, "inwardIssue": {"key": "ABC-5"}},
+        {"type": {"name": "Duplicate"}, "outwardIssue": {"key": "ABC-7"}},
     ]);
     let mapped = map(&issue(json!({"issuelinks": links})), &[], &config());
     assert_eq!(mapped.blocked_by_keys, vec!["ABC-2", "ABC-9"]);

@@ -51,22 +51,22 @@
       {
         "id": "20001",
         "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
-        "inwardIssue": {"id": "10122", "key": "ABC-122", "fields": {"summary": "Billing client timeouts"}}
+        "outwardIssue": {"id": "10122", "key": "ABC-122", "fields": {"summary": "Billing client timeouts"}}
       },
       {
         "id": "20002",
         "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
-        "inwardIssue": {"id": "10118", "key": "ABC-118", "fields": {"summary": "Gateway quotas"}}
+        "outwardIssue": {"id": "10118", "key": "ABC-118", "fields": {"summary": "Gateway quotas"}}
       },
       {
         "id": "20003",
         "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
-        "inwardIssue": {"id": "10118", "key": "ABC-118", "fields": {"summary": "Gateway quotas"}}
+        "outwardIssue": {"id": "10118", "key": "ABC-118", "fields": {"summary": "Gateway quotas"}}
       },
       {
         "id": "20004",
         "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
-        "outwardIssue": {"id": "10124", "key": "ABC-124", "fields": {"summary": "Retry dashboard"}}
+        "inwardIssue": {"id": "10124", "key": "ABC-124", "fields": {"summary": "Retry dashboard"}}
       },
       {
         "id": "20005",

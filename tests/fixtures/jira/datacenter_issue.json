@@ -16,7 +16,7 @@
       {
         "id": "30001",
         "type": {"name": "Blocks", "inward": "is blocked by", "outward": "blocks"},
-        "inwardIssue": {"id": "20401", "key": "OPS-3", "fields": {"summary": "Vault upgrade"}}
+        "outwardIssue": {"id": "20401", "key": "OPS-3", "fields": {"summary": "Vault upgrade"}}
       }
     ],
     "customfield_11000": [

@@ -231,7 +231,7 @@
             "issuelinks": [
               {
                 "id": "20001",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Billing client timeouts"
                   },
@@ -246,7 +246,7 @@
               },
               {
                 "id": "20002",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Gateway quotas"
                   },
@@ -261,7 +261,7 @@
               },
               {
                 "id": "20003",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Gateway quotas"
                   },
@@ -276,7 +276,7 @@
               },
               {
                 "id": "20004",
-                "outwardIssue": {
+                "inwardIssue": {
                   "fields": {
                     "summary": "Retry dashboard"
                   },
@@ -496,7 +496,7 @@
           "issuelinks": [
             {
               "id": "20001",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Billing client timeouts"
                 },
@@ -511,7 +511,7 @@
             },
             {
               "id": "20002",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Gateway quotas"
                 },
@@ -526,7 +526,7 @@
             },
             {
               "id": "20003",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Gateway quotas"
                 },
@@ -541,7 +541,7 @@
             },
             {
               "id": "20004",
-              "outwardIssue": {
+              "inwardIssue": {
                 "fields": {
                   "summary": "Retry dashboard"
                 },
@@ -830,7 +830,7 @@
             "issuelinks": [
               {
                 "id": "20001",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Billing client timeouts"
                   },
@@ -845,7 +845,7 @@
               },
               {
                 "id": "20002",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Gateway quotas"
                   },
@@ -860,7 +860,7 @@
               },
               {
                 "id": "20003",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Gateway quotas"
                   },
@@ -875,7 +875,7 @@
               },
               {
                 "id": "20004",
-                "outwardIssue": {
+                "inwardIssue": {
                   "fields": {
                     "summary": "Retry dashboard"
                   },
@@ -1095,7 +1095,7 @@
           "issuelinks": [
             {
               "id": "20001",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Billing client timeouts"
                 },
@@ -1110,7 +1110,7 @@
             },
             {
               "id": "20002",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Gateway quotas"
                 },
@@ -1125,7 +1125,7 @@
             },
             {
               "id": "20003",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Gateway quotas"
                 },
@@ -1140,7 +1140,7 @@
             },
             {
               "id": "20004",
-              "outwardIssue": {
+              "inwardIssue": {
                 "fields": {
                   "summary": "Retry dashboard"
                 },
@@ -1385,7 +1385,7 @@
             "issuelinks": [
               {
                 "id": "30001",
-                "inwardIssue": {
+                "outwardIssue": {
                   "fields": {
                     "summary": "Vault upgrade"
                   },
@@ -1447,7 +1447,7 @@
           "issuelinks": [
             {
               "id": "30001",
-              "inwardIssue": {
+              "outwardIssue": {
                 "fields": {
                   "summary": "Vault upgrade"
                 },
@@ -3137,43 +3137,43 @@
           "fields": {
             "issuelinks": [
               {
-                "inwardIssue": {
-                  "key": "ABC-9"
-                },
                 "type": {
                   "name": "Blocks"
-                }
-              },
-              {
-                "inwardIssue": {
-                  "key": "ABC-2"
                 },
-                "type": {
-                  "name": "Blocks"
-                }
-              },
-              {
-                "inwardIssue": {
-                  "key": "ABC-9"
-                },
-                "type": {
-                  "name": "Blocks"
-                }
-              },
-              {
                 "outwardIssue": {
-                  "key": "ABC-5"
-                },
-                "type": {
-                  "name": "Blocks"
+                  "key": "ABC-9"
                 }
               },
               {
-                "inwardIssue": {
-                  "key": "ABC-7"
+                "type": {
+                  "name": "Blocks"
                 },
+                "outwardIssue": {
+                  "key": "ABC-2"
+                }
+              },
+              {
+                "type": {
+                  "name": "Blocks"
+                },
+                "outwardIssue": {
+                  "key": "ABC-9"
+                }
+              },
+              {
+                "type": {
+                  "name": "Blocks"
+                },
+                "inwardIssue": {
+                  "key": "ABC-5"
+                }
+              },
+              {
                 "type": {
                   "name": "Duplicate"
+                },
+                "outwardIssue": {
+                  "key": "ABC-7"
                 }
               }
             ],
@@ -3197,43 +3197,43 @@
         "fields": {
           "issuelinks": [
             {
-              "inwardIssue": {
-                "key": "ABC-9"
-              },
               "type": {
                 "name": "Blocks"
-              }
-            },
-            {
-              "inwardIssue": {
-                "key": "ABC-2"
               },
-              "type": {
-                "name": "Blocks"
-              }
-            },
-            {
-              "inwardIssue": {
-                "key": "ABC-9"
-              },
-              "type": {
-                "name": "Blocks"
-              }
-            },
-            {
               "outwardIssue": {
-                "key": "ABC-5"
-              },
-              "type": {
-                "name": "Blocks"
+                "key": "ABC-9"
               }
             },
             {
-              "inwardIssue": {
-                "key": "ABC-7"
+              "type": {
+                "name": "Blocks"
               },
+              "outwardIssue": {
+                "key": "ABC-2"
+              }
+            },
+            {
+              "type": {
+                "name": "Blocks"
+              },
+              "outwardIssue": {
+                "key": "ABC-9"
+              }
+            },
+            {
+              "type": {
+                "name": "Blocks"
+              },
+              "inwardIssue": {
+                "key": "ABC-5"
+              }
+            },
+            {
               "type": {
                 "name": "Duplicate"
+              },
+              "outwardIssue": {
+                "key": "ABC-7"
               }
             }
           ],

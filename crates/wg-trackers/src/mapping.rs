@@ -221,8 +221,10 @@ fn blocked_by_keys(links: Option<&Value>) -> Vec<String> {
         .into_iter()
         .flatten()
         .filter(|link| dig(link, &["type", "name"]).and_then(Value::as_str) == Some("Blocks"))
+        // A link names only the other issue; when that other issue is the outward side of
+        // "Blocks", it is the one doing the blocking.
         .filter_map(|link| {
-            link.get("inwardIssue")
+            link.get("outwardIssue")
                 .and_then(|issue| text(issue.get("key")))
         })
         .collect();

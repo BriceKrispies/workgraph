@@ -25,6 +25,8 @@ use wg_exec::manifest::{
 use wg_exec::stack_base::{Sibling, SiblingChoice, choose_sibling, starts_from_integration_tip};
 use wg_git::{Git, GitError, resolve};
 pub use wg_git_feature::service::worktree_remove::{MANIFEST_FILE, worktree_remove};
+use wg_git_feature::service::worktree_root::workspace_root;
+use wg_git_feature::spec::worktree_root::{attempt_dir_name, taken_attempt_dir_name};
 use wg_json::Value;
 use wg_model::entity::{
     AgentAttempt, ManagedWorktree, Repository, ResourceLease, Task, VerificationConfig,
@@ -259,8 +261,18 @@ pub fn worktree_prepare(
         .runtime
         .store
         .read(|session| prepare_start(session, attempt_id, requests, &isolation))?;
-    let workspace_dir =
-        PathBuf::from(app.paths.worktrees_dir().as_str()).join(attempt_id.to_string());
+    let workspace_dir = match workspace_root(app, start.task.workspace_id)? {
+        Some(root) => {
+            let name = attempt_dir_name(&start.task.key.to_string(), start.number);
+            let path = root.join(&name);
+            if path.exists() {
+                root.join(taken_attempt_dir_name(&name, attempt_id))
+            } else {
+                path
+            }
+        }
+        None => PathBuf::from(app.paths.worktrees_dir().as_str()).join(attempt_id.to_string()),
+    };
     fs::create_dir_all(&workspace_dir).map_err(|err| io_failure(&workspace_dir, &err))?;
     let mut entries = Vec::with_capacity(start.requests.len());
     for request in &start.requests {

@@ -3,6 +3,7 @@
 //! reply. The clap command is in [`args`], the human views in [`view`].
 
 pub mod args;
+pub mod credentials;
 pub mod run;
 pub mod sql;
 pub mod sync;

@@ -4,6 +4,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
+use crate::service::worktree_root::{configured_roots, in_attempt_dir};
 use crate::spec::worktrees::{Removal, git_failure, io_failure, removed_decision};
 use wg_git::{Git, RunOptions};
 use wg_model::entity::{ManagedWorktree, RepositoryCheckout};
@@ -39,13 +40,14 @@ pub fn worktree_remove(
     if row.status == WorktreeStatus::Removed {
         return Ok(Removal::refused(worktree_id, "already removed"));
     }
-    if !is_within(&row.path, &root_text) {
+    let roots = configured_roots(app)?;
+    let path = PathBuf::from(&row.path);
+    if !is_within(&row.path, &root_text) && !in_attempt_dir(&path, &roots) {
         return Err(WgError::validation(format!(
             "refusing to remove {}: not inside Workgraph's worktree directory",
             row.path
         )));
     }
-    let path = PathBuf::from(&row.path);
     // The checkout the worktree was made from, when it is still a repository.
     let source_git = source
         .map(|path| Git {
@@ -95,7 +97,7 @@ pub fn worktree_remove(
         },
         |row, stamp| Ok(removed_decision(row, stamp)),
     )?;
-    remove_empty_attempt_dir(&path, Path::new(&root_text));
+    remove_empty_attempt_dir(&path, Path::new(&root_text), &roots);
     Ok(Removal::removed(worktree_id))
 }
 
@@ -115,14 +117,13 @@ fn removal_target(
 
 /// Removes the attempt directory a removed worktree sat in, when nothing else is left in it but the
 /// manifest. The worktrees root itself is never removed.
-fn remove_empty_attempt_dir(path: &Path, root: &Path) {
+pub(crate) fn remove_empty_attempt_dir(path: &Path, root: &Path, roots: &[PathBuf]) {
     let Some(parent) = path.parent() else {
         return;
     };
-    if !parent.exists()
-        || parent == root
-        || !is_within(&parent.display().to_string(), &root.display().to_string())
-    {
+    let under_default =
+        parent != root && is_within(&parent.display().to_string(), &root.display().to_string());
+    if !parent.exists() || !(under_default || in_attempt_dir(path, roots)) {
         return;
     }
     let leftovers = fs::read_dir(parent).map(|entries| {

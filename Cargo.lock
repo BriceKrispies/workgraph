@@ -3188,6 +3188,7 @@ dependencies = [
  "wg-model",
  "wg-net",
  "wg-netspec",
+ "wg-proc",
  "wg-render",
  "wg-rows",
  "wg-runtime",

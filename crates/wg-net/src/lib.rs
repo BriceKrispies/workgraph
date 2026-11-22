@@ -12,7 +12,7 @@ pub mod ollama;
 pub mod openai;
 
 pub use host::{Net, Sleeper};
-pub use jira::JiraClient;
+pub use jira::{JiraClient, TokenSource};
 pub use ollama::Ollama;
 pub use openai::OpenAiCompatible;
 pub use wg_netspec::client::{Endpoint, Generated};

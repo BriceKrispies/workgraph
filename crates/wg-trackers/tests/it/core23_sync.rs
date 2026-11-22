@@ -58,6 +58,8 @@ fn snapshot_hash_matches_the_python_digest() {
     let config = MappingConfig {
         base_url: "https://acme.atlassian.net".to_string(),
         pr_fields: vec!["customfield_10042".to_string()],
+        pr_default_repos: Default::default(),
+        assignee_field: None,
         dev_panel: true,
     };
     let dev = fixture("dev_status.json")["detail"][0]["pullRequests"]

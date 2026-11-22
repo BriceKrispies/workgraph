@@ -10,8 +10,9 @@
 //! and decodes each row through that table's codec.
 
 use wg_model::entity::{
-    ExternalItem, Project, Repository, Stack, StackItem, Task, TaskComment, TaskDependency,
-    TaskFile, TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag, Workspace,
+    ExternalItem, Project, Repository, RepositoryRemote, Stack, StackItem, Task, TaskComment,
+    TaskDependency, TaskFile, TaskLink, TaskProject, TaskRelation, TaskRepository, TaskTag,
+    Workspace,
 };
 use wg_model::{Row, Table};
 use wg_types::{Id, WgError};
@@ -90,6 +91,21 @@ fn stack_items(workspace: Option<Id>) -> Statement {
     }
 }
 
+/// The remotes of the repositories of `workspace`: a tracker sync resolves pull requests by them.
+fn repository_remotes(workspace: Option<Id>) -> Statement {
+    match workspace {
+        Some(id) => select(
+            Table::RepositoryRemote,
+            Some(
+                "\"repository_id\" IN (SELECT \"id\" FROM \"repositories\" WHERE \"workspace_id\" = ?1)",
+            ),
+            "\"id\"",
+            vec![id_sql(id)],
+        ),
+        None => select(Table::RepositoryRemote, None, "\"id\"", Vec::new()),
+    }
+}
+
 /// Every statement of the task world for `workspace` (`None`: all workspaces), each with the
 /// table whose rows it returns, and the comments of `comments_for`.
 #[must_use]
@@ -107,6 +123,7 @@ pub fn statements(workspace: Option<Id>, comments_for: &[Id]) -> Vec<(Table, Sta
             Table::Repository,
             in_workspace(Table::Repository, workspace, "\"id\""),
         ),
+        (Table::RepositoryRemote, repository_remotes(workspace)),
         (
             Table::Task,
             in_workspace(Table::Task, workspace, "\"number\", \"id\""),
@@ -213,6 +230,7 @@ pub fn decode_row(table: Table, values: &[Raw]) -> Result<Row, WgError> {
         Workspace,
         Project,
         Repository,
+        RepositoryRemote,
         Task,
         TaskFile,
         TaskTag,

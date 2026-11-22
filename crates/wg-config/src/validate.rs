@@ -249,6 +249,22 @@ pub(crate) fn validate(
         }
         Schema::Model(model) => validate_model(model, input, loc, errors).map(Value::Object),
         Schema::Tagged(members) => tagged(members, input, loc, errors),
+        Schema::Checked(inner, check) => {
+            let dump = validate(inner, input, loc, errors)?;
+            match (check.0)(&dump) {
+                None => Some(dump),
+                Some(message) => {
+                    push(
+                        errors,
+                        "value_error",
+                        format!("Value error, {message}"),
+                        loc,
+                        input,
+                    );
+                    None
+                }
+            }
+        }
     }
 }
 

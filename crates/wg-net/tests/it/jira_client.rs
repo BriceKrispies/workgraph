@@ -6,7 +6,8 @@ use crate::common;
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
 use serde_json::{Value, json};
-use wg_net::{JiraClient, Net};
+use wg_net::{JiraClient, Net, TokenSource};
+use wg_netspec::TrackerError;
 use wg_netspec::jira::Flavour;
 
 use common::{Fake, Reply, delays_of, net, recording_sleep};
@@ -19,7 +20,7 @@ const OCT_18: i64 = 1_792_281_600;
 
 fn cloud() -> Flavour {
     Flavour::Cloud {
-        email: EMAIL.to_owned(),
+        email: Some(EMAIL.to_owned()),
         token: TOKEN.to_owned(),
     }
 }
@@ -38,6 +39,10 @@ fn jira(url: &str, flavour: Flavour, net: Net) -> JiraClient {
         timeout_seconds: 5.0,
         net,
         zone: None,
+        tokens: None,
+        scope_jql: None,
+        min_interval_seconds: 0.0,
+        next_request_ms: 0,
     }
 }
 
@@ -100,7 +105,7 @@ fn cloud_search_follows_next_page_token() {
 }
 
 #[test]
-fn cloud_list_keys_requests_id_fields() {
+fn cloud_list_keys_requests_key_fields() {
     let fake = Fake::start(|_| page(vec![issue("ABC-1", 10001)]));
     let mut client = jira(&fake.url, cloud(), Net::default());
 
@@ -109,7 +114,8 @@ fn cloud_list_keys_requests_id_fields() {
         .expect("list succeeds");
 
     assert_eq!(keys, [("10001".to_owned(), "ABC-1".to_owned())]);
-    assert_eq!(fake.requests()[0].query("fields").as_deref(), Some("id"));
+    // /search/jql returns only the fields asked for, and `id` alone omits `key`.
+    assert_eq!(fake.requests()[0].query("fields").as_deref(), Some("key"));
 }
 
 #[test]
@@ -402,4 +408,196 @@ fn every_request_is_a_get() {
     let seen = fake.requests();
     assert_eq!(seen.len(), 5);
     assert!(seen.iter().all(|r| r.method == "GET"));
+}
+
+/// Hands out `tokens` in order; `refresh` moves to the next one while there is one.
+struct Rotating {
+    tokens: Vec<&'static str>,
+    at: usize,
+    refreshes: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl TokenSource for Rotating {
+    fn token(&mut self) -> Result<String, TrackerError> {
+        Ok(self.tokens[self.at].to_owned())
+    }
+
+    fn refresh(&mut self) -> Result<bool, TrackerError> {
+        self.refreshes
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        if self.at + 1 < self.tokens.len() {
+            self.at += 1;
+            Ok(true)
+        } else {
+            Ok(false)
+        }
+    }
+}
+
+fn bearer(token: &str) -> Flavour {
+    Flavour::Cloud {
+        email: None,
+        token: token.to_owned(),
+    }
+}
+
+#[test]
+fn cloud_without_email_sends_a_bearer_token() {
+    let fake = Fake::start(|_| Reply::json(200, &json!({"id": "1", "key": "ABC-1", "fields": {}})));
+    let mut client = jira(&fake.url, bearer(TOKEN), Net::default());
+
+    client.get_issue("ABC-1").expect("request succeeds");
+
+    let seen = fake.requests();
+    assert_eq!(
+        seen[0].header("Authorization"),
+        Some(format!("Bearer {TOKEN}").as_str())
+    );
+    assert_eq!(seen[0].path(), "/rest/api/3/issue/ABC-1");
+}
+
+#[test]
+fn a_401_is_retried_once_with_a_refreshed_token() {
+    let fake = Fake::start(|request| {
+        if request.header("Authorization") == Some("Bearer fresh") {
+            Reply::json(200, &json!({"id": "1", "key": "ABC-1", "fields": {}}))
+        } else {
+            Reply::text(401, "")
+        }
+    });
+    let refreshes = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut client = jira(&fake.url, bearer("stale"), Net::default());
+    client.tokens = Some(Box::new(Rotating {
+        tokens: vec!["stale", "fresh"],
+        at: 0,
+        refreshes: refreshes.clone(),
+    }));
+
+    let issue = client.get_issue("ABC-1").expect("refreshed to success");
+
+    assert!(issue.is_some());
+    assert_eq!(fake.requests().len(), 2);
+    assert_eq!(refreshes.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[test]
+fn a_401_that_persists_after_a_refresh_is_an_error() {
+    let fake = Fake::start(|_| Reply::text(401, ""));
+    let refreshes = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut client = jira(&fake.url, bearer("one"), Net::default());
+    client.tokens = Some(Box::new(Rotating {
+        tokens: vec!["one", "two", "three"],
+        at: 0,
+        refreshes: refreshes.clone(),
+    }));
+
+    let error = client.get_issue("ABC-1").expect_err("401 stays an error");
+
+    assert_eq!(error.status, Some(401));
+    assert_eq!(fake.requests().len(), 2);
+    assert_eq!(refreshes.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(!error.message.contains("two"));
+}
+
+#[test]
+fn a_401_without_a_token_source_is_not_retried() {
+    let fake = Fake::start(|_| Reply::text(401, ""));
+    let mut client = jira(&fake.url, cloud(), Net::default());
+
+    let error = client.get_issue("ABC-1").expect_err("401 is an error");
+
+    assert_eq!(error.status, Some(401));
+    assert_eq!(fake.requests().len(), 1);
+}
+
+#[test]
+fn retry_after_beyond_the_cap_of_backoff_is_honoured_in_full() {
+    let replies = std::sync::Mutex::new(std::collections::VecDeque::from(vec![
+        Reply::text(429, "").header("Retry-After", "120"),
+        Reply::json(200, &json!({"id": "1", "key": "ABC-1", "fields": {}})),
+    ]));
+    let fake = Fake::start(move |_| {
+        replies
+            .lock()
+            .expect("script lock")
+            .pop_front()
+            .unwrap_or_else(|| Reply::text(500, "exhausted"))
+    });
+    let (sleep, delays) = recording_sleep();
+    let mut client = jira(&fake.url, cloud(), net(sleep));
+
+    client.get_issue("ABC-1").expect("retried to success");
+
+    assert_eq!(delays_of(&delays), [120.0]);
+}
+
+#[test]
+fn retry_after_longer_than_five_minutes_fails_without_waiting() {
+    let fake = Fake::start(|_| Reply::text(429, "").header("Retry-After", "301"));
+    let (sleep, delays) = recording_sleep();
+    let mut client = jira(&fake.url, cloud(), net(sleep));
+
+    let error = client.get_issue("ABC-1").expect_err("too long to wait");
+
+    assert_eq!(error.status, Some(429));
+    assert!(error.message.contains("retry after more than 300s"));
+    assert_eq!(fake.requests().len(), 1);
+    assert!(delays_of(&delays).is_empty());
+}
+
+#[test]
+fn scope_jql_is_anded_onto_searches_and_key_listings() {
+    let fake = Fake::start(|_| page(Vec::new()));
+    let mut client = jira(&fake.url, cloud(), Net::default());
+    client.scope_jql = Some("labels = team-a".to_owned());
+
+    client
+        .search_updated(&projects(&["ABC"]), None)
+        .expect("search");
+    client.list_keys(&projects(&["ABC"])).expect("keys");
+
+    let jql: Vec<String> = fake
+        .requests()
+        .iter()
+        .filter_map(|r| r.query("jql"))
+        .collect();
+    assert_eq!(
+        jql,
+        [
+            "project in (\"ABC\") AND (labels = team-a) ORDER BY updated ASC",
+            "project in (\"ABC\") AND (labels = team-a)",
+        ]
+    );
+}
+
+#[test]
+fn near_limit_header_pauses_before_the_next_request() {
+    let fake = Fake::start(|_| {
+        Reply::json(200, &json!({"id": "1", "key": "ABC-1", "fields": {}}))
+            .header("X-RateLimit-NearLimit", "true")
+    });
+    let (sleep, delays) = recording_sleep();
+    let mut client = jira(&fake.url, cloud(), net(sleep));
+
+    client.get_issue("ABC-1").expect("first");
+    client.get_issue("ABC-1").expect("second");
+
+    let waits = delays_of(&delays);
+    assert_eq!(waits.len(), 1);
+    assert!(waits[0] > 4.0 && waits[0] <= 5.0, "waited {waits:?}");
+}
+
+#[test]
+fn min_request_interval_spaces_requests() {
+    let fake = Fake::start(|_| Reply::json(200, &json!({"id": "1", "key": "ABC-1", "fields": {}})));
+    let (sleep, delays) = recording_sleep();
+    let mut client = jira(&fake.url, cloud(), net(sleep));
+    client.min_interval_seconds = 2.0;
+
+    client.get_issue("ABC-1").expect("first");
+    client.get_issue("ABC-1").expect("second");
+
+    let waits = delays_of(&delays);
+    assert_eq!(waits.len(), 1);
+    assert!(waits[0] > 1.0 && waits[0] <= 2.0, "waited {waits:?}");
 }

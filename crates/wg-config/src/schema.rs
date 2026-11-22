@@ -37,6 +37,18 @@ pub(crate) enum Schema {
     Model(Model),
     /// A discriminated union on the `type` key, one model per tag.
     Tagged(Vec<(&'static str, Model)>),
+    /// `inner`, then a Pydantic `after` validator over its dump: `Some(message)` is a `ValueError`.
+    Checked(Box<Schema>, Check),
+}
+
+/// The function of a [`Schema::Checked`] validator.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct Check(pub fn(&Value) -> Option<String>);
+
+impl PartialEq for Check {
+    fn eq(&self, other: &Self) -> bool {
+        std::ptr::fn_addr_eq(self.0, other.0)
+    }
 }
 
 /// One field of a model.

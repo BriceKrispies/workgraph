@@ -12,10 +12,19 @@ pub fn project_jql(projects: &[String]) -> String {
     format!("project in ({})", quoted.join(","))
 }
 
+/// The project list with the connection's own filter ANDed on, when it has one.
+pub fn scoped_jql(projects: &[String], scope: Option<&str>) -> String {
+    let jql = project_jql(projects);
+    match scope.map(str::trim).filter(|scope| !scope.is_empty()) {
+        Some(scope) => format!("{jql} AND ({scope})"),
+        None => jql,
+    }
+}
+
 /// The query of a search for updated issues. `since` is the minute stamp of
 /// [`jql_minute`], or `None` for every issue in the projects.
-pub fn updated_jql(projects: &[String], since: Option<&str>) -> String {
-    let mut jql = project_jql(projects);
+pub fn updated_jql(projects: &[String], scope: Option<&str>, since: Option<&str>) -> String {
+    let mut jql = scoped_jql(projects, scope);
     if let Some(minute) = since {
         jql.push_str(&format!(" AND updated >= \"{minute}\""));
     }

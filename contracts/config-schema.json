@@ -231,6 +231,18 @@
           "minimum": 1,
           "title": "Max Concurrent Runs",
           "type": "integer"
+        },
+        "worktree_root": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Worktree Root"
         }
       },
       "title": "ExecutionConfig",
@@ -254,6 +266,27 @@
       "additionalProperties": false,
       "description": "A read-only connection to a Jira site. Workgraph never writes to Jira.",
       "properties": {
+        "assignee_field": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Assignee Field"
+        },
+        "auth": {
+          "default": "basic",
+          "enum": [
+            "basic",
+            "bearer"
+          ],
+          "title": "Auth",
+          "type": "string"
+        },
         "base_url": {
           "title": "Base Url",
           "type": "string"
@@ -301,6 +334,25 @@
           "title": "Full Sync Interval Seconds",
           "type": "integer"
         },
+        "jql": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Jql"
+        },
+        "min_request_interval_seconds": {
+          "default": 0.0,
+          "maximum": 60,
+          "minimum": 0,
+          "title": "Min Request Interval Seconds",
+          "type": "number"
+        },
         "missing_grace_seconds": {
           "default": 86400,
           "minimum": 0,
@@ -319,6 +371,13 @@
           "title": "Poll Interval Seconds",
           "type": "integer"
         },
+        "pr_default_repos": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Pr Default Repos",
+          "type": "object"
+        },
         "pr_fields": {
           "default": [],
           "items": {
@@ -335,15 +394,56 @@
           "title": "Projects",
           "type": "array"
         },
+        "site_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Site Url"
+        },
         "timeout_seconds": {
           "default": 30.0,
           "exclusiveMinimum": 0,
           "title": "Timeout Seconds",
           "type": "number"
         },
+        "token_command": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Token Command"
+        },
+        "token_command_timeout_seconds": {
+          "default": 60.0,
+          "exclusiveMinimum": 0,
+          "title": "Token Command Timeout Seconds",
+          "type": "number"
+        },
         "token_env": {
-          "title": "Token Env",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Token Env"
         },
         "type": {
           "const": "jira",
@@ -359,8 +459,7 @@
       "required": [
         "base_url",
         "workspace",
-        "projects",
-        "token_env"
+        "projects"
       ],
       "title": "JiraTrackerConfig",
       "type": "object"

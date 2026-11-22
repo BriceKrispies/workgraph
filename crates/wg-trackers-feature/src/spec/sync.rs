@@ -149,6 +149,49 @@ pub fn apply_page(
 
 /// Reconciles a full listing (`_reconcile`): restores what the listing returned, marks what it did
 /// not, and archives the tasks whose mark is older than the grace period.
+/// `(external_id, external_key)` of the connection's tracked items the listing did not return.
+#[must_use]
+pub fn unlisted_items(
+    world: &TaskWorld,
+    connection: &str,
+    listed: &HashSet<String>,
+) -> Vec<(String, String)> {
+    world
+        .tasks
+        .external_items
+        .values()
+        .filter(|item| item.connection == connection && !listed.contains(&item.external_id))
+        .map(|item| (item.external_id.clone(), item.external_key.clone()))
+        .collect()
+}
+
+/// Whether an issue fetched by key is still the tracked one and still in a configured project.
+/// A `jql`-scoped listing leaves out parents and blockers, so their absence proves nothing.
+#[must_use]
+pub fn still_present(issue: &Value, external_id: &str, key: &str, projects: &[String]) -> bool {
+    let same = match issue.get("id") {
+        Some(Value::String(id)) => id == external_id,
+        Some(Value::Number(id)) => id.to_string() == external_id,
+        _ => false,
+    };
+    let project = issue
+        .get("fields")
+        .and_then(|fields| fields.get("project"))
+        .and_then(|project| project.get("key"))
+        .and_then(Value::as_str)
+        .filter(|project| !project.is_empty())
+        .map_or_else(
+            || {
+                let key = issue.get("key").and_then(Value::as_str).unwrap_or(key);
+                key.rsplit_once('-')
+                    .map_or(key, |(project, _)| project)
+                    .to_owned()
+            },
+            str::to_owned,
+        );
+    same && projects.contains(&project)
+}
+
 pub fn reconcile_page(
     world: &TaskWorld,
     connection: &str,

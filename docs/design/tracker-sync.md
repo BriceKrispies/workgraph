@@ -98,7 +98,7 @@ The client has read methods only, and a test asserts its transport issues nothin
 | | Cloud (implemented) | Data Center (seam) |
 | --- | --- | --- |
 | Search | `GET /rest/api/3/search/jql`, `nextPageToken` | `GET /rest/api/2/search`, `startAt` |
-| Auth | Basic, email + API token | Bearer personal access token |
+| Auth | Basic (email + API token) or Bearer (OAuth 2.0 access token) | Bearer personal access token |
 | Description | Atlassian Document Format, flattened to text | wiki markup |
 | Dev panel | `GET /rest/dev-status/latest/issue/detail?issueId=…&applicationType=GitHub&dataType=pullrequest` | same endpoint |
 
@@ -151,7 +151,7 @@ dev_panel = true
 cancelled_resolutions = ["Won't Do", "Duplicate"]
 ```
 
-Credentials come only from the named environment variables.
+The token comes from the named environment variable or from `token_command`; it is never stored. See [configuration.md](../configuration.md#issue-trackers).
 
 ## Not in scope
 

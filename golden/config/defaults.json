@@ -29,7 +29,8 @@
       "enabled": false,
       "isolation": "worktree",
       "max_attempts_per_task": 3,
-      "max_concurrent_runs": 2
+      "max_concurrent_runs": 2,
+      "worktree_root": null
     },
     "jobs": {
       "default_max_attempts": 5,

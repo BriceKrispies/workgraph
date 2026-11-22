@@ -52,6 +52,7 @@ Worktree discovery: `repo register` and `repo refresh` run `git worktree list` a
 tracked branches. Git sync scans the tracked branches first and then only the first 20 local branches,
 so a branch that matters in a repository with many branches should be tracked explicitly. Changing
 `--default-branch` also adds the new default to the tracked branches when it is not tracked yet; existing
+entries are kept.
 
 `repo update --integration-branch BRANCH` names the branch finished work lands on (an empty value clears it);
 `repo show` prints it. When git sync finds a commit with a `Task-ID` trailer reachable from that branch (or, with
@@ -59,7 +60,6 @@ none set, from the integration branch of the repository's most recent stack), th
 blocked, claimed or running to awaiting_review, with a comment naming the commit and branch. Tasks in any other
 status, and commits that only mention a task in the body, are left alone. `workspace set --review-on-land off`
 turns this off for a workspace.
-entries are kept.
 
 ## Promoting ready work
 

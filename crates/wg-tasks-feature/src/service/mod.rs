@@ -71,6 +71,7 @@ pub fn task_create_from(
         .collect();
     let slug = app.workspace_slug(&scope.to_string())?;
     let guard = duplicate_guard(&app.effective_config(Some(&slug))?);
+    let mut duplicate_warned = false;
     if guard.mode != DuplicateMode::Off {
         let candidates = app.runtime.query(
             |session| session.task_world(Some(scope), &[]),
@@ -80,6 +81,7 @@ pub fn task_create_from(
             refuse_duplicates(&candidates, read.distinct_reason.as_deref())?;
         } else if !candidates.is_empty() && read.distinct_reason.is_none() {
             warnings.push(duplicates_warning(&candidates));
+            duplicate_warned = true;
         }
     }
     if from_agent && intake_enabled(&app.effective_config(Some(&slug))?) {
@@ -107,6 +109,7 @@ pub fn task_create_from(
                 "
 ",
             ),
+            duplicate_warned,
         )
     })
 }
@@ -117,8 +120,9 @@ fn criteria_required_in(app: &mut App, workspace: Id) -> Result<bool, WgError> {
     Ok(criteria_required(&app.effective_config(Some(&slug))?))
 }
 
-/// Adds the `warning` member to a created task's reply.
-fn with_warning(reply: Value, warning: &str) -> Value {
+/// Adds the `warning` member to a created task's reply. A task reply (a model) carries it only
+/// when it names duplicates, so replies without a duplicate warning keep the recorded shape.
+fn with_warning(reply: Value, warning: &str, on_models: bool) -> Value {
     match reply {
         Value::Dict(mut entries) => {
             entries.push((
@@ -127,19 +131,32 @@ fn with_warning(reply: Value, warning: &str) -> Value {
             ));
             Value::Dict(entries)
         }
+        Value::Model { name, mut fields } if on_models => {
+            fields.push((
+                "warning".to_owned(),
+                Value::Str(wg_json::PyStr::from(warning)),
+            ));
+            Value::Model { name, fields }
+        }
         other => other,
     }
 }
 
 /// The `warning` a `task_create` reply carries, if any.
 pub fn create_warning(reply: &Value) -> Option<String> {
-    let Value::Dict(entries) = reply else {
-        return None;
-    };
-    entries.iter().find_map(|(key, value)| match value {
-        Value::Str(text) if *key == wg_json::PyStr::from("warning") => text.to_text(),
+    let text = match reply {
+        Value::Dict(entries) => entries
+            .iter()
+            .find_map(|(key, value)| (*key == wg_json::PyStr::from("warning")).then_some(value)),
+        Value::Model { fields, .. } => fields
+            .iter()
+            .find_map(|(key, value)| (key == "warning").then_some(value)),
         _ => None,
-    })
+    };
+    match text {
+        Some(Value::Str(text)) => text.to_text(),
+        _ => None,
+    }
 }
 
 /// `TaskService.update`.

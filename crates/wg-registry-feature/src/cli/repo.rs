@@ -83,9 +83,14 @@ fn with_integration_branch(
     let id = wg_iface::cli::args::s(wg_iface::cli::args::get(&out, "id"));
     let branch = service::repo_integration_branch(state.app()?, context, workspace, &id)?;
     Ok(match out {
+        // Only a set branch is shown, so the output of repositories without one is unchanged.
         Value::Model { name, mut fields } => {
-            let value = branch.map_or(Value::Null, |text| Value::Str(text.as_str().into()));
-            fields.push(("integration_branch".to_owned(), value));
+            if let Some(text) = branch {
+                fields.push((
+                    "integration_branch".to_owned(),
+                    Value::Str(text.as_str().into()),
+                ));
+            }
             Value::Model { name, fields }
         }
         other => other,

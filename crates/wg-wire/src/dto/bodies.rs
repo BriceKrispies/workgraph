@@ -81,6 +81,7 @@ pub const TASK_CREATE: Body = body(
         "scheduled_at",
         "estimated_effort",
         "metadata",
+        "distinct_reason",
     ],
 );
 pub const TASK_UPDATE: Body = body(

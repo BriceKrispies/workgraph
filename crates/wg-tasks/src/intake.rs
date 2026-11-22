@@ -9,14 +9,14 @@ use serde_json::{Map, Value};
 use wg_model::entity::Task;
 use wg_types::{TaskStatus, WgError};
 
-/// Whether tasks created through MCP start as proposed (`tasks.intake_proposed`, default on).
+/// Whether tasks created through MCP start as proposed (`tasks.intake_proposed`, default off).
 #[must_use]
 pub fn intake_enabled(config: &Map<String, Value>) -> bool {
     config
         .get("tasks")
         .and_then(|tasks| tasks.get("intake_proposed"))
         .and_then(Value::as_bool)
-        .unwrap_or(true)
+        .unwrap_or(false)
 }
 
 /// The status an intake action admits a proposal to: ready, or backlog.

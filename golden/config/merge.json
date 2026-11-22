@@ -91,9 +91,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -197,9 +197,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -304,9 +304,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -411,9 +411,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -517,9 +517,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -624,9 +624,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -731,9 +731,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },
@@ -887,9 +887,9 @@
         "auto_accept": true
       },
       "tasks": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },

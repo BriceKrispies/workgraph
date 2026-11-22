@@ -701,7 +701,7 @@
       "additionalProperties": false,
       "properties": {
         "duplicate_check": {
-          "default": "refuse",
+          "default": "off",
           "enum": [
             "refuse",
             "warn",
@@ -717,7 +717,7 @@
           "type": "number"
         },
         "intake_proposed": {
-          "default": true,
+          "default": false,
           "title": "Intake Proposed",
           "type": "boolean"
         },
@@ -893,9 +893,9 @@
     "tasks": {
       "$ref": "#/$defs/TasksConfig",
       "default": {
-        "duplicate_check": "refuse",
+        "duplicate_check": "off",
         "duplicate_threshold": 0.6,
-        "intake_proposed": true,
+        "intake_proposed": false,
         "require_acceptance_criteria": false
       }
     },

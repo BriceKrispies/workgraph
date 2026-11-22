@@ -36,7 +36,7 @@ stateDiagram-v2
 
 Transitions are validated by `core/policies/lifecycle.py`. Notable rules:
 
-- **Agent-created tasks start as `proposed`.** With `tasks.intake_proposed` on (the default), the MCP
+- **Agent-created tasks start as `proposed`.** With `tasks.intake_proposed` on (off by default; turn it on per installation), the MCP
   `task_create` tool inserts the task as `proposed`. A proposed task is not in `task ready`, the
   backlog or `task promote-ready`, and nothing moves a task into `proposed` later. `task intake`
   (and the MCP tool `task_intake`) lists the proposals per repository and admits one to `backlog`

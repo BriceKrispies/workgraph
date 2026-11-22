@@ -4,6 +4,7 @@
   "setup": [],
   "steps": [
     {"cli": ["init"], "json": true},
+    {"cli": ["config", "set", "tasks.intake_proposed", "true"], "json": true},
     {"mcp": "task_create", "args": {"title": "Parser panics on empty input", "description": "Seen in review", "acceptance_criteria": ["no panic"], "ready": true}},
     {"assert": {"json": {"path": "/status", "equals": "proposed"}}},
     {"mcp": "task_create", "args": {"title": "Cache invalidation", "acceptance_criteria": ["covered"]}},

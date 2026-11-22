@@ -17,7 +17,7 @@ use wg_registry_feature::spec::registry::workspace_create_body;
 use wg_registry_feature::spec::repos::RegisterInput;
 use wg_runtime::{App, RequestContext, human_context};
 use wg_store::{Raw, Statement};
-use wg_tasks_feature::service::{task_create, task_update};
+use wg_tasks_feature::service::{task_claim, task_create, task_update};
 
 const WS: Option<&str> = Some("t");
 
@@ -96,7 +96,18 @@ impl Fixture {
                 _ => std::slice::from_ref(&status),
             };
             for step in path {
-                self.set_status(&key, step);
+                if *step == "claimed" {
+                    task_claim(
+                        &mut self.app,
+                        &self.ctx,
+                        WS,
+                        &key,
+                        &json!({"agent": "land-review-test"}),
+                    )
+                    .expect("claim");
+                } else {
+                    self.set_status(&key, step);
+                }
             }
         }
     }

@@ -61,9 +61,9 @@ fn search(slice: &TaskSlice, repositories: &[Id], projects: &[Id]) -> Vec<String
 }
 
 #[test]
-fn guard_defaults_to_refuse_and_reads_mode_and_threshold() {
+fn guard_defaults_to_off_and_reads_mode_and_threshold() {
     let default = duplicate_guard(&serde_json::Map::new());
-    assert_eq!(default.mode, DuplicateMode::Refuse);
+    assert_eq!(default.mode, DuplicateMode::Off);
     assert!((default.threshold - 0.6).abs() < 1e-9);
 
     let read = |value: serde_json::Value| {
@@ -75,6 +75,8 @@ fn guard_defaults_to_refuse_and_reads_mode_and_threshold() {
     assert!((warn.threshold - 0.8).abs() < 1e-9);
     let off = read(json!({"tasks": {"duplicate_check": "off"}}));
     assert_eq!(off.mode, DuplicateMode::Off);
+    let refuse = read(json!({"tasks": {"duplicate_check": "refuse"}}));
+    assert_eq!(refuse.mode, DuplicateMode::Refuse);
 }
 
 #[test]

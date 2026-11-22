@@ -158,8 +158,8 @@ fn proposed_tasks_are_not_ready_or_promotable() {
 }
 
 #[test]
-fn intake_is_on_unless_the_workspace_turns_it_off() {
-    assert!(intake_enabled(&serde_json::Map::new()));
+fn intake_is_off_unless_the_workspace_turns_it_on() {
+    assert!(!intake_enabled(&serde_json::Map::new()));
     let on = json!({"tasks": {"intake_proposed": true}});
     assert!(intake_enabled(
         on.as_object().unwrap_or(&serde_json::Map::new())

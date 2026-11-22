@@ -1,0 +1,1185 @@
+{
+  "base": {
+    "action": "list"
+  },
+  "cases": [
+    {
+      "id": "base",
+      "input": {
+        "action": "list"
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "missing:action",
+      "input": {},
+      "output": {
+        "errors": [
+          {
+            "input": {},
+            "loc": [
+              "action"
+            ],
+            "msg": "Field required",
+            "type": "missing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:none",
+      "input": {
+        "action": null
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": null,
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:int",
+      "input": {
+        "action": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": 12,
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:float",
+      "input": {
+        "action": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": 1.5,
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:bool",
+      "input": {
+        "action": true
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": true,
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:str",
+      "input": {
+        "action": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": "x",
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:list",
+      "input": {
+        "action": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:action:dict",
+      "input": {
+        "action": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "ctx": {
+              "expected": "'list', 'admit', 'merge' or 'drop'"
+            },
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "action"
+            ],
+            "msg": "Input should be 'list', 'admit', 'merge' or 'drop'",
+            "type": "literal_error"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:keys:none",
+      "input": {
+        "action": "list",
+        "keys": null
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:keys:int",
+      "input": {
+        "action": "list",
+        "keys": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "keys"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:keys:float",
+      "input": {
+        "action": "list",
+        "keys": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "keys"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:keys:bool",
+      "input": {
+        "action": "list",
+        "keys": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "keys"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:keys:str",
+      "input": {
+        "action": "list",
+        "keys": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "keys"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:keys:list",
+      "input": {
+        "action": "list",
+        "keys": [
+          "a"
+        ]
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": [
+            "a"
+          ],
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:keys:dict",
+      "input": {
+        "action": "list",
+        "keys": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "keys"
+            ],
+            "msg": "Input should be a valid list",
+            "type": "list_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:into:none",
+      "input": {
+        "action": "list",
+        "into": null
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:into:int",
+      "input": {
+        "action": "list",
+        "into": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "into"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:into:float",
+      "input": {
+        "action": "list",
+        "into": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "into"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:into:bool",
+      "input": {
+        "action": "list",
+        "into": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "into"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:into:str",
+      "input": {
+        "action": "list",
+        "into": "x"
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": "x",
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:into:list",
+      "input": {
+        "action": "list",
+        "into": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "into"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:into:dict",
+      "input": {
+        "action": "list",
+        "into": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "into"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:none",
+      "input": {
+        "action": "list",
+        "reason": null
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:int",
+      "input": {
+        "action": "list",
+        "reason": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:float",
+      "input": {
+        "action": "list",
+        "reason": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:bool",
+      "input": {
+        "action": "list",
+        "reason": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:str",
+      "input": {
+        "action": "list",
+        "reason": "x"
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": "x",
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:reason:list",
+      "input": {
+        "action": "list",
+        "reason": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:reason:dict",
+      "input": {
+        "action": "list",
+        "reason": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "reason"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:ready:none",
+      "input": {
+        "action": "list",
+        "ready": null
+      },
+      "output": {
+        "errors": [
+          {
+            "input": null,
+            "loc": [
+              "ready"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:ready:int",
+      "input": {
+        "action": "list",
+        "ready": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "ready"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:ready:float",
+      "input": {
+        "action": "list",
+        "ready": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "ready"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:ready:bool",
+      "input": {
+        "action": "list",
+        "ready": true
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": true,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:ready:str",
+      "input": {
+        "action": "list",
+        "ready": "x"
+      },
+      "output": {
+        "errors": [
+          {
+            "input": "x",
+            "loc": [
+              "ready"
+            ],
+            "msg": "Input should be a valid boolean, unable to interpret input",
+            "type": "bool_parsing"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:ready:list",
+      "input": {
+        "action": "list",
+        "ready": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "ready"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:ready:dict",
+      "input": {
+        "action": "list",
+        "ready": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "ready"
+            ],
+            "msg": "Input should be a valid boolean",
+            "type": "bool_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:none",
+      "input": {
+        "action": "list",
+        "repository": null
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:int",
+      "input": {
+        "action": "list",
+        "repository": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:float",
+      "input": {
+        "action": "list",
+        "repository": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:bool",
+      "input": {
+        "action": "list",
+        "repository": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:str",
+      "input": {
+        "action": "list",
+        "repository": "x"
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": "x",
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:repository:list",
+      "input": {
+        "action": "list",
+        "repository": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:repository:dict",
+      "input": {
+        "action": "list",
+        "repository": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "repository"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:none",
+      "input": {
+        "action": "list",
+        "project": null
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:int",
+      "input": {
+        "action": "list",
+        "project": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:float",
+      "input": {
+        "action": "list",
+        "project": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:bool",
+      "input": {
+        "action": "list",
+        "project": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:str",
+      "input": {
+        "action": "list",
+        "project": "x"
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": "x",
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:project:list",
+      "input": {
+        "action": "list",
+        "project": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:project:dict",
+      "input": {
+        "action": "list",
+        "project": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "project"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:none",
+      "input": {
+        "action": "list",
+        "workspace": null
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": null
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:int",
+      "input": {
+        "action": "list",
+        "workspace": 12
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 12,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:float",
+      "input": {
+        "action": "list",
+        "workspace": 1.5
+      },
+      "output": {
+        "errors": [
+          {
+            "input": 1.5,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:bool",
+      "input": {
+        "action": "list",
+        "workspace": true
+      },
+      "output": {
+        "errors": [
+          {
+            "input": true,
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:str",
+      "input": {
+        "action": "list",
+        "workspace": "x"
+      },
+      "output": {
+        "ok": {
+          "action": "list",
+          "into": null,
+          "keys": null,
+          "project": null,
+          "ready": false,
+          "reason": null,
+          "repository": null,
+          "workspace": "x"
+        }
+      }
+    },
+    {
+      "id": "wrong:workspace:list",
+      "input": {
+        "action": "list",
+        "workspace": [
+          "a"
+        ]
+      },
+      "output": {
+        "errors": [
+          {
+            "input": [
+              "a"
+            ],
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    },
+    {
+      "id": "wrong:workspace:dict",
+      "input": {
+        "action": "list",
+        "workspace": {
+          "k": 1
+        }
+      },
+      "output": {
+        "errors": [
+          {
+            "input": {
+              "k": 1
+            },
+            "loc": [
+              "workspace"
+            ],
+            "msg": "Input should be a valid string",
+            "type": "string_type"
+          }
+        ]
+      }
+    }
+  ],
+  "kind": "mcp",
+  "tool": "task_intake"
+}

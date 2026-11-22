@@ -158,7 +158,7 @@ refused with a `validation_failed` error whose `reason` detail is `acceptance_cr
 so is any move of a task with no acceptance criteria to ready (`task update` to `ready`, and
 `task promote-ready`). Tasks that already exist are unaffected until they are promoted.
 
-`[tasks] duplicate_check` (`refuse`, `warn` or `off`; default `refuse`) and `duplicate_threshold`
+`[tasks] duplicate_check` (`refuse`, `warn` or `off`; default `off`, so an installation turns it on) and `duplicate_threshold`
 (0 to 1; default `0.6`) set the duplicate check of `task create`. The check compares the new task's
 title and description with the open tasks (not accepted, cancelled or archived) that share a
 repository or project with it, using a token overlap: the mean of the Jaccard overlap of the title
@@ -171,7 +171,7 @@ body field `distinct_reason`); the reason is stored in the task's `metadata.dist
 `task show` prints it. With `warn` the task is created and the matches come back in the `warning`
 field; with `off` nothing is compared.
 
-`[tasks] intake_proposed` (default `true`) puts every task created through the MCP `task_create` tool
+`[tasks] intake_proposed` (default `false`) puts every task created through the MCP `task_create` tool
 into the `proposed` status instead of `backlog`; a `ready` argument is ignored then. Proposed tasks
 are not in `task ready`, are not promoted by `task promote-ready` and are reviewed with `task intake`
 (`list`, `admit [--ready]`, `merge --into KEY`, `drop --reason TEXT`; the MCP tool `task_intake`

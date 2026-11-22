@@ -59,7 +59,7 @@ pub struct DuplicateCandidate {
 }
 
 /// Reads `tasks.duplicate_check` and `tasks.duplicate_threshold`; an absent or unknown value is
-/// the default (refuse at 0.6).
+/// the default (off, threshold 0.6).
 #[must_use]
 pub fn duplicate_guard(config: &Map<String, Value>) -> DuplicateGuard {
     let tasks = config.get("tasks");
@@ -68,8 +68,8 @@ pub fn duplicate_guard(config: &Map<String, Value>) -> DuplicateGuard {
         .and_then(Value::as_str)
     {
         Some("warn") => DuplicateMode::Warn,
-        Some("off") => DuplicateMode::Off,
-        _ => DuplicateMode::Refuse,
+        Some("refuse") => DuplicateMode::Refuse,
+        _ => DuplicateMode::Off,
     };
     let threshold = tasks
         .and_then(|tasks| tasks.get("duplicate_threshold"))

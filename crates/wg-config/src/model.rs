@@ -318,7 +318,7 @@ fn tasks() -> Model {
             def(
                 "duplicate_check",
                 Schema::Literal(&["refuse", "warn", "off"]),
-                json!("refuse"),
+                json!("off"),
             ),
             def(
                 "duplicate_threshold",
@@ -328,7 +328,7 @@ fn tasks() -> Model {
                 },
                 json!(0.6),
             ),
-            def("intake_proposed", Schema::Bool, json!(true)),
+            def("intake_proposed", Schema::Bool, json!(false)),
         ],
     }
 }

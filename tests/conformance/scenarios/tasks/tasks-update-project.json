@@ -16,10 +16,10 @@
     {"assert": {"exit": 0}},
     {"cli": ["task", "list", "--project", "exegra"], "json": true},
     {"assert": {"json": {"path": "/total", "equals": 0}}},
-    {"cli": ["task", "update", "WG-1", "--project", "nothing"], "json": true, "expect_exit": 1},
-    {"assert": {"exit": 1}},
-    {"cli": ["task", "update", "--tag", "exegra", "--project", "nothing", "--dry-run"], "json": true, "expect_exit": 1},
-    {"assert": {"exit": 1}},
+    {"cli": ["task", "update", "WG-1", "--project", "nothing"], "json": true, "expect_exit": 4},
+    {"assert": {"exit": 4}},
+    {"cli": ["task", "update", "--tag", "exegra", "--project", "nothing", "--dry-run"], "json": true, "expect_exit": 4},
+    {"assert": {"exit": 4}},
     {"cli": ["task", "update", "--tag", "exegra", "--project", "exegra", "--dry-run"], "json": true},
     {"assert": {"json": {"path": "/dry_run", "equals": true}}},
     {"assert": {"json": {"path": "/would_change", "equals": ["WG-1", "WG-2"]}}},
@@ -35,8 +35,8 @@
     {"assert": {"json": {"path": "/would_change", "equals": []}}},
     {"cli": ["task", "update", "WG-3", "--tag", "exegra", "--project", "exegra"], "json": true, "expect_exit": 1},
     {"assert": {"exit": 1}},
-    {"cli": ["task", "update", "--tag", "exegra", "--title", "renamed"], "json": true, "expect_exit": 1},
-    {"assert": {"exit": 1}}
+    {"cli": ["task", "update", "--tag", "exegra", "--title", "renamed"], "json": true, "expect_exit": 2},
+    {"assert": {"exit": 2}}
   ],
   "not_observable": []
 }

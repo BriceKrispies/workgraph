@@ -71,10 +71,17 @@ fn workspace(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<()
         }
         Some("set") => {
             let roots = option_list(m, "--allowed-root");
-            if roots.is_empty() {
+            let review_on_land = option_text(m, "--review-on-land").map(|choice| choice == "on");
+            if roots.is_empty() && review_on_land.is_none() {
                 return Err(CliFailure::fail("nothing to update", 2));
             }
-            let out = service::workspace_set_roots(state.app()?, &context, &reference, &roots)?;
+            let out = service::workspace_set_roots(
+                state.app()?,
+                &context,
+                &reference,
+                &roots,
+                review_on_land,
+            )?;
             state.emit(&out, Some(&|c| view::workspace_settings_view(c, &out)))
         }
         _ => Err(CliFailure::fail(not_implemented_message(path), 1)),

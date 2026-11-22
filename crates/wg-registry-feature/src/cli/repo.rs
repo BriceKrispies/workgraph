@@ -65,7 +65,31 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
         }
         _ => return Err(CliFailure::fail(not_implemented_message(path), 1)),
     };
+    let out = if matches!(path.get(1).map(String::as_str), Some("show" | "update")) {
+        with_integration_branch(state, &context, ws, out)?
+    } else {
+        out
+    };
     state.emit(&out, Some(&|c| view::repo_view(c, &out)))
+}
+
+/// The repository with its integration branch added, which the repository DTO does not carry.
+fn with_integration_branch(
+    state: &mut CliState,
+    context: &wg_runtime::RequestContext,
+    workspace: Option<&str>,
+    out: Value,
+) -> Result<Value, CliFailure> {
+    let id = wg_iface::cli::args::s(wg_iface::cli::args::get(&out, "id"));
+    let branch = service::repo_integration_branch(state.app()?, context, workspace, &id)?;
+    Ok(match out {
+        Value::Model { name, mut fields } => {
+            let value = branch.map_or(Value::Null, |text| Value::Str(text.as_str().into()));
+            fields.push(("integration_branch".to_owned(), value));
+            Value::Model { name, fields }
+        }
+        other => other,
+    })
 }
 
 /// `repo update`: `--track` and `--untrack` edit the current list, read first.

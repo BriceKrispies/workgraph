@@ -449,3 +449,61 @@ fn split_after(values: &[Raw], table: Table) -> Result<(&[Raw], &[Raw]), WgError
     }
     Ok(values.split_at(width))
 }
+
+/// The trailer links of a repository's commits whose task is in one of `statuses`, newest commit
+/// first: the task and the commit's SHA.
+pub fn open_trailer_landings(repository_id: Id, statuses: &[&str]) -> Statement {
+    let mut params = vec![id_sql(repository_id)];
+    params.extend(statuses.iter().map(|status| text_sql(status)));
+    Statement {
+        sql: format!(
+            "SELECT cl.\"task_id\" AS \"task_id\", c.\"sha\" AS \"sha\" \
+             FROM \"commit_task_links\" cl \
+             JOIN \"commits\" c ON c.id = cl.commit_id \
+             JOIN \"tasks\" t ON t.id = cl.task_id \
+             WHERE c.\"repository_id\" = ?1 AND cl.\"source\" = 'trailer' \
+             AND t.\"status\" IN ({}) \
+             ORDER BY c.\"committed_at\" DESC, c.id, cl.id",
+            placeholders(2, statuses.len())
+        ),
+        params,
+    }
+}
+
+/// A [`open_trailer_landings`] row.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TrailerLanding {
+    pub task_id: Id,
+    pub sha: String,
+}
+
+wg_rows::row_projection! {
+    TrailerLanding {
+        task_id: id,
+        sha: text,
+    }
+}
+
+/// The integration branch of the repository's most recent stack, if it has been in a stack.
+pub fn latest_stack_integration_branch(repository_id: Id) -> Statement {
+    Statement {
+        sql: "SELECT sr.\"integration_branch\" AS \"branch\" FROM \"stack_repositories\" sr \
+              JOIN \"stacks\" s ON s.id = sr.stack_id \
+              WHERE sr.\"repository_id\" = ?1 \
+              ORDER BY s.\"created_at\" DESC, s.id DESC LIMIT 1"
+            .to_owned(),
+        params: vec![id_sql(repository_id)],
+    }
+}
+
+/// A [`latest_stack_integration_branch`] row.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StackBranch {
+    pub branch: String,
+}
+
+wg_rows::row_projection! {
+    StackBranch {
+        branch: text,
+    }
+}

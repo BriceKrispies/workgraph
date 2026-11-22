@@ -2666,6 +2666,7 @@ dependencies = [
  "wg-rows",
  "wg-runtime",
  "wg-store",
+ "wg-tasks",
  "wg-types",
  "wg-wire",
 ]

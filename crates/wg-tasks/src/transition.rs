@@ -19,8 +19,8 @@ use wg_types::{Id, TaskStatus, WgError};
 use crate::deps::{
     BLOCKED_BY_DEPENDENCIES, CLAIMABLE_DEPENDENCY_STATUSES, DEPENDENCY_SATISFIED_STATUSES,
 };
-use crate::lifecycle::check_task_transition;
-use crate::promote::{dependency_gate_in, dependents, refresh_blocked_state};
+use crate::lifecycle::{LAND_REVIEW_SOURCES, check_task_transition};
+use crate::promote::{Gated, dependency_gate_in, dependents, refresh_blocked_state};
 use wg_types::pyval::truthy;
 
 /// How a status change is requested.
@@ -40,6 +40,10 @@ pub struct Change<'a> {
     pub attempt_id: Option<Option<Id>>,
     /// The `run_id` key of the status event (`extra={"run_id": ...}`), the same way.
     pub run_id: Option<Option<Id>>,
+    /// Work landed on the integration branch: a task in one of `LAND_REVIEW_SOURCES` moves
+    /// straight to `awaiting_review`, with no dependency gate and no step through `claimed`.
+    /// Ignored for any other change.
+    pub landed: bool,
     /// Further keys of the status event (`extra=` in Python), merged after the standard keys.
     pub extra: Option<&'a wg_model::entity::JsonObject>,
 }
@@ -151,7 +155,21 @@ pub fn transition(
     } else {
         DEPENDENCY_SATISFIED_STATUSES
     };
-    let gated = dependency_gate_in(tasks, stacks, task, target, change.reason, statuses)?;
+    let direct = change.landed
+        && target == TaskStatus::AwaitingReview
+        && LAND_REVIEW_SOURCES.contains(&current);
+    let gated = if direct {
+        Gated {
+            target,
+            reason: change
+                .reason
+                .filter(|text| !text.is_empty())
+                .map(str::to_owned),
+            blocked_by_dependencies: false,
+        }
+    } else {
+        dependency_gate_in(tasks, stacks, task, target, change.reason, statuses)?
+    };
     let target = gated.target;
     let metadata = if gated.blocked_by_dependencies {
         with_entry(
@@ -177,7 +195,9 @@ pub fn transition(
             ids,
         });
     }
-    check_task_transition(current, target, change.privileged, change.tracker)?;
+    if !direct {
+        check_task_transition(current, target, change.privileged, change.tracker)?;
+    }
 
     let next = moved(task, metadata, current, target, stamp.at);
     let reopened = matches!(current, TaskStatus::Accepted | TaskStatus::Cancelled);

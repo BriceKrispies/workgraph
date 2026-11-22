@@ -102,6 +102,7 @@ pub fn update_patch(m: &ArgMatches, tracked: Option<Vec<String>>) -> Result<Patc
         description: one(m, "--description"),
         access_mode: access,
         default_branch: one(m, "--default-branch"),
+        integration_branch: one(m, "--integration-branch"),
         tracked_branches: tracked,
     })
 }
@@ -142,6 +143,7 @@ pub fn repo_view(console: &Console, repo: &Value) -> String {
         ("access", opt(get(repo, "access_mode"))),
         ("health", opt(get(repo, "health_status"))),
         ("default branch", opt(get(repo, "default_branch"))),
+        ("integration branch", opt(get(repo, "integration_branch"))),
         ("tracked", Some(tracked)),
         (
             "fingerprint",

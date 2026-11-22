@@ -306,3 +306,29 @@ pub fn task_change_surface(
         TaskChangeSurface::from_raw,
     )
 }
+
+/// The trailer links of the repository's commits whose task has one of `statuses`.
+pub fn open_trailer_landings(
+    session: &mut Session<'_>,
+    repository_id: Id,
+    statuses: &[&str],
+) -> Result<Vec<crate::spec::sql::TrailerLanding>, WgError> {
+    many_with(
+        session,
+        &git_sql::open_trailer_landings(repository_id, statuses),
+        crate::spec::sql::TrailerLanding::from_raw,
+    )
+}
+
+/// The integration branch of the repository's most recent stack.
+pub fn latest_stack_integration_branch(
+    session: &mut Session<'_>,
+    repository_id: Id,
+) -> Result<Option<String>, WgError> {
+    first(
+        session,
+        &git_sql::latest_stack_integration_branch(repository_id),
+        crate::spec::sql::StackBranch::from_raw,
+    )
+    .map(|found| found.map(|row| row.branch))
+}

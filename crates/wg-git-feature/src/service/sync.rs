@@ -48,7 +48,7 @@ type CommitPlan = (
 /// The managed-worktree commits of a repository: SHA to (attempt, task, branch).
 type Worktrees = BTreeMap<String, (Option<Id>, Id, String)>;
 /// A git call that must not fail the caller on a non-zero exit.
-const NO_CHECK: RunOptions<'static> = RunOptions {
+pub(super) const NO_CHECK: RunOptions<'static> = RunOptions {
     check: false,
     stdin: None,
     timeout_ms: None,
@@ -267,6 +267,7 @@ pub(crate) fn sync_repository(
     let new_ids: Vec<Id> = new_commits.iter().map(|(id, _)| *id).collect();
     result.equivalences = detect_equivalences(app, context, &state, &new_ids)?;
     result.links_created = attribute_commits(app, context, &git, &state, &new_ids)?;
+    super::land_review::land_review(app, context, &git, &state)?;
     record_sync(
         app,
         context,

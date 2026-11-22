@@ -112,7 +112,8 @@ fn settings_keys_are_checked_sorted_and_roots_must_be_strings() {
         [
             "allowed_roots",
             "default_project",
-            "description_classification"
+            "description_classification",
+            "review_on_land"
         ]
     );
     assert!(

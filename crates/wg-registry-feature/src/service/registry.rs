@@ -139,15 +139,18 @@ pub fn workspace_archive(
     Ok(workspace_out(&row))
 }
 
-/// `WorkspaceService.update_settings` with `allowed_roots`.
+/// `WorkspaceService.update_settings` with `allowed_roots` and, when given, `review_on_land`.
 pub fn workspace_set_roots(
     app: &mut App,
     context: &RequestContext,
     reference: &str,
     roots: &[String],
+    review_on_land: Option<bool>,
 ) -> Result<Value, WgError> {
-    let update: Map<String, Json> = [("allowed_roots".to_owned(), json!(roots))]
+    let update: Map<String, Json> = (!roots.is_empty())
+        .then(|| ("allowed_roots".to_owned(), json!(roots)))
         .into_iter()
+        .chain(review_on_land.map(|on| ("review_on_land".to_owned(), json!(on))))
         .collect();
     let row = app
         .runtime

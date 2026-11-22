@@ -11,11 +11,21 @@ use wg_model::{JsonObject, py_repr_str};
 use wg_types::WgError;
 
 /// The setting keys a workspace may store (Python's `ALLOWED_SETTINGS`).
-pub const ALLOWED_SETTINGS: [&str; 3] = [
+pub const ALLOWED_SETTINGS: [&str; 4] = [
     "allowed_roots",
     "default_project",
     "description_classification",
+    "review_on_land",
 ];
+
+/// Whether git sync moves a task to `awaiting_review` when its `Task-ID` commit lands on the
+/// repository's integration branch. On unless the workspace sets `review_on_land` to `false`.
+pub fn review_on_land(settings: &JsonObject) -> bool {
+    settings
+        .get("review_on_land")
+        .and_then(Value::as_bool)
+        .unwrap_or(true)
+}
 
 /// Checks an update before it is merged: every key must be an allowed setting (the unknown ones
 /// are listed sorted, as Python's `sorted(set)` prints them), and `allowed_roots`, when present,
@@ -42,6 +52,11 @@ pub fn validate_update(update: &JsonObject) -> Result<(), WgError> {
                 "allowed_roots must be a list of directory paths",
             ));
         }
+    }
+    if let Some(switch) = update.get("review_on_land")
+        && !switch.is_boolean()
+    {
+        return Err(WgError::validation("review_on_land must be true or false"));
     }
     Ok(())
 }

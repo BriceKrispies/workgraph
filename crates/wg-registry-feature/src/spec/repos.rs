@@ -128,6 +128,7 @@ pub fn repository_patch(body: &Json) -> Result<Patch, WgError> {
         description: text_field(body, "description"),
         access_mode,
         default_branch: text_field(body, "default_branch"),
+        integration_branch: None,
         tracked_branches: body
             .get("tracked_branches")
             .and_then(Json::as_array)

@@ -574,3 +574,20 @@ pub fn repo_depend(
         .reply;
     repository_value(app, scope, id)
 }
+
+/// The repository's configured integration branch (`repo update --integration-branch`), or
+/// `None` when none is set.
+pub fn repo_integration_branch(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    reference: &str,
+) -> Result<Option<String>, WgError> {
+    require_repo(app, context, Permission::RepoRead)?;
+    let scope = app.workspace_or_default(workspace)?;
+    app.runtime.store.read(|session| {
+        let registry = reads::registry_slice(session, scope)?;
+        let repo = resolve::repository(&registry, scope, reference, true)?;
+        Ok(admin::integration_branch(repo))
+    })
+}

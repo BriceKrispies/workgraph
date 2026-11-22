@@ -19,7 +19,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | `init`, `doctor` | create storage/schema/first workspace; health checks (`--verify-events`) |
 | `serve` | HTTP API + UI + Streamable HTTP MCP at `/mcp/` + in-process worker (`--no-worker`, `--no-mcp`); also serves paired devices on the local network unless `--local` |
 | `mcp` | MCP server over stdio (default) or HTTP; `--agent-name`, `--grant run:start` |
-| `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root` |
+| `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root --review-on-land on|off` |
 | `project` | `create`, `list`, `show`, `update` (`--name`, `--description`, `--status`), `add-repo`, `remove-repo`, `rename-term PROJECT --from OLD --to NEW [--keep TOKEN]... [--dry-run]` (renames a word, such as a language's name, across the project's live records: open tasks' title, description, acceptance criteria and file paths; every task's tags; the project's slug, name and description; its repositories' names and descriptions; and every string in the checks of verification configs scoped to them. Accepted, cancelled and archived tasks keep their text as records and take only the renamed tags. The word matches in three spellings (`rho`, `Rho`, `RHO`) when no letter precedes it and no letter of its case follows, so `rhombus` stays; `--keep` protects tokens that contain it but are not it. Each change is an ordinary event with reason `rename OLD to NEW` and queues no reclassification. A rewritten absolute path in a check that names nothing on disk is reported; checkout paths are not moved) |
 | `repo` | `register`, `list`, `show`, `refresh`, `status`, `update`, `remove`, `remove-checkout`, `depend` |
 | `task` | `create`, `list`, `ready`, `promote-ready [--tag T] [--project P] [--dry-run]` (moves every backlog task whose dependencies are all accepted to `ready` in one transaction and prints the promoted keys; skips tasks with children and tasks tagged `parked`), `show REF...` (one or more refs, see [Showing several tasks](#showing-several-tasks)), `contract-check TASK --model M [--target 0.8]` (triage: `not_delegable`, `incomplete`, `split` or `leaf`, with the missing contract fields, reasons and the predicted success, labelled an inference; `--json` for the verdict), `update`, `bulk-update`, `claim`, `release`, `complete`, `accept`, `reject`, `comment`, `progress`, `result`, `depend`, `relate`, `link-repo`, `archive`, `history`, `graph` (`--project`, `--repo`, `--open`), `triage-apply FILE [--dry-run] [--source TEXT]` (applies a JSON array of triage verdicts; see [Triage verdicts](#triage-verdicts)), `import-breakdown FILE --section TEXT --parent KEY [--tag T]... [--project P] [--repo R] [--dry-run]` (creates or updates the tasks of one markdown section; see [Importing a breakdown](#importing-a-breakdown)) |
@@ -52,6 +52,13 @@ Worktree discovery: `repo register` and `repo refresh` run `git worktree list` a
 tracked branches. Git sync scans the tracked branches first and then only the first 20 local branches,
 so a branch that matters in a repository with many branches should be tracked explicitly. Changing
 `--default-branch` also adds the new default to the tracked branches when it is not tracked yet; existing
+
+`repo update --integration-branch BRANCH` names the branch finished work lands on (an empty value clears it);
+`repo show` prints it. When git sync finds a commit with a `Task-ID` trailer reachable from that branch (or, with
+none set, from the integration branch of the repository's most recent stack), the task moves from backlog, ready,
+blocked, claimed or running to awaiting_review, with a comment naming the commit and branch. Tasks in any other
+status, and commits that only mention a task in the body, are left alone. `workspace set --review-on-land off`
+turns this off for a workspace.
 entries are kept.
 
 ## Promoting ready work

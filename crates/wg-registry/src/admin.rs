@@ -33,7 +33,38 @@ pub struct Patch {
     pub description: Option<String>,
     pub access_mode: Option<AccessMode>,
     pub default_branch: Option<String>,
+    /// The branch finished work lands on; an empty string clears it. Stored in the repository's
+    /// `metadata` (see [`integration_branch`]).
+    pub integration_branch: Option<String>,
     pub tracked_branches: Option<Vec<String>>,
+}
+
+/// The metadata key holding a repository's integration branch.
+pub const INTEGRATION_BRANCH_KEY: &str = "integration_branch";
+
+/// The repository's configured integration branch, if one is set and not empty.
+#[must_use]
+pub fn integration_branch(repo: &Repository) -> Option<String> {
+    repo.metadata
+        .get(INTEGRATION_BRANCH_KEY)
+        .and_then(Value::as_str)
+        .filter(|name| !name.is_empty())
+        .map(str::to_owned)
+}
+
+/// The metadata after setting (or, for an empty name, clearing) the integration branch.
+fn metadata_after(repo: &Repository, patch: &Patch) -> wg_model::JsonObject {
+    let mut metadata = repo.metadata.clone();
+    match patch.integration_branch.as_deref() {
+        None => {}
+        Some("") => {
+            metadata.remove(INTEGRATION_BRANCH_KEY);
+        }
+        Some(name) => {
+            metadata.insert(INTEGRATION_BRANCH_KEY.to_owned(), json!(name));
+        }
+    }
+    metadata
 }
 
 fn event(stamp: &Stamp, repo: &Repository, payload: EventPayload) -> EventDraft {
@@ -144,6 +175,21 @@ pub fn update(
         tracked.as_ref(),
         |list| json!(list),
     );
+    let metadata = metadata_after(repo, patch);
+    let changes = if metadata == repo.metadata {
+        changes
+    } else {
+        changes.with(
+            INTEGRATION_BRANCH_KEY,
+            json!(integration_branch(repo)),
+            json!(
+                patch
+                    .integration_branch
+                    .as_deref()
+                    .filter(|name| !name.is_empty())
+            ),
+        )
+    };
     let reply = Decision::new(repo.id);
     if changes.is_empty() {
         return Ok(reply);
@@ -162,6 +208,7 @@ pub fn update(
         tracked_branches: tracked
             .map(|list| list.into_iter().collect())
             .unwrap_or_else(|| repo.tracked_branches.clone()),
+        metadata,
         updated_at: stamp.at,
         ..repo.clone()
     };

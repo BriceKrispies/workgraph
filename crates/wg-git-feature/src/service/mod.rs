@@ -10,6 +10,7 @@ pub mod worktree_remove;
 
 mod attempt_links;
 mod entries;
+mod land_review;
 mod sync;
 
 pub use attempt_links::link_attempt_commits;

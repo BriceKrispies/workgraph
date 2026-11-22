@@ -19,6 +19,7 @@ pub mod attempt_links;
 pub mod cli;
 pub mod ingest;
 pub mod jobs;
+pub mod land_review;
 pub mod links;
 pub mod mode;
 pub mod reads;

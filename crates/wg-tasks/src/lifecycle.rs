@@ -96,6 +96,12 @@ pub fn attempt_targets(from: A) -> &'static [A] {
 /// Entering these statuses is reserved for the acceptance service, unless `privileged`.
 pub const RESTRICTED_TARGETS: &[TaskStatus] = &[S::Accepted];
 
+/// The statuses a task may be moved from to `awaiting_review` when work carrying its `Task-ID`
+/// trailer lands on the integration branch (see `Change::landed`). An explicit list, not derived
+/// from the transition table, so a new status is a deliberate decision here.
+pub const LAND_REVIEW_SOURCES: &[TaskStatus] =
+    &[S::Backlog, S::Ready, S::Blocked, S::Claimed, S::Running];
+
 /// Statuses that require every dependency to be satisfied.
 pub const REQUIRES_DEPENDENCIES: &[TaskStatus] = &[S::Ready, S::Claimed, S::Running];
 

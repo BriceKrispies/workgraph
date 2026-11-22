@@ -1050,6 +1050,7 @@ impl Page {
                 privileged: true,
                 tracker: true,
                 claimable: false,
+                landed: false,
                 caused_by: accepted,
                 attempt_id: None,
                 run_id: None,

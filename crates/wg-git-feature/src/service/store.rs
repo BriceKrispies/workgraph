@@ -320,6 +320,33 @@ pub fn open_trailer_landings(
     )
 }
 
+/// When each of `task_ids` last changed status.
+pub fn last_status_changes(
+    session: &mut Session<'_>,
+    task_ids: &[Id],
+) -> Result<Vec<crate::spec::sql::StatusChange>, WgError> {
+    many_with(
+        session,
+        &git_sql::last_status_changes(task_ids),
+        crate::spec::sql::StatusChange::from_raw,
+    )
+}
+
+/// The ids among `task_ids` that have a child neither accepted nor cancelled.
+pub fn tasks_with_unsettled_children(
+    session: &mut Session<'_>,
+    task_ids: &[Id],
+) -> Result<Vec<Id>, WgError> {
+    Ok(many_with(
+        session,
+        &git_sql::tasks_with_unsettled_children(task_ids),
+        crate::spec::sql::ParentId::from_raw,
+    )?
+    .into_iter()
+    .map(|row| row.task_id)
+    .collect())
+}
+
 /// The integration branch of the repository's most recent stack.
 pub fn latest_stack_integration_branch(
     session: &mut Session<'_>,

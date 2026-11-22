@@ -5,12 +5,16 @@
 //! Git is read outside any transaction. The decision then reloads the tasks and their comments
 //! in its own transaction, so a task another writer already moved is left alone, and it applies
 //! the status change through the ordinary task transition, which records the history event.
-//! Idempotency: a moved task is no longer in an eligible status, and the comment's marker keeps
-//! a task that was reopened afterwards from being moved again by the same commit.
+//! A commit moves a task only when its committer time (read from git) is newer than the task's
+//! last status change (the newest `task.status_changed` event, else its creation), and the task
+//! has no child that is not accepted or cancelled. That is also the idempotency rule: the move
+//! is itself a status change, so the same commit never moves the task again. The comment's
+//! `landed_commit` marker is for information.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 
 use wg_git::Git;
+use wg_gitcore::parse_meta;
 use wg_model::Decision;
 use wg_runtime::App;
 use wg_runtime::spec::RequestContext;
@@ -72,6 +76,26 @@ pub(crate) fn land_review(
     if landed.is_empty() {
         return Ok(0);
     }
+    let shas: Vec<String> = landed.values().cloned().collect();
+    let committed_at: BTreeMap<String, _> = parse_meta(&git.log_meta(&shas).map_err(git_error)?)?
+        .into_iter()
+        .filter_map(|meta| meta.committed_at.map(|time| (meta.sha, time)))
+        .collect();
+    let candidates: Vec<Id> = landed.keys().copied().collect();
+    let (changed_at, unsettled) = app.runtime.store.read(|session| {
+        let changed: BTreeMap<Id, _> = store::last_status_changes(session, &candidates)?
+            .into_iter()
+            .map(|change| (change.task_id, change.changed_at))
+            .collect();
+        let unsettled: BTreeSet<Id> = store::tasks_with_unsettled_children(session, &candidates)?
+            .into_iter()
+            .collect();
+        Ok((changed, unsettled))
+    })?;
+    let landed = plan::movable(&landed, &committed_at, &changed_at, &unsettled);
+    if landed.is_empty() {
+        return Ok(0);
+    }
     let task_ids: Vec<Id> = landed.keys().copied().collect();
     let workspace_id = state.workspace_id;
     app.runtime
@@ -88,11 +112,7 @@ pub(crate) fn land_review(
                         continue;
                     };
                     let workspace = task.workspace_id;
-                    if !LAND_REVIEW_SOURCES.contains(&task.status)
-                        || tasks
-                            .comments_of(*task_id)
-                            .any(|comment| plan::is_marked(&comment.data, sha))
-                    {
+                    if !LAND_REVIEW_SOURCES.contains(&task.status) {
                         continue;
                     }
                     let why = plan::reason(sha, &branch);

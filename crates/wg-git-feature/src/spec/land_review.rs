@@ -1,16 +1,20 @@
 //! The decisions of the land-review guardrail: when work carrying a task's `Task-ID` trailer is
 //! reachable from the repository's integration branch, the task moves to `awaiting_review`.
 //! The service reads git and the rows and applies the result; everything it decides is here.
+//!
+//! A landed commit moves a task only when it is newer than the task's last status change (so a
+//! task rejected or reopened after the commit stays where the reviewer put it, and a moved task
+//! is not moved again by the same commit) and the task has no child that is not settled.
 
 use std::collections::{BTreeMap, BTreeSet};
 
 use serde_json::{Map, Value, json};
-use wg_types::Id;
+use wg_types::{Id, Timestamp};
 
 use super::sql::TrailerLanding;
 
-/// The key of the comment data that records which commit moved a task, so a task reopened later
-/// is not moved again by the same commit.
+/// The key of the comment data that records which commit moved a task. Informational: the
+/// idempotency rule is the commit time against the last status change.
 pub const MARKER_KEY: &str = "landed_commit";
 
 /// The task statuses the guardrail moves, as stored.
@@ -55,6 +59,29 @@ pub fn landed(landings: &[TrailerLanding], reachable: &BTreeSet<String>) -> BTre
     found
 }
 
+/// The landed commits that may move their task: the commit's committer time is strictly newer
+/// than the task's last status change, and the task is not in `unsettled_parents`. A commit with
+/// no known committer time, or a task with no known status change, does not move.
+#[must_use]
+pub fn movable(
+    landed: &BTreeMap<Id, String>,
+    committed_at: &BTreeMap<String, Timestamp>,
+    changed_at: &BTreeMap<Id, Timestamp>,
+    unsettled_parents: &BTreeSet<Id>,
+) -> BTreeMap<Id, String> {
+    landed
+        .iter()
+        .filter(|(task_id, sha)| {
+            !unsettled_parents.contains(task_id)
+                && matches!(
+                    (committed_at.get(*sha), changed_at.get(*task_id)),
+                    (Some(commit), Some(change)) if commit > change
+                )
+        })
+        .map(|(task_id, sha)| (*task_id, sha.clone()))
+        .collect()
+}
+
 /// The reason recorded on the status change.
 #[must_use]
 pub fn reason(sha: &str, branch: &str) -> String {
@@ -78,12 +105,6 @@ pub fn comment_data(sha: &str, branch: &str) -> Map<String, Value> {
     ]
     .into_iter()
     .collect()
-}
-
-/// Whether a comment's data marks `sha` as already handled.
-#[must_use]
-pub fn is_marked(data: &Map<String, Value>, sha: &str) -> bool {
-    data.get(MARKER_KEY).and_then(Value::as_str) == Some(sha)
 }
 
 #[cfg(test)]
@@ -111,10 +132,33 @@ mod tests {
         assert_eq!(integration_branch(Some(String::new()), None), None);
     }
 
+    fn at(seconds: i64) -> Timestamp {
+        Timestamp::parse_iso(&format!("2026-11-22T12:00:{seconds:02}.000000+00:00")).expect("time")
+    }
+
     #[test]
-    fn a_marker_names_one_commit() {
-        let data = comment_data("abc", "main");
-        assert!(is_marked(&data, "abc"));
-        assert!(!is_marked(&data, "def"));
+    fn movable_needs_a_newer_commit_and_settled_children() {
+        let ids: Vec<Id> = (1..=4).map(Id::from_u128).collect();
+        let landed: BTreeMap<Id, String> = ids
+            .iter()
+            .enumerate()
+            .map(|(n, id)| (*id, format!("sha{n}")))
+            .collect();
+        let committed: BTreeMap<String, Timestamp> = [
+            ("sha0".to_owned(), at(10)),
+            ("sha1".to_owned(), at(10)),
+            ("sha2".to_owned(), at(10)),
+        ]
+        .into();
+        let changed: BTreeMap<Id, Timestamp> = [
+            (ids[0], at(5)),
+            (ids[1], at(10)),
+            (ids[2], at(5)),
+            (ids[3], at(5)),
+        ]
+        .into();
+        let unsettled: BTreeSet<Id> = [ids[2]].into();
+        let moved = movable(&landed, &committed, &changed, &unsettled);
+        assert_eq!(moved.keys().copied().collect::<Vec<_>>(), vec![ids[0]]);
     }
 }

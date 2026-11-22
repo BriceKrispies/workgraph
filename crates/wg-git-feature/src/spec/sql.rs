@@ -484,6 +484,55 @@ wg_rows::row_projection! {
     }
 }
 
+/// When each of `task_ids` last changed status: the newest `task.status_changed` event, or the
+/// task's creation when it never changed. One row per task that exists.
+pub fn last_status_changes(task_ids: &[Id]) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT t.\"id\" AS \"task_id\", COALESCE((SELECT MAX(e.\"occurred_at\") FROM \"events\" e              WHERE e.\"entity_id\" = t.\"id\" AND e.\"event_type\" = 'task.status_changed'),              t.\"created_at\") AS \"changed_at\"              FROM \"tasks\" t WHERE t.\"id\" IN ({}) ORDER BY t.\"id\"",
+            placeholders(1, task_ids.len())
+        ),
+        params: task_ids.iter().copied().map(id_sql).collect(),
+    }
+}
+
+/// A [`last_status_changes`] row.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StatusChange {
+    pub task_id: Id,
+    pub changed_at: Timestamp,
+}
+
+wg_rows::row_projection! {
+    StatusChange {
+        task_id: id,
+        changed_at: ts,
+    }
+}
+
+/// Which of `task_ids` have a child task that is neither accepted nor cancelled.
+pub fn tasks_with_unsettled_children(task_ids: &[Id]) -> Statement {
+    Statement {
+        sql: format!(
+            "SELECT DISTINCT c.\"parent_id\" AS \"task_id\" FROM \"tasks\" c              WHERE c.\"parent_id\" IN ({}) AND c.\"status\" NOT IN ('accepted', 'cancelled')              ORDER BY c.\"parent_id\"",
+            placeholders(1, task_ids.len())
+        ),
+        params: task_ids.iter().copied().map(id_sql).collect(),
+    }
+}
+
+/// A [`tasks_with_unsettled_children`] row.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ParentId {
+    pub task_id: Id,
+}
+
+wg_rows::row_projection! {
+    ParentId {
+        task_id: id,
+    }
+}
+
 /// The integration branch of the repository's most recent stack, if it has been in a stack.
 pub fn latest_stack_integration_branch(repository_id: Id) -> Statement {
     Statement {

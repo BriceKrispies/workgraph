@@ -1,11 +1,18 @@
 //! WG-5453: git sync moves a task to `awaiting_review` when a commit carrying its `Task-ID`
 //! trailer is reachable from the repository's integration branch. Each test builds a temporary
 //! git repository, registers it in a fresh home and syncs it through the services the CLI calls.
+//!
+//! WG-5455: a commit moves a task only when its committer time is newer than the task's last
+//! status change, and never while the task has a child that is not accepted or cancelled. The
+//! tests cannot wait for the clock, so they date commits explicitly: a commit is `LATER` (an hour
+//! after now) unless the test dates it `EARLIER` (an hour before), which is a commit the task's
+//! last status change, made just now, is newer than.
 
 #![allow(clippy::expect_used)]
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde_json::json;
 use wg_git_feature::service::git_sync;
@@ -27,8 +34,17 @@ struct Fixture {
     repo: PathBuf,
 }
 
+const LATER: i64 = 3600;
+const EARLIER: i64 = -3600;
+
 fn git(dir: &Path, args: &[&str]) -> String {
-    let out = Command::new("git")
+    git_dated(dir, args, None)
+}
+
+/// Runs git, with the committer date `offset` seconds from now when given.
+fn git_dated(dir: &Path, args: &[&str], offset: Option<i64>) -> String {
+    let mut command = Command::new("git");
+    command
         .current_dir(dir)
         .args([
             "-c",
@@ -37,9 +53,16 @@ fn git(dir: &Path, args: &[&str]) -> String {
             "user.email=tester@example.com",
         ])
         .args(["-c", "commit.gpgsign=false", "-c", "core.autocrlf=false"])
-        .args(args)
-        .output()
-        .expect("git runs");
+        .args(args);
+    if let Some(offset) = offset {
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_secs();
+        let when = now.saturating_add_signed(offset);
+        command.env("GIT_COMMITTER_DATE", format!("{when} +0000"));
+    }
+    let out = command.output().expect("git runs");
     assert!(
         out.status.success(),
         "git {args:?}: {}",
@@ -48,12 +71,18 @@ fn git(dir: &Path, args: &[&str]) -> String {
     String::from_utf8_lossy(&out.stdout).trim().to_owned()
 }
 
-/// Commits a new file on the current branch and returns the commit's SHA.
-fn commit(dir: &Path, file: &str, message: &str) -> String {
+/// Commits a new file on the current branch, committed `offset` seconds from now, and returns the
+/// commit's SHA.
+fn commit_at(dir: &Path, file: &str, message: &str, offset: i64) -> String {
     std::fs::write(dir.join(file), file).expect("write file");
     git(dir, &["add", "."]);
-    git(dir, &["commit", "-q", "-m", message]);
+    git_dated(dir, &["commit", "-q", "-m", message], Some(offset));
     git(dir, &["rev-parse", "HEAD"])
+}
+
+/// A commit newer than any status change the test has made.
+fn commit(dir: &Path, file: &str, message: &str) -> String {
+    commit_at(dir, file, message, LATER)
 }
 
 impl Fixture {
@@ -310,18 +339,50 @@ fn the_workspace_switch_turns_the_guardrail_off() {
 }
 
 #[test]
-fn a_task_reopened_after_landing_is_not_moved_again_by_the_same_commit() {
-    let mut f = Fixture::new("reopened");
-    f.task("ready", "ready");
+fn a_task_changed_after_its_commit_is_not_moved_but_a_newer_commit_moves_it() {
+    let mut f = Fixture::new("rejected");
+    f.task("running", "running");
     f.set_integration("integration");
     let repo = f.repo.clone();
-    commit(&repo, "f.txt", &trailer("WG-1"));
+    // The task was rejected back to ready (its last change is now) after this commit was made.
+    commit_at(&repo, "old.txt", &trailer("WG-1"), EARLIER);
+    f.sync(false);
+    f.sync(true);
+    assert_eq!(f.status("WG-1"), "running");
+    assert_eq!(f.land_comments("WG-1"), 0);
+    assert_eq!(f.review_transitions("WG-1"), 0);
+
+    commit_at(&repo, "new.txt", &trailer("WG-1"), LATER);
     f.sync(false);
     assert_eq!(f.status("WG-1"), "awaiting_review");
-    f.set_status("WG-1", "ready");
-    f.sync(false);
-    assert_eq!(f.status("WG-1"), "ready");
     assert_eq!(f.land_comments("WG-1"), 1);
+    assert_eq!(f.review_transitions("WG-1"), 1);
+    f.sync(true);
+    assert_eq!(f.land_comments("WG-1"), 1);
+    assert_eq!(f.review_transitions("WG-1"), 1);
+}
+
+#[test]
+fn a_parent_with_an_open_child_is_not_moved_until_the_children_are_settled() {
+    let mut f = Fixture::new("children");
+    f.task("parent", "ready");
+    for title in ["open child", "cancelled child"] {
+        let body = json!({"title": title, "status": "ready", "parent": "WG-1"});
+        task_create(&mut f.app, &f.ctx, WS, &body).expect("child");
+    }
+    f.set_integration("integration");
+    f.set_status("WG-3", "cancelled");
+    let repo = f.repo.clone();
+    commit(&repo, "p.txt", &trailer("WG-1"));
+    f.sync(false);
+    assert_eq!(f.status("WG-1"), "ready", "WG-2 is still ready");
+    assert_eq!(f.land_comments("WG-1"), 0);
+
+    f.set_status("WG-2", "cancelled");
+    f.sync(false);
+    assert_eq!(f.status("WG-1"), "awaiting_review");
+    assert_eq!(f.land_comments("WG-1"), 1);
+    assert_eq!(f.review_transitions("WG-1"), 1);
 }
 
 #[test]

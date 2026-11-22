@@ -158,6 +158,19 @@ refused with a `validation_failed` error whose `reason` detail is `acceptance_cr
 so is any move of a task with no acceptance criteria to ready (`task update` to `ready`, and
 `task promote-ready`). Tasks that already exist are unaffected until they are promoted.
 
+`[tasks] duplicate_check` (`refuse`, `warn` or `off`; default `refuse`) and `duplicate_threshold`
+(0 to 1; default `0.6`) set the duplicate check of `task create`. The check compares the new task's
+title and description with the open tasks (not accepted, cancelled or archived) that share a
+repository or project with it, using a token overlap: the mean of the Jaccard overlap of the title
+words and of the title-and-description words, offline and deterministic. With `refuse`, a create
+that scores at or above the threshold is refused with a `validation_failed` error whose `reason`
+detail is `duplicate_task` and whose `candidates` detail lists each match's key, title, status and
+score. Add a comment to the existing task instead, or repeat the create with a distinct reason
+(`task create --distinct-reason TEXT`, the MCP `task_create` argument `distinct_reason`, the HTTP
+body field `distinct_reason`); the reason is stored in the task's `metadata.distinct_reason` and
+`task show` prints it. With `warn` the task is created and the matches come back in the `warning`
+field; with `off` nothing is compared.
+
 ### Issue trackers
 
 Each `[trackers.<name>]` table connects Workgraph to one Jira site, read-only: Workgraph only issues

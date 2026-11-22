@@ -91,6 +91,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -194,6 +196,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -298,6 +302,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -402,6 +408,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -505,6 +513,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -609,6 +619,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -713,6 +725,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },
@@ -866,6 +880,8 @@
         "auto_accept": true
       },
       "tasks": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },

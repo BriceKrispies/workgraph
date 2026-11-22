@@ -60,6 +60,7 @@ pub fn create_body(arguments: &Value) -> Value {
         "repositories": list(arguments, "repositories"),
         "parent": given(arguments, "parent"),
         "depends_on": list(arguments, "depends_on"),
+        "distinct_reason": given(arguments, "distinct_reason"),
     })
 }
 

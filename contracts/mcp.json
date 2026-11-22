@@ -2301,7 +2301,7 @@
       }
     },
     {
-      "description": "Create a task. Acceptance criteria are expected: a task created without them returns a warning field, or is refused when the workspace sets tasks.require_acceptance_criteria. Repositories/projects/dependencies may be given by name or key.",
+      "description": "Create a task. Search first (task_search, task_list): a create whose title and description closely match an open task in the same repository or project is refused, and the reply lists the matching tasks with key, title, status and similarity. Add a comment to the existing task instead, or create anyway by passing distinct_reason, a sentence on why the new task is different; the reason is stored on the task. Acceptance criteria are expected: a task created without them returns a warning field, or is refused when the workspace sets tasks.require_acceptance_criteria. Repositories/projects/dependencies may be given by name or key.",
       "input_schema": {
         "$defs": {
           "TaskFileIn": {
@@ -2381,6 +2381,19 @@
             ],
             "default": null,
             "title": "Depends On"
+          },
+          "distinct_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Why this task is distinct from the similar open tasks a create is refused for; stored on the task",
+            "title": "Distinct Reason"
           },
           "description": {
             "default": "",

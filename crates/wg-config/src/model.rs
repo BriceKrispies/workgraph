@@ -313,11 +313,22 @@ fn verification() -> Model {
 fn tasks() -> Model {
     Model {
         name: "TasksConfig",
-        fields: vec![def(
-            "require_acceptance_criteria",
-            Schema::Bool,
-            json!(false),
-        )],
+        fields: vec![
+            def("require_acceptance_criteria", Schema::Bool, json!(false)),
+            def(
+                "duplicate_check",
+                Schema::Literal(&["refuse", "warn", "off"]),
+                json!("refuse"),
+            ),
+            def(
+                "duplicate_threshold",
+                Schema::Float {
+                    ge: Some(0.0),
+                    gt: None,
+                },
+                json!(0.6),
+            ),
+        ],
     }
 }
 

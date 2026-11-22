@@ -9,6 +9,7 @@ pub mod comments;
 pub mod content;
 pub mod create;
 pub mod deps;
+pub mod duplicates;
 pub mod edit;
 pub mod files;
 pub mod graph;

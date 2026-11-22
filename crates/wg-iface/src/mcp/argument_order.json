@@ -125,6 +125,7 @@
    "repositories",
    "parent",
    "depends_on",
+   "distinct_reason",
    "workspace"
   ],
   "task_get": [

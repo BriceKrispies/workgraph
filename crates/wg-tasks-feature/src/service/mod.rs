@@ -32,6 +32,7 @@ use wg_runtime::{App, index_written};
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
 use wg_tasks::create::{acceptance_warning, criteria_required, refuse_without_criteria};
+use wg_tasks::duplicates::{DuplicateMode, duplicate_guard, duplicates_warning, refuse_duplicates};
 use wg_tasks::edit::{self, read_update, validate_update};
 use wg_tasks::shape::{bulk_result_out, key_of};
 use wg_types::{Id, Permission, WgError, parse_id};
@@ -43,12 +44,33 @@ pub fn task_create(
     workspace: Option<&str>,
     body: &Json,
 ) -> Result<Value, WgError> {
-    let read = read_create(&validate_create(body)?)?;
+    let mut read = read_create(&validate_create(body)?)?;
     let enrich = edit::enrichment_from(&app.config()?);
     let scope = app.workspace_or_default(workspace)?;
     let has_criteria = !read.acceptance_criteria.is_empty();
     let required = !has_criteria && criteria_required_in(app, scope)?;
     refuse_without_criteria(has_criteria, required)?;
+    let mut warnings: Vec<String> = acceptance_warning(has_criteria)
+        .map(str::to_owned)
+        .into_iter()
+        .collect();
+    let slug = app.workspace_slug(&scope.to_string())?;
+    let guard = duplicate_guard(&app.effective_config(Some(&slug))?);
+    if guard.mode != DuplicateMode::Off {
+        let candidates = app.runtime.query(
+            |session| session.task_world(Some(scope), &[]),
+            |world| writes::duplicate_candidates(world, scope, &read, guard.threshold),
+        )?;
+        if guard.mode == DuplicateMode::Refuse {
+            refuse_duplicates(&candidates, read.distinct_reason.as_deref())?;
+        } else if !candidates.is_empty() && read.distinct_reason.is_none() {
+            warnings.push(duplicates_warning(&candidates));
+        }
+    }
+    if let Some(reason) = &read.distinct_reason {
+        read.metadata
+            .insert("distinct_reason".to_owned(), Json::String(reason.clone()));
+    }
     let reply = app
         .runtime
         .decide_then(
@@ -58,9 +80,16 @@ pub fn task_create(
             index_written,
         )?
         .reply;
-    Ok(match acceptance_warning(has_criteria) {
-        Some(warning) => with_warning(reply, warning),
-        None => reply,
+    Ok(if warnings.is_empty() {
+        reply
+    } else {
+        with_warning(
+            reply,
+            &warnings.join(
+                "
+",
+            ),
+        )
     })
 }
 

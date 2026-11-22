@@ -169,6 +169,7 @@ wg-tasks::comments Core
 wg-tasks::content Core
 wg-tasks::create Core
 wg-tasks::deps Core
+wg-tasks::duplicates Core
 wg-tasks::edit Pure
 wg-tasks::files Core
 wg-tasks::graph Core

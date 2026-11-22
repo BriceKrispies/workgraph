@@ -14,7 +14,7 @@ use wg_types::pyval::{self, int_or};
 use wg_types::{TaskPriority, TaskStatus, Timestamp, WgError};
 use wg_validate::{ChoiceKind, Extra, Field, IntRules, Model, Schema, StrRules};
 
-const CREATE_ORDER: [&str; 19] = [
+const CREATE_ORDER: [&str; 20] = [
     "key",
     "title",
     "description",
@@ -34,6 +34,7 @@ const CREATE_ORDER: [&str; 19] = [
     "scheduled_at",
     "estimated_effort",
     "metadata",
+    "distinct_reason",
 ];
 
 /// Validates a `TaskCreate` body.
@@ -193,6 +194,8 @@ pub struct CreateRead {
     pub scheduled_naive: bool,
     pub estimated_effort: Option<Map<String, Value>>,
     pub metadata: Map<String, Value>,
+    /// Why the task is distinct from the similar open tasks a create is refused for.
+    pub distinct_reason: Option<String>,
 }
 
 /// Reads a validated `TaskCreate`.
@@ -225,6 +228,7 @@ pub fn read_create(dump: &Map<String, Value>) -> Result<CreateRead, WgError> {
         scheduled_naive: is_naive(dump, "scheduled_at"),
         estimated_effort: object_of(dump, "estimated_effort"),
         metadata: object_of(dump, "metadata").unwrap_or_default(),
+        distinct_reason: string_of(dump, "distinct_reason").filter(|text| !text.trim().is_empty()),
     })
 }
 

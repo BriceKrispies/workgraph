@@ -16,6 +16,7 @@ use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::archive::{ArchiveChange, archive_plan};
 use wg_tasks::create::refuse_without_criteria;
 use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
+use wg_tasks::duplicates::{DuplicateCandidate, find_duplicates};
 use wg_tasks::edit::*;
 use wg_tasks::promote::{PromoteScope, promote_ready as promotable, promoted_by_project};
 use wg_tasks::transition::{Change, transition};
@@ -175,6 +176,37 @@ pub fn create_task(
         created.scheduled_at.filter(|_| naive_scheduled),
     );
     Ok(decision.with_reply(out))
+}
+
+/// The open tasks a create of `read` resembles in the repositories and projects it names, at or
+/// above `threshold` (the duplicate check of `task create`).
+pub fn duplicate_candidates(
+    world: &TaskWorld,
+    workspace: Id,
+    read: &CreateRead,
+    threshold: f64,
+) -> Result<Vec<DuplicateCandidate>, WgError> {
+    let tasks = &world.tasks;
+    let repositories = read
+        .repositories
+        .iter()
+        .map(|reference| {
+            resolve::repository(&tasks.registry, workspace, reference, false)
+                .map(|repository| repository.id)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let projects = read
+        .projects
+        .iter()
+        .map(|reference| resolve::project(&tasks.registry, workspace, reference).map(|p| p.id))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(find_duplicates(
+        tasks,
+        workspace,
+        (&read.title, &read.description),
+        (&repositories, &projects),
+        threshold,
+    ))
 }
 
 /// `TaskService.archive`.

@@ -7375,6 +7375,20 @@
         {
           "choices": null,
           "default": null,
+          "envvar": null,
+          "is_flag": false,
+          "kind": "option",
+          "multiple": false,
+          "opts": [
+            "--distinct-reason"
+          ],
+          "required": false,
+          "secondary_opts": [],
+          "type": "str"
+        },
+        {
+          "choices": null,
+          "default": null,
           "envvar": "WORKGRAPH_WORKSPACE",
           "is_flag": false,
           "kind": "option",

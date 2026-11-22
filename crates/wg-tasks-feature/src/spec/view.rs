@@ -85,6 +85,20 @@ pub fn task_view(console: &Console, task: &Value) -> String {
         out.push_str(&console.print("").text);
         out.push_str(&console.print(&description).text);
     }
+    if let Some(reason) = get(task, "metadata")
+        .and_then(|metadata| get(metadata, "distinct_reason"))
+        .and_then(|reason| opt(Some(reason)))
+        .filter(|reason| !reason.is_empty())
+    {
+        out.push_str(
+            &console
+                .print(&format!(
+                    "\n[bold]Distinct reason[/bold]: {}",
+                    escape(&reason)
+                ))
+                .text,
+        );
+    }
     let criteria = items(get(task, "acceptance_criteria"));
     if !criteria.is_empty() {
         out.push_str(&console.print("\n[bold]Acceptance criteria[/bold]").text);

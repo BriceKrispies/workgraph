@@ -2850,6 +2850,18 @@
             "title": "Description",
             "type": "string"
           },
+          "distinct_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why this task is distinct from the similar open tasks a create is refused for; stored on the task",
+            "title": "Distinct Reason"
+          },
           "due_at": {
             "anyOf": [
               {

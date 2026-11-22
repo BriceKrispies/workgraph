@@ -700,6 +700,22 @@
     "TasksConfig": {
       "additionalProperties": false,
       "properties": {
+        "duplicate_check": {
+          "default": "refuse",
+          "enum": [
+            "refuse",
+            "warn",
+            "off"
+          ],
+          "title": "Duplicate Check",
+          "type": "string"
+        },
+        "duplicate_threshold": {
+          "default": 0.6,
+          "minimum": 0,
+          "title": "Duplicate Threshold",
+          "type": "number"
+        },
         "require_acceptance_criteria": {
           "default": false,
           "title": "Require Acceptance Criteria",
@@ -872,6 +888,8 @@
     "tasks": {
       "$ref": "#/$defs/TasksConfig",
       "default": {
+        "duplicate_check": "refuse",
+        "duplicate_threshold": 0.6,
         "require_acceptance_criteria": false
       }
     },

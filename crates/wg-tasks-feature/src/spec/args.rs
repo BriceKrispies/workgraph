@@ -220,6 +220,7 @@ pub fn create_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliF
     put(&mut body, "assigned_agent", one(m, "--agent"));
     body.insert("auto_execute".to_owned(), json!(flag(m, "--auto-execute")));
     put(&mut body, "due_at", due);
+    put(&mut body, "distinct_reason", one(m, "--distinct-reason"));
     Ok(Json::Object(body))
 }
 

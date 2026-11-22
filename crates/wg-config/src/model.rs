@@ -328,6 +328,7 @@ fn tasks() -> Model {
                 },
                 json!(0.6),
             ),
+            def("intake_proposed", Schema::Bool, json!(true)),
         ],
     }
 }

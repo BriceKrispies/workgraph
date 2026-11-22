@@ -17,6 +17,9 @@ use TaskStatus as S;
 /// Targets of each task status, as `TASK_TRANSITIONS` in the Python module.
 pub fn task_targets(from: S) -> &'static [S] {
     match from {
+        // A proposed task is an intake candidate: admitted to backlog or ready, or cancelled. Nothing
+        // moves into it; a task is created proposed.
+        S::Proposed => &[S::Backlog, S::Ready, S::Cancelled],
         S::Backlog => &[S::Ready, S::Blocked, S::Cancelled],
         S::Ready => &[S::Backlog, S::Blocked, S::Claimed, S::Running, S::Cancelled],
         S::Blocked => &[S::Backlog, S::Ready, S::Cancelled],
@@ -103,7 +106,7 @@ pub const REQUIRES_DEPENDENCIES: &[TaskStatus] = &[S::Ready, S::Claimed, S::Runn
 pub const TRACKER_CLOSE_TARGETS: &[TaskStatus] = &[S::Accepted, S::Cancelled];
 
 /// Every task status in wire-string order, so allowed-target lists come out sorted.
-const TASK_STATUS_BY_WIRE: [TaskStatus; 10] = [
+const TASK_STATUS_BY_WIRE: [TaskStatus; 11] = [
     S::Accepted,
     S::AwaitingReview,
     S::AwaitingVerification,
@@ -112,6 +115,7 @@ const TASK_STATUS_BY_WIRE: [TaskStatus; 10] = [
     S::Cancelled,
     S::Claimed,
     S::Failed,
+    S::Proposed,
     S::Ready,
     S::Running,
 ];

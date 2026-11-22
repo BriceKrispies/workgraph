@@ -1,6 +1,7 @@
 /* Shapes returned by the Workgraph API (subset used by the UI). */
 
 export type TaskStatus =
+  | "proposed"
   | "backlog"
   | "ready"
   | "blocked"
@@ -13,6 +14,7 @@ export type TaskStatus =
   | "cancelled";
 
 export const TASK_STATUSES: TaskStatus[] = [
+  "proposed",
   "backlog",
   "ready",
   "blocked",

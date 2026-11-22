@@ -16,7 +16,8 @@ pub struct TaskCreated {
     pub title: String,
     pub description: String,
     pub acceptance_criteria: VectorSync<String>,
-    /// Always `backlog`: a task created ready gets a `task.status_changed` after this.
+    /// `backlog`, or `proposed` for a task created into intake: a task created ready gets a
+    /// `task.status_changed` after this.
     pub status: TaskStatus,
     pub priority: TaskPriority,
     pub tags: VectorSync<String>,

@@ -14,6 +14,7 @@ pub mod edit;
 pub mod files;
 pub mod graph;
 pub mod hierarchy;
+pub mod intake;
 pub mod lifecycle;
 pub mod links;
 pub mod ownership;

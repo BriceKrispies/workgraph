@@ -43,6 +43,7 @@ pub fn call(
         "task_get_ready" => get_ready(app, agent, arguments),
         "task_promote_ready" => promote_ready(app, agent, arguments),
         "task_import_breakdown" => import_breakdown(app, agent, arguments),
+        "task_intake" => intake(app, agent, arguments),
         "task_add_dependency" => add_dependency(app, agent, arguments),
         "task_remove_dependency" => remove_dependency(app, agent, arguments),
         "task_add_relation" => add_relation(app, agent, arguments),
@@ -62,11 +63,12 @@ pub fn call(
 /// `TaskService.create` for `task_create` (M26).
 fn create(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
     let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
-    service::task_create(
+    service::task_create_from(
         app,
         &context,
         text_argument(a, "workspace"),
         &args::create_body(a),
+        true,
     )
 }
 
@@ -168,6 +170,38 @@ fn promote_ready(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError
         scope.project.as_deref(),
         scope.dry_run,
     )
+}
+
+/// `task_intake`: list, admit, merge or drop the proposed tasks.
+fn intake(app: &mut App, agent: &Agent, a: &Value) -> Result<Dto, WgError> {
+    let context = agent_context(&agent.name, Some(agent.permissions.clone()))?;
+    let workspace = text_argument(a, "workspace");
+    let keys = args::strings(a, "keys");
+    match args::text(a, "action").as_str() {
+        "list" => service::intake::intake_list(
+            app,
+            &context,
+            workspace,
+            text_argument(a, "repository"),
+            text_argument(a, "project"),
+        ),
+        "admit" => service::intake::intake_admit(
+            app,
+            &context,
+            workspace,
+            &keys,
+            a.get("ready").and_then(Value::as_bool).unwrap_or(false),
+        ),
+        "merge" => {
+            service::intake::intake_merge(app, &context, workspace, &keys, &args::text(a, "into"))
+        }
+        "drop" => {
+            service::intake::intake_drop(app, &context, workspace, &keys, &args::text(a, "reason"))
+        }
+        other => Err(WgError::validation(format!(
+            "unknown task_intake action {other}"
+        ))),
+    }
 }
 
 /// `breakdown.import_breakdown` for `task_import_breakdown`: the document is given as text.

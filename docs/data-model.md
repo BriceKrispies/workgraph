@@ -80,7 +80,7 @@ erDiagram
 
 ## Task versus attempt state
 
-Task states: `backlog`, `ready`, `blocked`, `claimed`, `running`, `awaiting_verification`,
+Task states: `proposed` (intake: created by an agent, not yet admitted), `backlog`, `ready`, `blocked`, `claimed`, `running`, `awaiting_verification`,
 `awaiting_review`, `accepted`, `failed`, `cancelled`.
 Attempt states: `queued`, `preparing`, `running`, `verifying`, `succeeded`, `failed`, `cancelled`,
 `timed_out`, `abandoned`. See [task-lifecycle.md](task-lifecycle.md).

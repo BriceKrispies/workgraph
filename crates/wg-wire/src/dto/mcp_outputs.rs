@@ -440,6 +440,7 @@ static SHAPES: &[(&str, Shape)] = &[
         ]),
     ),
     ("task_import_breakdown", TASK_IMPORT),
+    ("task_intake", Shape::Any),
     ("task_add_relation", dto(relation::RelationOut::FIELDS)),
     ("task_add_comment", COMMENT),
     ("task_report_progress", COMMENT),

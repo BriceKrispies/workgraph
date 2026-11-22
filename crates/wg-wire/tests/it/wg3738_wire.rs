@@ -104,7 +104,7 @@ fn every_tool_has_exactly_one_output_shape() {
         .map(|tool| tool["name"].as_str().expect("name").to_string())
         .collect();
     let shaped: BTreeSet<String> = tools_with_shape().map(str::to_string).collect();
-    assert_eq!(tools.len(), 69);
+    assert_eq!(tools.len(), 70);
     let base: BTreeSet<String> = tools
         .into_iter()
         .filter(|tool| !FEATURE_SHAPED.contains(&tool.as_str()))

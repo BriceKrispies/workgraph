@@ -536,7 +536,7 @@ pub fn review_parent_steps(status: TaskStatus) -> &'static [TaskStatus] {
         T::AwaitingVerification | T::Claimed | T::Running => &[T::AwaitingReview],
         T::Ready => &[T::Claimed, T::AwaitingReview],
         T::Backlog | T::Blocked | T::Failed => &[T::Ready, T::Claimed, T::AwaitingReview],
-        T::AwaitingReview | T::Accepted | T::Cancelled => &[],
+        T::Proposed | T::AwaitingReview | T::Accepted | T::Cancelled => &[],
     }
 }
 

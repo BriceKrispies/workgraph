@@ -19,6 +19,7 @@ pub mod bodies;
 pub mod breakdown;
 pub mod claims;
 pub mod contract;
+pub mod intake;
 pub mod links;
 pub mod query;
 pub mod reads;

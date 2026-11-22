@@ -130,14 +130,14 @@
         "errors": [
           {
             "ctx": {
-              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+              "expected": "'proposed', 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
             },
             "input": "a",
             "loc": [
               "statuses",
               0
             ],
-            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "msg": "Input should be 'proposed', 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
             "type": "enum"
           }
         ]
@@ -176,14 +176,14 @@
         "errors": [
           {
             "ctx": {
-              "expected": "'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
+              "expected": "'proposed', 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'"
             },
             "input": "Not valid!",
             "loc": [
               "statuses",
               0
             ],
-            "msg": "Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
+            "msg": "Input should be 'proposed', 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled'",
             "type": "enum"
           }
         ]

@@ -174,6 +174,7 @@ string_enum! {
 
 string_enum! {
     pub enum TaskStatus {
+        Proposed = "proposed",
         Backlog = "backlog",
         Ready = "ready",
         Blocked = "blocked",

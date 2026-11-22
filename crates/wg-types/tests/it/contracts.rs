@@ -75,7 +75,7 @@ fn wg_error_keeps_details_in_insertion_order() {
 
 #[test]
 fn enum_counts_and_wire_strings() -> TestResult {
-    assert_eq!(TaskStatus::ALL.len(), 10);
+    assert_eq!(TaskStatus::ALL.len(), 11);
     assert_eq!(AttemptStatus::ALL.len(), 9);
     assert_eq!(
         TaskStatus::AwaitingVerification.as_str(),

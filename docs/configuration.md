@@ -171,6 +171,13 @@ body field `distinct_reason`); the reason is stored in the task's `metadata.dist
 `task show` prints it. With `warn` the task is created and the matches come back in the `warning`
 field; with `off` nothing is compared.
 
+`[tasks] intake_proposed` (default `true`) puts every task created through the MCP `task_create` tool
+into the `proposed` status instead of `backlog`; a `ready` argument is ignored then. Proposed tasks
+are not in `task ready`, are not promoted by `task promote-ready` and are reviewed with `task intake`
+(`list`, `admit [--ready]`, `merge --into KEY`, `drop --reason TEXT`; the MCP tool `task_intake`
+takes the same actions). Set it to `false` to keep agent creates going straight to backlog. CLI and
+HTTP creates are unchanged.
+
 ### Issue trackers
 
 Each `[trackers.<name>]` table connects Workgraph to one Jira site, read-only: Workgraph only issues

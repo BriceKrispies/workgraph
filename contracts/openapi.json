@@ -3871,6 +3871,7 @@
       },
       "TaskStatus": {
         "enum": [
+          "proposed",
           "backlog",
           "ready",
           "blocked",

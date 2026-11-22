@@ -251,7 +251,7 @@
    ],
    "sort": "bogus"
   },
-  "text": "2 validation errors for task_listArguments\nstatuses.1\n  Input should be 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled' [type=enum, input_value='nope', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/enum\nsort\n  Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at' [type=literal_error, input_value='bogus', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
+  "text": "2 validation errors for task_listArguments\nstatuses.1\n  Input should be 'proposed', 'backlog', 'ready', 'blocked', 'claimed', 'running', 'awaiting_verification', 'awaiting_review', 'accepted', 'failed' or 'cancelled' [type=enum, input_value='nope', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/enum\nsort\n  Input should be 'created_at', 'updated_at', 'priority', 'key', 'title', 'status' or 'due_at' [type=literal_error, input_value='bogus', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/literal_error"
  },
  {
   "tool": "task_list",

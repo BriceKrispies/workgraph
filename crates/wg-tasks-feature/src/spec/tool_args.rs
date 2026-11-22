@@ -26,6 +26,20 @@ fn flag(arguments: &Value, key: &str) -> bool {
     pyval::flag(arguments.get(key))
 }
 
+/// The string items of the list argument `key`, empty when absent.
+pub fn strings(arguments: &Value, key: &str) -> Vec<String> {
+    arguments
+        .get(key)
+        .and_then(Value::as_array)
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(|item| item.as_str().map(str::to_owned))
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
 /// The integer argument `key`, or `default` when absent.
 pub fn number(arguments: &Value, key: &str, default: i64) -> i64 {
     pyval::int_or(arguments.get(key), default)

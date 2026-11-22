@@ -94,6 +94,11 @@
       "ready",
       "running"
     ],
+    "proposed": [
+      "backlog",
+      "cancelled",
+      "ready"
+    ],
     "ready": [
       "backlog",
       "blocked",

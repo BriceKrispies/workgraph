@@ -36,7 +36,7 @@ import { toneOf } from "../lib/tone";
 const PAGE_SIZE = 50;
 const FILTER_KEYS = ["status", "priority", "project", "repository", "tag", "category", "q"] as const;
 // the statuses worth one tap; the rest are in the Status select
-const QUICK_STATUSES = ["ready", "awaiting_review", "running", "claimed", "blocked", "failed", "backlog", "accepted"];
+const QUICK_STATUSES = ["proposed", "ready", "awaiting_review", "running", "claimed", "blocked", "failed", "backlog", "accepted"];
 
 export function TasksPage() {
   const { ws } = useWorkspace();

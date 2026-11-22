@@ -716,6 +716,11 @@
           "title": "Duplicate Threshold",
           "type": "number"
         },
+        "intake_proposed": {
+          "default": true,
+          "title": "Intake Proposed",
+          "type": "boolean"
+        },
         "require_acceptance_criteria": {
           "default": false,
           "title": "Require Acceptance Criteria",
@@ -890,6 +895,7 @@
       "default": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },

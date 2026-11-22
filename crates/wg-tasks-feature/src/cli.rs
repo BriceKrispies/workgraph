@@ -10,6 +10,10 @@ use crate::service;
 use crate::spec::args::*;
 use crate::spec::breakdown::import_view;
 use crate::spec::contract::contract_target;
+use crate::spec::intake::{
+    action_failed as intake_failed, action_view as intake_action_view,
+    list_view as intake_list_view,
+};
 use crate::spec::reads::GraphRequest;
 use crate::spec::triage::{triage_failed, triage_view};
 use crate::spec::view::*;
@@ -87,6 +91,57 @@ fn update(
     }
 }
 
+/// `task intake list | admit | merge | drop`: the triage of proposed tasks.
+fn intake(
+    state: &mut CliState,
+    context: &RequestContext,
+    ws: Option<&str>,
+    path: &[String],
+    m: &ArgMatches,
+) -> Result<(), CliFailure> {
+    let keys = many(m, "keys");
+    match path.get(2).map(String::as_str) {
+        Some("list") => {
+            let repository = option_text(m, "--repo");
+            let project = option_text(m, "--project");
+            let out = service::intake::intake_list(
+                state.app()?,
+                context,
+                ws,
+                repository.as_deref(),
+                project.as_deref(),
+            )?;
+            state.emit(&out, Some(&|c| intake_list_view(c, &out)))
+        }
+        Some(verb @ ("admit" | "merge" | "drop")) => {
+            let app = state.app()?;
+            let out = match verb {
+                "admit" => service::intake::intake_admit(
+                    app,
+                    context,
+                    ws,
+                    &keys,
+                    option_flag(m, "--ready"),
+                )?,
+                "merge" => {
+                    let into = option_text(m, "--into").unwrap_or_default();
+                    service::intake::intake_merge(app, context, ws, &keys, &into)?
+                }
+                _ => {
+                    let reason = option_text(m, "--reason").unwrap_or_default();
+                    service::intake::intake_drop(app, context, ws, &keys, &reason)?
+                }
+            };
+            state.emit(&out, Some(&|c| intake_action_view(c, &out)))?;
+            if intake_failed(&out) {
+                return Err(CliFailure::Exit(3));
+            }
+            Ok(())
+        }
+        _ => Err(CliFailure::fail("unknown task intake command", 2)),
+    }
+}
+
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     let workspace = state.workspace_ref(option_text(m, "--workspace").as_deref());
     let ws = workspace.as_deref();
@@ -100,6 +155,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             }
             state.emit(&out, Some(&|c| created_line(c, &out)))
         }
+        Some("intake") => intake(state, &context, ws, path, m),
         Some("list") => {
             let body = list_body(m)?;
             let out = service::task_list(state.app()?, &context, ws, &body)?;

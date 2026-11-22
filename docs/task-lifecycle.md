@@ -5,6 +5,10 @@
 ```mermaid
 stateDiagram-v2
     [*] --> backlog
+    [*] --> proposed: created by an agent (MCP), intake on
+    proposed --> backlog: intake admit
+    proposed --> ready: intake admit --ready
+    proposed --> cancelled: intake merge / drop
     backlog --> ready
     backlog --> blocked
     ready --> claimed
@@ -31,6 +35,13 @@ stateDiagram-v2
 ```
 
 Transitions are validated by `core/policies/lifecycle.py`. Notable rules:
+
+- **Agent-created tasks start as `proposed`.** With `tasks.intake_proposed` on (the default), the MCP
+  `task_create` tool inserts the task as `proposed`. A proposed task is not in `task ready`, the
+  backlog or `task promote-ready`, and nothing moves a task into `proposed` later. `task intake`
+  (and the MCP tool `task_intake`) lists the proposals per repository and admits one to `backlog`
+  (or `ready`), merges it into an existing task (its description and criteria become a comment on
+  the target, it is cancelled and linked as a duplicate) or drops it with a reason (cancelled).
 
 - **Completion is a claim, not acceptance.** `task complete` / `task_complete` /
   `task_report_result succeeded` move a task to `awaiting_verification` (when checks apply) or

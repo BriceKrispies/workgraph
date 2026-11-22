@@ -8,7 +8,7 @@
 //! The score of two tasks is the mean of the Jaccard overlap of their title tokens and the Jaccard
 //! overlap of the tokens of title and description together, so a matching title with an unrelated
 //! description scores 0.5 at most and a copy scores 1.0. Tokens are lower-case alphanumeric words
-//! of two or more characters, without a few stop words and with a plural `s` removed.
+//! without a few stop words and with a plural `s` removed (a lone letter or digit is a token, so "Phase 1" and "Phase 2" differ).
 
 use std::collections::BTreeSet;
 
@@ -24,9 +24,10 @@ pub const DEFAULT_THRESHOLD: f64 = 0.6;
 const MAX_CANDIDATES: usize = 5;
 
 /// Words that carry no meaning about what a task is.
-const STOP_WORDS: [&str; 24] = [
-    "the", "and", "for", "with", "from", "that", "this", "into", "when", "then", "are", "was",
-    "not", "can", "should", "must", "will", "its", "has", "have", "via", "any", "all", "each",
+const STOP_WORDS: [&str; 36] = [
+    "a", "an", "of", "to", "in", "on", "is", "it", "or", "be", "as", "at", "by", "the", "and",
+    "for", "with", "from", "that", "this", "into", "when", "then", "are", "was", "not", "can",
+    "should", "must", "will", "its", "has", "have", "via", "any", "all",
 ];
 
 /// What the workspace does with a create that matches an open task.
@@ -83,7 +84,7 @@ pub fn duplicate_guard(config: &Map<String, Value>) -> DuplicateGuard {
 fn tokens(text: &str) -> BTreeSet<String> {
     text.to_lowercase()
         .split(|c: char| !c.is_alphanumeric())
-        .filter(|word| word.chars().count() >= 2 && !STOP_WORDS.contains(word))
+        .filter(|word| !word.is_empty() && !STOP_WORDS.contains(word))
         .map(|word| {
             if word.chars().count() > 3 && word.ends_with('s') && !word.ends_with("ss") {
                 word.chars().take(word.chars().count() - 1).collect()

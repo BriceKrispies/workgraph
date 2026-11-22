@@ -30,8 +30,8 @@ pub struct NewTask {
     pub title: String,
     pub description: String,
     pub acceptance_criteria: Vec<String>,
-    /// The requested status. `ready` is applied after the insert; any other value leaves the
-    /// task in backlog.
+    /// The requested status. `ready` is applied after the insert, `proposed` is the status the
+    /// task is inserted in (the intake stage); any other value leaves the task in backlog.
     pub status: TaskStatus,
     pub priority: TaskPriority,
     pub parent_id: Option<Id>,
@@ -136,6 +136,11 @@ pub fn create_plan(
         },
     );
 
+    let inserted = if new.status == TaskStatus::Proposed {
+        TaskStatus::Proposed
+    } else {
+        TaskStatus::Backlog
+    };
     let task = Task {
         id: task_id,
         workspace_id: allocation.workspace_id,
@@ -145,7 +150,7 @@ pub fn create_plan(
         title: new.title.clone(),
         description: new.description.clone(),
         acceptance_criteria: new.acceptance_criteria.iter().cloned().collect(),
-        status: TaskStatus::Backlog,
+        status: inserted,
         priority: new.priority,
         category: None,
         parent_id: new.parent_id,
@@ -174,7 +179,7 @@ pub fn create_plan(
         title: new.title.clone(),
         description: new.description.clone(),
         acceptance_criteria: new.acceptance_criteria.iter().cloned().collect(),
-        status: TaskStatus::Backlog,
+        status: inserted,
         priority: new.priority,
         tags: tags.iter().cloned().collect::<VectorSync<String>>(),
         project_ids: sorted_projects.iter().copied().collect(),

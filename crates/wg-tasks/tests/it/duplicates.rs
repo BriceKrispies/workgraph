@@ -201,3 +201,9 @@ fn warn_text_names_each_match() {
     let warning = duplicates_warning(&found);
     assert!(warning.contains("WG-1") && warning.contains("similarity 1.00"));
 }
+
+#[test]
+fn titles_that_differ_in_one_digit_or_letter_are_not_duplicates() {
+    assert!(similarity(("Phase 1", ""), ("Phase 2", "")) < 0.6);
+    assert!(similarity(("Fix A", ""), ("Fix B", "")) < 0.6);
+}

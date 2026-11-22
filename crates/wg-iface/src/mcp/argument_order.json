@@ -216,6 +216,16 @@
    "dry_run",
    "workspace"
   ],
+  "task_intake": [
+   "action",
+   "keys",
+   "into",
+   "reason",
+   "ready",
+   "repository",
+   "project",
+   "workspace"
+  ],
   "task_add_dependency": [
    "task",
    "depends_on",

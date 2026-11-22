@@ -94,6 +94,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -196,6 +197,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -361,6 +363,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -463,6 +466,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -565,6 +569,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -667,6 +672,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -874,6 +880,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -978,6 +985,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -1103,6 +1111,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },
@@ -1223,6 +1232,7 @@
       "tasks": {
         "duplicate_check": "refuse",
         "duplicate_threshold": 0.6,
+        "intake_proposed": true,
         "require_acceptance_criteria": false
       }
     },

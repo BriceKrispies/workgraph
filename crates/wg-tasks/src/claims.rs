@@ -319,7 +319,7 @@ pub fn plan_report_result(
     let live = matches!(task.status, TaskStatus::Claimed | TaskStatus::Running);
     if matches!(
         task.status,
-        TaskStatus::Backlog | TaskStatus::Ready | TaskStatus::Blocked
+        TaskStatus::Proposed | TaskStatus::Backlog | TaskStatus::Ready | TaskStatus::Blocked
     ) {
         return Err(WgError::invalid_transition(format!(
             "task {} is {}; claim it before reporting a result",

@@ -2843,6 +2843,122 @@
       }
     },
     {
+      "description": "Triage the tasks agents proposed (status proposed). action=list shows the proposed tasks per repository, narrowed by repository or project. action=admit moves the given keys to backlog, or to ready with ready=true. action=merge appends each proposal's description and criteria to the task named in into as a comment, cancels the proposal and records it as a duplicate of that task. action=drop cancels the keys and records the reason as a comment. Several keys may be given; each is handled on its own and a failure is reported per key.",
+      "input_schema": {
+        "properties": {
+          "action": {
+            "description": "What to do with the proposals",
+            "enum": [
+              "list",
+              "admit",
+              "merge",
+              "drop"
+            ],
+            "title": "Action",
+            "type": "string"
+          },
+          "into": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "merge: the task the proposals are merged into (key or id)",
+            "title": "Into"
+          },
+          "keys": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "admit, merge, drop: the proposed task keys",
+            "title": "Keys"
+          },
+          "project": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "list: only proposals in this project",
+            "title": "Project"
+          },
+          "ready": {
+            "default": false,
+            "description": "admit: move to ready instead of backlog",
+            "title": "Ready",
+            "type": "boolean"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "drop: why the proposals are dropped",
+            "title": "Reason"
+          },
+          "repository": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "list: only proposals in this repository",
+            "title": "Repository"
+          },
+          "workspace": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Workspace slug or id; omit for the default workspace",
+            "title": "Workspace"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "task_intakeArguments",
+        "type": "object"
+      },
+      "name": "task_intake",
+      "output_schema": {
+        "additionalProperties": true,
+        "title": "task_intakeDictOutput",
+        "type": "object"
+      }
+    },
+    {
       "description": "Explicitly link a commit (SHA or ref) to a task with confidence 1.0.",
       "input_schema": {
         "properties": {
@@ -2964,6 +3080,7 @@
           },
           "TaskStatus": {
             "enum": [
+              "proposed",
               "backlog",
               "ready",
               "blocked",

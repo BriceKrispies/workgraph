@@ -3,6 +3,7 @@ export type Tone = "idle" | "ready" | "blocked" | "claimed" | "active" | "review
 
 const TONES: Record<string, Tone> = {
   // tasks
+  proposed: "review",
   backlog: "idle",
   ready: "ready",
   blocked: "blocked",

@@ -7,6 +7,7 @@
 pub mod acceptance;
 pub mod breakdown;
 pub mod contract;
+pub mod intake;
 pub mod rename;
 pub mod triage;
 
@@ -34,8 +35,9 @@ use wg_tasks::bulk::bulk_results;
 use wg_tasks::create::{acceptance_warning, criteria_required, refuse_without_criteria};
 use wg_tasks::duplicates::{DuplicateMode, duplicate_guard, duplicates_warning, refuse_duplicates};
 use wg_tasks::edit::{self, read_update, validate_update};
+use wg_tasks::intake::intake_enabled;
 use wg_tasks::shape::{bulk_result_out, key_of};
-use wg_types::{Id, Permission, WgError, parse_id};
+use wg_types::{Id, Permission, TaskStatus, WgError, parse_id};
 
 /// `TaskService.create`.
 pub fn task_create(
@@ -43,6 +45,19 @@ pub fn task_create(
     context: &RequestContext,
     workspace: Option<&str>,
     body: &Json,
+) -> Result<Value, WgError> {
+    task_create_from(app, context, workspace, body, false)
+}
+
+/// `TaskService.create` for a create that agents make (the MCP `task_create` tool): when the
+/// workspace sets `tasks.intake_proposed` (the default) the task starts as `proposed`, out of the
+/// backlog and ready queues until `task intake` admits it. `ready` does not apply then.
+pub fn task_create_from(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    body: &Json,
+    from_agent: bool,
 ) -> Result<Value, WgError> {
     let mut read = read_create(&validate_create(body)?)?;
     let enrich = edit::enrichment_from(&app.config()?);
@@ -66,6 +81,9 @@ pub fn task_create(
         } else if !candidates.is_empty() && read.distinct_reason.is_none() {
             warnings.push(duplicates_warning(&candidates));
         }
+    }
+    if from_agent && intake_enabled(&app.effective_config(Some(&slug))?) {
+        read.status = TaskStatus::Proposed;
     }
     if let Some(reason) = &read.distinct_reason {
         read.metadata

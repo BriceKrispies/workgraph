@@ -53,19 +53,36 @@ fn update(
     ws: Option<&str>,
     m: &ArgMatches,
 ) -> Result<(), CliFailure> {
-    let body = update_body(m, &read_file)?;
+    let mut body = update_body(m, &read_file)?;
     let reference = option_text(m, "ref");
     let tags = tag_values(&many(m, "--tag"));
     let dry_run = option_flag(m, "--dry-run");
+    let added_criteria = many(m, "--add-criterion");
     match (reference, tags.as_slice()) {
         (Some(reference), []) => {
             if dry_run {
                 return Err(CliFailure::fail("--dry-run needs --tag", 1));
             }
+            if !added_criteria.is_empty() {
+                let criteria = service::task_append_criteria(
+                    state.app()?,
+                    context,
+                    ws,
+                    &reference,
+                    &added_criteria,
+                )?;
+                body["acceptance_criteria"] = serde_json::json!(criteria);
+            }
             let out = service::task_update(state.app()?, context, ws, &reference, &body)?;
             state.emit(&out, Some(&|c| updated_line(c, &out)))
         }
         (None, [tag]) => {
+            if !added_criteria.is_empty() {
+                return Err(CliFailure::fail(
+                    "--add-criterion needs a task REF; with --tag, use --criterion to replace the list",
+                    1,
+                ));
+            }
             let out = service::task_update_by_tag(state.app()?, context, ws, tag, &body, dry_run)?;
             state.emit(
                 &out,

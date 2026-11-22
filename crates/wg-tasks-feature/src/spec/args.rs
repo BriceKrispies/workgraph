@@ -281,9 +281,19 @@ pub fn update_body(m: &ArgMatches, read_file: ReadFile<'_>) -> Result<Json, CliF
             1,
         ));
     }
+    let criteria = many(m, "--criterion");
+    let added_criteria = many(m, "--add-criterion");
+    if !criteria.is_empty() && !added_criteria.is_empty() {
+        return Err(CliFailure::Usage {
+            usage: UPDATE.usage.to_owned(),
+            command: UPDATE.command.to_owned(),
+            message: "--criterion cannot be combined with --add-criterion".to_owned(),
+        });
+    }
     let mut body = Map::new();
     put(&mut body, "title", one(m, "--title"));
     put(&mut body, "description", one(m, "--description"));
+    put_list(&mut body, "acceptance_criteria", criteria);
     put(&mut body, "status", one(m, "--status"));
     put(&mut body, "priority", one(m, "--priority"));
     if let Some(project) = one(m, "--project") {

@@ -161,6 +161,15 @@ An empty `WORKGRAPH_AGENT` or `--agent ""` is no agent. A report by an actor oth
 refused with `permission_denied` (exit 5). The message names the holder and the remedy: give both commands the
 same `--agent <name>` (or `WORKGRAPH_AGENT`), or run as the holder without `--agent`.
 
+## Updating acceptance criteria
+
+`task update REF` takes two repeatable options for the acceptance criteria:
+
+- `-c/--criterion TEXT` replaces the whole list with exactly the values given. `-c "a" -c "b"` leaves the task with those two criteria.
+- `--add-criterion TEXT` appends to the task's current criteria. The task is read first, and the update sends the full list: the existing criteria in order, then the added ones.
+
+The two options cannot be combined; giving both is a usage error (exit `2`). `--add-criterion` needs a single REF, so it is refused with `--tag`; use `-c` to set one list on several tasks at once.
+
 ## Showing several tasks
 
 `task show REF [REF ...]` accepts any number of refs. A single ref prints and returns exactly what it always did. With several refs, the tasks are shown in the order given, each opened through the same app session. With `--json` the output is `{"items": [...], "errors": [...]}`: each item is the same object a single `show` returns, and `errors` lists `{"ref", "error"}` for each ref that failed (`error` is the usual `{"code","message","details"}` object). An unknown ref does not stop the others: they are still printed, the failures are reported (on stderr in human output), and the command exits with the first failure's code (`4` for a not-found ref).
@@ -175,6 +184,7 @@ workgraph --json task show WG-12 WG-13 WG-14
 workgraph task update WG-12 --status blocked --reason "waiting for infra" --expected-version 4
 workgraph task create "Add token expiry" --file src/auth/token.rs:refresh --file docs/auth.md
 workgraph task update WG-12 --add-file src/auth/session.rs --expected-version 5
+workgraph task update WG-12 --add-criterion "no token leaks in logs"
 workgraph task list --file src/auth/token.rs
 workgraph task depend WG-13 WG-12
 workgraph task promote-ready --tag sprint-42 --dry-run

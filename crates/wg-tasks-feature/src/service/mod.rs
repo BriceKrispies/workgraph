@@ -222,6 +222,34 @@ fn update_checked(
         .reply)
 }
 
+/// The full acceptance-criteria list of `task update --add-criterion`: the task's current criteria
+/// followed by `added`. Read from the task first, so the update sends the whole list.
+pub fn task_append_criteria(
+    app: &mut App,
+    context: &RequestContext,
+    workspace: Option<&str>,
+    reference: &str,
+    added: &[String],
+) -> Result<Vec<String>, WgError> {
+    let shown = task_show(app, context, workspace, &[reference.to_owned()])?;
+    if let Some((_, error)) = shown.errors.into_iter().next() {
+        return Err(error);
+    }
+    let Some(task) = shown.items.first() else {
+        return Err(WgError::validation(format!("no task {reference}")));
+    };
+    let mut criteria: Vec<String> =
+        wg_iface::cli::args::items(wg_iface::cli::args::get(task, "acceptance_criteria"))
+            .iter()
+            .filter_map(|item| match item {
+                Value::Str(text) => text.to_text(),
+                _ => None,
+            })
+            .collect();
+    criteria.extend(added.iter().cloned());
+    Ok(criteria)
+}
+
 /// `TaskService.bulk_update`: one update applied to many tasks, each in its own transaction.
 pub fn task_bulk_update(
     app: &mut App,

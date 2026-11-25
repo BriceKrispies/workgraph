@@ -72,8 +72,8 @@ pub fn task_create_from(
     let slug = app.workspace_slug(&scope.to_string())?;
     let guard = duplicate_guard(&app.effective_config(Some(&slug))?);
     let mut duplicate_warned = false;
-    // A ready create that stayed proposed names its reason in the reply, so the reply carries it.
-    let mut stayed_proposed = false;
+    // A create whose status the rules changed names the reason in the reply, so the reply carries it.
+    let mut status_warned = false;
     if guard.mode != DuplicateMode::Off {
         let candidates = app.runtime.query(
             |session| session.task_world(Some(scope), &[]),
@@ -86,27 +86,33 @@ pub fn task_create_from(
             duplicate_warned = true;
         }
     }
-    if from_agent && intake_enabled(&app.effective_config(Some(&slug))?) {
-        // An agent's `ready` create lands ready when the promote-ready rule would move it;
-        // otherwise it stays proposed and the reply says why.
+    if from_agent {
         let wanted_ready = read.status == TaskStatus::Ready;
-        let skip = if wanted_ready {
-            app.runtime.query(
+        if intake_enabled(&app.effective_config(Some(&slug))?) {
+            // Intake is the owner's triage of agent creates: every agent create starts proposed,
+            // `ready` included, and a human admits it.
+            if wanted_ready {
+                warnings.push(
+                    "task stays proposed because tasks.intake_proposed is on; a human promotes it with `task intake admit <KEY> --ready`".to_owned(),
+                );
+                status_warned = true;
+            }
+            read.status = TaskStatus::Proposed;
+        } else if wanted_ready {
+            // Without intake a `ready` agent create lands ready when the promote-ready rule would
+            // move it, and in backlog with the reason otherwise.
+            let skip = app.runtime.query(
                 |session| session.task_world(Some(scope), &[]),
                 |world| Ok(writes::create_skip(world, scope, &read)),
-            )?
-        } else {
-            None
-        };
-        if !wanted_ready {
-            read.status = TaskStatus::Proposed;
-        } else if let Some(skip) = skip {
-            warnings.push(format!(
-                "task stays proposed: it {}; admit it with `task intake` once that is resolved",
-                skip.reason()
-            ));
-            read.status = TaskStatus::Proposed;
-            stayed_proposed = true;
+            )?;
+            if let Some(skip) = skip {
+                warnings.push(format!(
+                    "task created in backlog, not ready: it {}",
+                    skip.reason()
+                ));
+                read.status = TaskStatus::Backlog;
+                status_warned = true;
+            }
         }
     }
     if let Some(reason) = &read.distinct_reason {
@@ -131,7 +137,7 @@ pub fn task_create_from(
                 "
 ",
             ),
-            duplicate_warned || stayed_proposed,
+            duplicate_warned || status_warned,
         )
     })
 }

@@ -1,6 +1,7 @@
-//! An agent's `task_create` with `ready` under `tasks.intake_proposed` lands ready when the
-//! promote-ready rule would move it, and stays proposed with the reason otherwise. `task
-//! promote-ready` reports each candidate it leaves out, with the reason.
+//! An agent's `task_create` is triaged under `tasks.intake_proposed`: with intake on every agent
+//! create starts `proposed`, `ready` included, and the reply says how a human promotes it. Without
+//! intake a `ready` agent create lands ready when the promote-ready rule would move it, and in
+//! backlog with the reason otherwise. `task promote-ready` reports each candidate it leaves out.
 
 use std::error::Error;
 use std::path::PathBuf;
@@ -13,8 +14,8 @@ use wg_tasks_feature::service;
 
 type TestResult = Result<(), Box<dyn Error>>;
 
-/// A fresh workspace `main` with `tasks.intake_proposed` on.
-fn app(name: &str) -> Result<App, Box<dyn Error>> {
+/// A fresh workspace `main`, with `tasks.intake_proposed` set to `intake`.
+fn app(name: &str, intake: bool) -> Result<App, Box<dyn Error>> {
     let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR"))
         .join("intake_ready")
         .join(name);
@@ -27,7 +28,7 @@ fn app(name: &str) -> Result<App, Box<dyn Error>> {
     let body = json!({"slug": "main", "name": "Main", "description": "", "key_prefix": "WG"});
     workspace_create(&mut app, &human, &body, true)?;
     let mut config = serde_json::Map::new();
-    config.insert("tasks".to_owned(), json!({"intake_proposed": true}));
+    config.insert("tasks".to_owned(), json!({"intake_proposed": intake}));
     app.save_config(&config)?;
     Ok(app)
 }
@@ -81,8 +82,26 @@ fn skip_reason(report: &Value, key: &str) -> Option<String> {
 }
 
 #[test]
-fn an_agent_ready_create_lands_ready_when_promote_would_move_it() -> TestResult {
-    let mut app = app("lands_ready")?;
+fn an_intake_create_with_ready_stays_proposed_with_a_warning() -> TestResult {
+    let mut app = app("intake_stays_proposed", true)?;
+    let context = human_context(None)?;
+    let reply = service::task_create_from(
+        &mut app,
+        &context,
+        None,
+        &create_body("Plain", "ready", &[], &[]),
+        true,
+    )?;
+    assert_eq!(status(&reply).as_deref(), Some("proposed"));
+    let warning = service::create_warning(&reply).unwrap_or_default();
+    assert!(warning.contains("tasks.intake_proposed is on"), "{warning}");
+    assert!(warning.contains("task intake admit"), "{warning}");
+    Ok(())
+}
+
+#[test]
+fn a_non_intake_ready_create_lands_ready() -> TestResult {
+    let mut app = app("non_intake_ready", false)?;
     let context = human_context(None)?;
     let reply = service::task_create_from(
         &mut app,
@@ -92,60 +111,41 @@ fn an_agent_ready_create_lands_ready_when_promote_would_move_it() -> TestResult 
         true,
     )?;
     assert_eq!(status(&reply).as_deref(), Some("ready"));
-    let warning = service::create_warning(&reply).unwrap_or_default();
-    assert!(!warning.contains("stays proposed"), "{warning}");
+    assert!(service::create_warning(&reply).is_none());
     Ok(())
 }
 
 #[test]
-fn an_agent_ready_create_with_an_unaccepted_dependency_stays_proposed() -> TestResult {
-    let mut app = app("unaccepted_dependency")?;
-    let human = human_context(None)?;
+fn a_non_intake_ready_create_with_an_unaccepted_dependency_goes_to_backlog() -> TestResult {
+    let mut app = app("non_intake_dependency", false)?;
+    let context = human_context(None)?;
     service::task_create(
         &mut app,
-        &human,
+        &context,
         None,
         &create_body("Base", "backlog", &[], &[]),
     )?;
     let reply = service::task_create_from(
         &mut app,
-        &human,
+        &context,
         None,
         &create_body("Follow", "ready", &[], &["WG-1"]),
         true,
     )?;
-    assert_eq!(status(&reply).as_deref(), Some("proposed"));
+    assert_eq!(status(&reply).as_deref(), Some("backlog"));
     let warning = service::create_warning(&reply).unwrap_or_default();
-    assert!(warning.contains("stays proposed"), "{warning}");
     assert!(warning.contains("WG-1"), "{warning}");
     Ok(())
 }
 
 #[test]
-fn an_agent_ready_create_tagged_parked_stays_proposed() -> TestResult {
-    let mut app = app("parked")?;
-    let human = human_context(None)?;
-    let reply = service::task_create_from(
-        &mut app,
-        &human,
-        None,
-        &create_body("Held", "ready", &["parked"], &[]),
-        true,
-    )?;
-    assert_eq!(status(&reply).as_deref(), Some("proposed"));
-    let warning = service::create_warning(&reply).unwrap_or_default();
-    assert!(warning.contains("parked"), "{warning}");
-    Ok(())
-}
-
-#[test]
 fn promote_ready_dry_run_names_each_skipped_candidate_and_why() -> TestResult {
-    let mut app = app("dry_run_reasons")?;
-    let human = human_context(None)?;
-    // WG-1: a proposed task (an agent create without ready under intake).
+    let mut app = app("dry_run_reasons", true)?;
+    let context = human_context(None)?;
+    // WG-1: a proposed task (an agent create under intake).
     service::task_create_from(
         &mut app,
-        &human,
+        &context,
         None,
         &create_body("Proposal", "backlog", &[], &[]),
         true,
@@ -153,30 +153,30 @@ fn promote_ready_dry_run_names_each_skipped_candidate_and_why() -> TestResult {
     // WG-2 has a child; WG-3 is that child and moves.
     service::task_create(
         &mut app,
-        &human,
+        &context,
         None,
         &create_body("Parent", "backlog", &[], &[]),
     )?;
     let mut child = create_body("Child", "backlog", &[], &[]);
     child["parent"] = json!("WG-2");
-    service::task_create(&mut app, &human, None, &child)?;
+    service::task_create(&mut app, &context, None, &child)?;
     // WG-4 is parked; WG-5 waits for the proposed WG-1.
     service::task_create(
         &mut app,
-        &human,
+        &context,
         None,
         &create_body("Held", "backlog", &["parked"], &[]),
     )?;
     service::task_create(
         &mut app,
-        &human,
+        &context,
         None,
         &create_body("Waits", "backlog", &[], &["WG-1"]),
     )?;
 
-    let report = service::task_promote_ready(&mut app, &human, None, &[], None, true)?;
-    let skipped = skip_reason(&report, "WG-1").unwrap_or_default();
-    assert!(skipped.contains("proposed"), "{skipped}");
+    let report = service::task_promote_ready(&mut app, &context, None, &[], None, true)?;
+    let proposed = skip_reason(&report, "WG-1").unwrap_or_default();
+    assert!(proposed.contains("proposed"), "{proposed}");
     assert!(
         skip_reason(&report, "WG-2")
             .unwrap_or_default()

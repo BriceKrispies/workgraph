@@ -66,7 +66,7 @@ turns this off for a workspace.
 `task promote-ready` finds the backlog tasks whose dependencies are all accepted and moves them to `ready`,
 without one `task show` per task. A scope is required: `--tag` (repeatable), `--project`, or `--all` for every
 backlog task in the workspace (`--all` cannot be combined with the others). The result lists the keys that moved and
-a count per project; `--dry-run` reports the same and changes nothing. A task with no dependencies counts as having
+a count per project; `--dry-run` reports the same and changes nothing. Each backlog or proposed task in scope that stays where it is is listed under `skipped` with its reason (a proposed task needs `task intake` first; a task with children, a `parked` tag, or unaccepted dependencies are the other reasons), so a dry run that promotes nothing says why. A task with no dependencies counts as having
 them all accepted.
 Tasks with children are skipped (they are rolled up, not claimed), as are tasks tagged `parked` and archived
 tasks. Dependencies count as accepted under the same rule as `task ready` (including a sibling already

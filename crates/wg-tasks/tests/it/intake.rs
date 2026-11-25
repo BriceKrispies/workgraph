@@ -2,6 +2,7 @@
 //! exclusion from the ready and promote-ready selections, and the intake rules.
 
 use crate::common::{self, id, stamp, task, tasks_slice};
+use common::tag;
 use serde_json::json;
 use wg_model::slice::StackSlice;
 use wg_model::stamp::Stamp;
@@ -10,7 +11,10 @@ use wg_tasks::intake::{
     admit_status, dropped_reason, intake_enabled, merge_comment, merged_reason, require_proposed,
 };
 use wg_tasks::lifecycle::check_task_transition;
-use wg_tasks::promote::{PromoteScope, ReadyQuery, promote_ready, ready_tasks};
+use wg_tasks::promote::{
+    PromoteScope, PromoteSkip, ReadyQuery, new_task_skip, promote_ready, promote_report,
+    ready_tasks,
+};
 use wg_types::{Actor, ErrorCode, TaskPriority, TaskStatus};
 
 fn stamp_for(text: &str) -> Stamp {
@@ -201,4 +205,73 @@ fn a_merge_comment_carries_the_description_and_criteria() {
         dropped_reason("out of scope"),
         "dropped at intake: out of scope"
     );
+}
+
+#[test]
+fn promote_report_names_why_each_candidate_stays_where_it_is() {
+    // WG-1 proposed; WG-2 has child WG-3; WG-4 parked; WG-5 waits for WG-6 (ready, not accepted).
+    let slice = tasks_slice(
+        vec![
+            task("WG", 1, TaskStatus::Proposed, None),
+            task("WG", 2, TaskStatus::Backlog, None),
+            task("WG", 3, TaskStatus::Backlog, Some(id(2))),
+            task("WG", 4, TaskStatus::Backlog, None),
+            task("WG", 5, TaskStatus::Backlog, None),
+            task("WG", 6, TaskStatus::Ready, None),
+        ],
+        vec![tag(id(4), "parked")],
+        vec![(id(5), id(6))],
+    );
+    let stacks = StackSlice::default();
+    let report = promote_report(
+        &slice,
+        &stacks,
+        common::workspace(),
+        PromoteScope {
+            tags: &[],
+            project: None,
+        },
+    );
+    let reasons: Vec<(String, Option<PromoteSkip>)> = report
+        .into_iter()
+        .map(|(task, skip)| (task.key.to_string(), skip))
+        .collect();
+    assert_eq!(
+        reasons,
+        vec![
+            ("WG-1".to_owned(), Some(PromoteSkip::Proposed)),
+            ("WG-2".to_owned(), Some(PromoteSkip::HasChildren)),
+            ("WG-3".to_owned(), None),
+            ("WG-4".to_owned(), Some(PromoteSkip::Parked)),
+            (
+                "WG-5".to_owned(),
+                Some(PromoteSkip::Dependencies(vec!["WG-6".to_owned()]))
+            ),
+        ],
+        "WG-6 is ready, not in promote scope"
+    );
+    let text = PromoteSkip::Dependencies(vec!["WG-6".to_owned()]).reason();
+    assert!(text.contains("WG-6"), "{text}");
+}
+
+#[test]
+fn a_new_task_is_skipped_for_parked_tags_and_unaccepted_dependencies_only() {
+    let slice = tasks_slice(
+        vec![
+            task("WG", 6, TaskStatus::Ready, None),
+            task("WG", 7, TaskStatus::Accepted, None),
+        ],
+        vec![],
+        vec![],
+    );
+    assert_eq!(
+        new_task_skip(&slice, &["parked".to_owned()], &[]),
+        Some(PromoteSkip::Parked)
+    );
+    assert_eq!(
+        new_task_skip(&slice, &[], &[id(6)]),
+        Some(PromoteSkip::Dependencies(vec!["WG-6".to_owned()]))
+    );
+    assert_eq!(new_task_skip(&slice, &[], &[id(7)]), None);
+    assert_eq!(new_task_skip(&slice, &[], &[]), None);
 }

@@ -179,7 +179,7 @@ body field `distinct_reason`); the reason is stored in the task's `metadata.dist
 field; with `off` nothing is compared.
 
 `[tasks] intake_proposed` (default `false`) puts every task created through the MCP `task_create` tool
-into the `proposed` status instead of `backlog`; a `ready` argument is ignored then. Proposed tasks
+into the `proposed` status instead of `backlog`, except a `ready` create that promote-ready would move, which lands in `ready`; a `ready` create tagged `parked` or with an unaccepted dependency stays `proposed` and its `warning` gives the reason. Proposed tasks
 are not in `task ready`, are not promoted by `task promote-ready` and are reviewed with `task intake`
 (`list`, `admit [--ready]`, `merge --into KEY`, `drop --reason TEXT`; the MCP tool `task_intake`
 takes the same actions). Set it to `false` to keep agent creates going straight to backlog. CLI and

@@ -541,6 +541,20 @@ pub fn promote_view(console: &Console, report: &Value, dry_run: bool) -> String 
             );
         }
     }
+    // Each candidate that was left out, with the reason it stayed where it is.
+    if let Some(Value::Dict(skipped)) = get(report, "skipped") {
+        for (key, reason) in skipped {
+            out.push_str(
+                &console
+                    .print(&format!(
+                        "  skipped {}: {}",
+                        escape(&python(&Value::Str(key.clone()))),
+                        python(reason)
+                    ))
+                    .text,
+            );
+        }
+    }
     out
 }
 

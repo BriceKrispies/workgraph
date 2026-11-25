@@ -45,6 +45,12 @@ It tags the task `needs-decision`. The user answers in the web UI or CLI; agents
 `task_decisions(task)` returns the task's decisions with the chosen option or free-text answer and note once given,
 and `decision_list(status, limit)` lists decisions (`open` by default) with their task. See [Decisions](api.md#decisions).
 
+`task_create` with `ready: true` lands the task in `ready` (not `proposed`) unless the workspace sets
+`tasks.intake_proposed` and the promote-ready rule would not move the task: a tag `parked` or an unaccepted
+dependency. Then the task stays `proposed` and the reply's `warning` says why; admit it with `task_intake`.
+`task_promote_ready` (with or without `dry_run`) lists the candidates it leaves out in `skipped` (a key-to-reason map),
+present only when there is one.
+
 `task_create` and `task_update` take `files` (a list of `{path, anchor?, note?}`; `task_update` also
 takes `add_files`, and `files: []` clears them). `task_get` returns them as `files`, and `task_list`
 takes `file` to filter by an exact path.

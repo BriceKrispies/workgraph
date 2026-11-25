@@ -72,6 +72,8 @@ pub fn task_create_from(
     let slug = app.workspace_slug(&scope.to_string())?;
     let guard = duplicate_guard(&app.effective_config(Some(&slug))?);
     let mut duplicate_warned = false;
+    // A ready create that stayed proposed names its reason in the reply, so the reply carries it.
+    let mut stayed_proposed = false;
     if guard.mode != DuplicateMode::Off {
         let candidates = app.runtime.query(
             |session| session.task_world(Some(scope), &[]),
@@ -85,7 +87,27 @@ pub fn task_create_from(
         }
     }
     if from_agent && intake_enabled(&app.effective_config(Some(&slug))?) {
-        read.status = TaskStatus::Proposed;
+        // An agent's `ready` create lands ready when the promote-ready rule would move it;
+        // otherwise it stays proposed and the reply says why.
+        let wanted_ready = read.status == TaskStatus::Ready;
+        let skip = if wanted_ready {
+            app.runtime.query(
+                |session| session.task_world(Some(scope), &[]),
+                |world| Ok(writes::create_skip(world, scope, &read)),
+            )?
+        } else {
+            None
+        };
+        if !wanted_ready {
+            read.status = TaskStatus::Proposed;
+        } else if let Some(skip) = skip {
+            warnings.push(format!(
+                "task stays proposed: it {}; admit it with `task intake` once that is resolved",
+                skip.reason()
+            ));
+            read.status = TaskStatus::Proposed;
+            stayed_proposed = true;
+        }
     }
     if let Some(reason) = &read.distinct_reason {
         read.metadata
@@ -109,7 +131,7 @@ pub fn task_create_from(
                 "
 ",
             ),
-            duplicate_warned,
+            duplicate_warned || stayed_proposed,
         )
     })
 }

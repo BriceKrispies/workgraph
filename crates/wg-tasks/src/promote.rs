@@ -144,13 +144,48 @@ pub fn dependents(tasks: &TaskSlice, task_id: Id) -> Vec<&Task> {
         .collect()
 }
 
-/// The backlog tasks among `candidates` that may move to ready: no children, not parked, and
-/// every dependency satisfied. Order is kept.
-pub fn backlog_promotable<'a>(
+/// Why promote-ready leaves a candidate where it is.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum PromoteSkip {
+    /// A proposed task waits for `task intake` before it can be promoted.
+    Proposed,
+    /// The task has children, so it is rolled up instead of claimed.
+    HasChildren,
+    /// The task is tagged `parked`.
+    Parked,
+    /// The task waits for these dependencies (keys), none accepted or cancelled yet.
+    Dependencies(Vec<String>),
+    /// The task is in a status other than backlog or proposed.
+    Status(TaskStatus),
+}
+
+impl PromoteSkip {
+    /// The sentence a skipped candidate carries in promote-ready output.
+    #[must_use]
+    pub fn reason(&self) -> String {
+        match self {
+            Self::Proposed => {
+                "is proposed; admit it with `task intake` before it can be promoted".to_owned()
+            }
+            Self::HasChildren => {
+                "has child tasks, which are rolled up instead of promoted".to_owned()
+            }
+            Self::Parked => "is tagged parked".to_owned(),
+            Self::Dependencies(keys) => {
+                format!("waits for unaccepted dependencies: {}", keys.join(", "))
+            }
+            Self::Status(status) => format!("is {status}, not backlog"),
+        }
+    }
+}
+
+/// The promote-ready rule for each of `candidates`, in order: `None` when the task moves to ready,
+/// otherwise why it is skipped. Only backlog tasks can move; the others report why not.
+pub fn promote_checks<'a>(
     tasks: &TaskSlice,
     stacks: &StackSlice,
     candidates: &[&'a Task],
-) -> Vec<&'a Task> {
+) -> Vec<(&'a Task, Option<PromoteSkip>)> {
     let backlog: BTreeSet<Id> = candidates
         .iter()
         .filter(|task| task.status == TaskStatus::Backlog)
@@ -175,20 +210,65 @@ pub fn backlog_promotable<'a>(
         .map(|row| (row.task_id, row.depends_on_id))
         .collect();
     let satisfied = satisfied_dependencies(tasks, stacks, &edges);
-    let blocked: BTreeSet<Id> = edges
-        .iter()
-        .filter(|edge| !satisfied.contains(edge))
-        .map(|(task_id, _)| *task_id)
-        .collect();
     candidates
         .iter()
         .copied()
-        .filter(|task| {
-            task.status == TaskStatus::Backlog
-                && !with_children.contains(&task.id)
-                && !parked.contains(&task.id)
-                && !blocked.contains(&task.id)
+        .map(|task| {
+            let skip = match task.status {
+                TaskStatus::Backlog => {
+                    if with_children.contains(&task.id) {
+                        Some(PromoteSkip::HasChildren)
+                    } else if parked.contains(&task.id) {
+                        Some(PromoteSkip::Parked)
+                    } else {
+                        let mut waits: Vec<String> = edges
+                            .iter()
+                            .filter(|edge| edge.0 == task.id && !satisfied.contains(edge))
+                            .filter_map(|(_, dep)| tasks.task(*dep))
+                            .map(|dep| dep.key.to_string())
+                            .collect();
+                        waits.sort();
+                        waits.dedup();
+                        (!waits.is_empty()).then_some(PromoteSkip::Dependencies(waits))
+                    }
+                }
+                TaskStatus::Proposed => Some(PromoteSkip::Proposed),
+                other => Some(PromoteSkip::Status(other)),
+            };
+            (task, skip)
         })
+        .collect()
+}
+
+/// The promote-ready rule for a task that is about to be created with `depends_on` and `tags`: the
+/// reason it would be skipped, `None` when promote-ready would move it. A new task has no children
+/// and sits in no stack, so only parked tags and unaccepted dependencies can apply.
+pub fn new_task_skip(tasks: &TaskSlice, tags: &[String], depends_on: &[Id]) -> Option<PromoteSkip> {
+    if tags.iter().any(|tag| tag == PARKED_TAG) {
+        return Some(PromoteSkip::Parked);
+    }
+    let mut waits: Vec<String> = depends_on
+        .iter()
+        .filter_map(|dep| tasks.task(*dep))
+        .filter(|dep| !DEPENDENCY_SATISFIED_STATUSES.contains(&dep.status))
+        .map(|dep| dep.key.to_string())
+        .collect();
+    waits.sort();
+    waits.dedup();
+    (!waits.is_empty()).then_some(PromoteSkip::Dependencies(waits))
+}
+
+/// The backlog tasks among `candidates` that may move to ready: no children, not parked, and
+/// every dependency satisfied. Order is kept.
+pub fn backlog_promotable<'a>(
+    tasks: &TaskSlice,
+    stacks: &StackSlice,
+    candidates: &[&'a Task],
+) -> Vec<&'a Task> {
+    promote_checks(tasks, stacks, candidates)
+        .into_iter()
+        .filter(|(_, skip)| skip.is_none())
+        .map(|(task, _)| task)
         .collect()
 }
 
@@ -209,13 +289,28 @@ pub fn promote_ready<'a>(
     workspace_id: Id,
     scope: PromoteScope<'_>,
 ) -> Vec<&'a Task> {
+    promote_report(tasks, stacks, workspace_id, scope)
+        .into_iter()
+        .filter(|(_, skip)| skip.is_none())
+        .map(|(task, _)| task)
+        .collect()
+}
+
+/// Every task of `workspace_id` in scope that promote-ready considers (backlog or proposed, not
+/// archived), by task number, each with the reason it is skipped (`None` when it moves).
+pub fn promote_report<'a>(
+    tasks: &'a TaskSlice,
+    stacks: &StackSlice,
+    workspace_id: Id,
+    scope: PromoteScope<'_>,
+) -> Vec<(&'a Task, Option<PromoteSkip>)> {
     let candidates: Vec<&Task> = tasks
         .tasks
         .values()
         .filter(|task| {
             task.workspace_id == workspace_id
                 && task.archived_at.is_none()
-                && task.status == TaskStatus::Backlog
+                && matches!(task.status, TaskStatus::Backlog | TaskStatus::Proposed)
                 && scope
                     .tags
                     .iter()
@@ -228,7 +323,7 @@ pub fn promote_ready<'a>(
         .collect::<BTreeMap<_, _>>()
         .into_values()
         .collect();
-    backlog_promotable(tasks, stacks, &candidates)
+    promote_checks(tasks, stacks, &candidates)
 }
 
 /// The backlog dependents of `task_id` that become promotable once it is accepted, by task

@@ -18,7 +18,9 @@ use wg_tasks::create::refuse_without_criteria;
 use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
 use wg_tasks::duplicates::{DuplicateCandidate, find_duplicates};
 use wg_tasks::edit::*;
-use wg_tasks::promote::{PromoteScope, promote_ready as promotable, promoted_by_project};
+use wg_tasks::promote::{
+    PromoteScope, PromoteSkip, new_task_skip, promote_report, promoted_by_project,
+};
 use wg_tasks::transition::{Change, transition};
 use wg_types::{Id, Permission, TaskKey, TaskStatus, WgError};
 use wg_wire::convention::text;
@@ -271,7 +273,7 @@ pub fn promote_ready(
         .map(|reference| resolve::project(&tasks.registry, workspace, reference))
         .transpose()?
         .map(|found| found.id);
-    let moved = promotable(
+    let report = promote_report(
         tasks,
         &world.stacks,
         workspace,
@@ -280,6 +282,11 @@ pub fn promote_ready(
             project: project_id,
         },
     );
+    let moved: Vec<&wg_model::Task> = report
+        .iter()
+        .filter(|(_, skip)| skip.is_none())
+        .map(|(task, _)| *task)
+        .collect();
     // A promotion that would move a task with no acceptance criteria is refused, not partly applied.
     for task in &moved {
         refuse_without_criteria(!task.acceptance_criteria.is_empty(), require_criteria)?;
@@ -319,10 +326,41 @@ pub fn promote_ready(
             )
         })
         .collect();
-    let out = dict!({
+    let skipped: Vec<(wg_json::PyStr, Value)> = report
+        .iter()
+        .filter_map(|(task, skip)| skip.as_ref().map(|skip| (task, skip)))
+        .map(|(task, skip)| {
+            (
+                wg_json::PyStr::from(task.key.to_string().as_str()),
+                text(&skip.reason()),
+            )
+        })
+        .collect();
+    let mut out = dict!({
         "promoted": Value::List(keys),
         "by_project": Value::Dict(counts),
         "dry_run": Value::Bool(dry_run),
     });
+    // `skipped` maps each candidate left out to its reason. It appears only when there is one, so
+    // a scope where everything in it moves keeps the reply shape it always had.
+    if !skipped.is_empty()
+        && let Value::Dict(entries) = &mut out
+    {
+        entries.push((wg_json::PyStr::from("skipped"), Value::Dict(skipped)));
+    }
     Ok(decision.with_reply(out))
+}
+
+/// The promote-ready skip a task created with `read` would get; `None` when promote-ready would
+/// move it. The agent create path keeps a `ready` request ready only when this is `None`.
+pub fn create_skip(world: &TaskWorld, workspace: Id, read: &CreateRead) -> Option<PromoteSkip> {
+    let tasks = &world.tasks;
+    let space = tasks.registry.workspace(workspace)?;
+    let depends_on: Vec<Id> = read
+        .depends_on
+        .iter()
+        .filter_map(|reference| resolve::task(tasks, Some(space.id), reference).ok())
+        .map(|task| task.id)
+        .collect();
+    new_task_skip(tasks, &read.tags, &depends_on)
 }

@@ -5,12 +5,12 @@
 
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 
 use wg_git::{
     BranchPosition, Git, GitError, GitOutput, HookOutcome, RunOptions, install_post_commit_hook,
 };
 use wg_gitcore::{HOOK_MARKER, parse_meta};
+use wg_proc::Spawn;
 
 /// The runner for a repository at `path`, with the default timeout.
 fn repo(path: impl Into<PathBuf>) -> Git {
@@ -41,7 +41,7 @@ fn scratch(tag: &str) -> PathBuf {
 
 /// Runs git directly, for fixtures only.
 fn fixture(dir: &Path, args: &[&str]) -> String {
-    let output = Command::new("git")
+    let output = Spawn::new("git")
         .arg("-C")
         .arg(dir)
         .args(args)

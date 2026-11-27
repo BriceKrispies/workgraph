@@ -13,8 +13,9 @@ use serde_json::{Map, Value};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Stdio};
 use std::time::{Duration, Instant};
+use wg_proc::Spawn;
 
 /// Response headers the CF-04 recorder keeps (`RECORDED_HEADERS` in `record_http.py`).
 pub const RECORDED_HEADERS: [&str; 11] = [
@@ -483,7 +484,7 @@ impl Server {
         let log_err = log
             .try_clone()
             .map_err(|e| format!("clone log handle: {e}"))?;
-        let mut cmd = Command::new(&imp.program);
+        let mut cmd = Spawn::new(&imp.program);
         cmd.args(&imp.args)
             .args(["serve", "--local", "--no-worker", "--port"])
             .arg(port.to_string())
@@ -548,7 +549,7 @@ impl Drop for Server {
         // On Windows a plain kill leaves the serve process's children running, and each run left
         // orphans behind, so the whole tree goes (as the Python runner's taskkill /T does).
         if cfg!(windows) {
-            let _ = Command::new("taskkill")
+            let _ = Spawn::new("taskkill")
                 .args(["/F", "/T", "/PID", &self.child.id().to_string()])
                 .stdout(Stdio::null())
                 .stderr(Stdio::null())

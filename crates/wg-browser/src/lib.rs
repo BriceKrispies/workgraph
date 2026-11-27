@@ -8,7 +8,7 @@
 mod cdp;
 
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Stdio};
 use std::time::{Duration, Instant};
 
 use cdp::Cdp;
@@ -16,6 +16,7 @@ use wg_browserspec::{
     capture_calls, capture_screenshot_call, devtools_port, io_failure, launch_args, locate_browser,
     page_websocket_url, readiness_expression, screenshot_bytes, unavailable, wait_timeout_error,
 };
+use wg_proc::Spawn;
 use wg_types::WgError;
 
 pub use wg_browserspec::{BROWSER_ENV, CaptureOptions};
@@ -68,7 +69,7 @@ pub fn screenshot(
             .map_err(|err| io_failure("create output directory", err))?;
     }
     let profile = ProfileDir::create()?;
-    let mut child = Command::new(&exe)
+    let mut child = Spawn::new(&exe)
         .args(launch_args(
             &profile.0.to_string_lossy(),
             options.width,

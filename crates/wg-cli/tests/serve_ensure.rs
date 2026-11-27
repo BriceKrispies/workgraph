@@ -16,8 +16,9 @@ use std::fs::File;
 use std::io::{Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 use std::time::Duration;
+use wg_proc::Spawn;
 
 /// Stops this process's standard handles from being inherited by the processes it starts.
 #[cfg(windows)]
@@ -61,7 +62,7 @@ struct Run {
 /// Runs `workgraph --home HOME --json serve --ensure --port PORT`, with its output in `out`.
 fn ensure(exe: &Path, home: &Path, port: u16, out: &Path) -> Run {
     let stdout = File::create(out).expect("an output file");
-    let success = Command::new(exe)
+    let success = Spawn::new(exe)
         .arg("--home")
         .arg(home)
         .args(["--json", "serve", "--ensure", "--port"])
@@ -105,12 +106,12 @@ fn answers(port: u16) -> bool {
 fn kill(pid: u64) {
     let pid = pid.to_string();
     if cfg!(windows) {
-        Command::new("taskkill")
+        Spawn::new("taskkill")
             .args(["/PID", &pid, "/F"])
             .output()
             .ok();
     } else {
-        Command::new("kill").args(["-9", &pid]).output().ok();
+        Spawn::new("kill").args(["-9", &pid]).output().ok();
     }
 }
 

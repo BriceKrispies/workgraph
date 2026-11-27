@@ -15,7 +15,8 @@ use wg_procspec::{
 
 use crate::resolve::resolve_executable;
 use crate::sink::{ByteBuffer, LineSink, Sink};
-use crate::tree::{self, TreeGuard};
+use crate::spawn::Spawn;
+use crate::tree::TreeGuard;
 
 /// A cancellation probe, polled every [`ProcessSpec::poll_interval_ms`]. Returning `true` terminates
 /// the child's tree.
@@ -140,7 +141,7 @@ fn execute(
     let mut argv = vec![program.display().to_string()];
     argv.extend(spec.argv[1..].iter().cloned());
 
-    let mut command = std::process::Command::new(&program);
+    let mut command = Spawn::new(&program);
     command.args(&spec.argv[1..]);
     if let Some(cwd) = &spec.cwd {
         command.current_dir(cwd);
@@ -167,7 +168,7 @@ fn execute(
             .stderr(writer);
         Some(reader)
     };
-    tree::configure(&mut command);
+    command.own_process_group();
 
     let started = Instant::now();
     let mut child = command.spawn().map_err(spawn_error)?;

@@ -10,8 +10,8 @@ use crate::scenario::{Assertion, HeaderExpect, JsonExpect, Scenario, Setup, Step
 use serde_json::{Map, Value, json};
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
+use wg_proc::Spawn;
 
 /// An implementation under test: `program args...` is prefixed to every command line.
 #[derive(Debug, Clone)]
@@ -293,7 +293,7 @@ fn path_prefix_dirs(value: &str) -> Vec<String> {
 
 /// Run a process to completion. It gives up as a stall when it prints nothing for the
 /// no-progress window (see [`crate::wait`]).
-pub(crate) fn run_process(cmd: &mut Command, stdin: Option<&str>) -> Result<Outcome, String> {
+pub(crate) fn run_process(cmd: &mut Spawn, stdin: Option<&str>) -> Result<Outcome, String> {
     let (code, stdout, stderr) = crate::wait::run_bounded(cmd, stdin)?;
     Ok(Outcome {
         exit: i64::from(code),
@@ -497,7 +497,7 @@ pub(crate) fn run_cli(
     stdin: Option<&str>,
     extra: &[(String, String)],
 ) -> Result<Outcome, String> {
-    let mut cmd = Command::new(&imp.program);
+    let mut cmd = Spawn::new(&imp.program);
     cmd.args(&imp.args);
     if json_mode {
         cmd.arg("--json");

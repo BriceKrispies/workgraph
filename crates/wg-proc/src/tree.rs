@@ -1,31 +1,12 @@
 //! Whole-tree termination: a Job Object on Windows, a process group on POSIX.
 
 use std::io;
-use std::process::Command;
 use std::time::{Duration, Instant};
+
+use crate::spawn::Spawn;
 
 /// How long a terminated child may take to be reaped before it is killed directly.
 const REAP_TIMEOUT: Duration = Duration::from_secs(10);
-
-/// Make the child the leader of a new process group (POSIX) or process group (Windows), so a
-/// console interrupt aimed at us is not delivered to it and the tree can be addressed as a unit.
-pub(crate) fn configure(command: &mut Command) {
-    #[cfg(unix)]
-    {
-        use std::os::unix::process::CommandExt;
-        command.process_group(0);
-    }
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        // CREATE_NEW_PROCESS_GROUP
-        command.creation_flags(0x0000_0200);
-    }
-    #[cfg(not(any(unix, windows)))]
-    {
-        let _ = command;
-    }
-}
 
 /// Owns whatever is needed to terminate a started child and its descendants.
 pub(crate) struct TreeGuard {
@@ -125,7 +106,7 @@ impl TreeGuard {
 /// Fallback when no Job Object could be created or assigned: `taskkill /F /T`.
 #[cfg(windows)]
 fn taskkill(pid: u32) {
-    let _ = Command::new("taskkill")
+    let _ = Spawn::new("taskkill")
         .args(["/F", "/T", "/PID", &pid.to_string()])
         .stdin(std::process::Stdio::null())
         .stdout(std::process::Stdio::null())

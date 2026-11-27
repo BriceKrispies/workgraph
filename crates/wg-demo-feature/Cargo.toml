@@ -11,6 +11,7 @@ description = "the demo feature: the end-to-end demonstration and the UI demo da
 workspace = true
 
 [dependencies]
+wg-proc = { path = "../wg-proc" }
 wg-iface = { path = "../wg-iface" }
 clap = { version = "4.5", default-features = false, features = ["std", "help", "usage", "error-context", "suggestions", "env", "string"] }
 serde_json = { version = "1", features = ["preserve_order"] }

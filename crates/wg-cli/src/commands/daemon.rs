@@ -7,7 +7,7 @@
 //! this binary. `ui open` starts its server with the same detached start, so the code lives here.
 
 use std::path::{Path, PathBuf};
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Stdio};
 use std::time::{Duration, Instant};
 
 use clap::ArgMatches;
@@ -22,6 +22,7 @@ use wg_uispec::Wait;
 use crate::CliState;
 use crate::spec::servers::port_option;
 use crate::spec::ui::base_url;
+use wg_proc::Spawn;
 
 /// The file a restart writes into the data directory. The running daemon removes it and stops.
 pub const STOP_FILE: &str = "serve.stop";
@@ -90,8 +91,9 @@ pub fn start_and_wait(
     }
 }
 
-/// Launches this binary's `serve` with its output appended to `log`. On Windows the server is
-/// detached from the console; on POSIX it gets its own process group.
+/// Launches this binary's `serve` with its output appended to `log`. The server gets its own
+/// process group, and on Windows a hidden console (see `wg_proc::Spawn`), so the consoles of the
+/// children it starts stay hidden too.
 pub fn spawn_serve(
     home: Option<&Path>,
     listen: Option<(&str, u16)>,
@@ -112,23 +114,15 @@ pub fn spawn_serve(
         args.extend(["--host".to_owned(), host.to_owned()]);
         args.extend(["--port".to_owned(), port.to_string()]);
     }
-    let mut command = Command::new(exe);
+    #[cfg(windows)]
+    stop_std_handles_inheritance();
+    let mut command = Spawn::new(exe);
+    command.own_process_group();
     command
         .args(args)
         .stdin(Stdio::null())
         .stdout(Stdio::from(file))
         .stderr(Stdio::from(errors));
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        stop_std_handles_inheritance();
-        command.creation_flags(wg_uispec::WINDOWS_DETACHED);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::process::CommandExt;
-        command.process_group(0);
-    }
     command.spawn()
 }
 

@@ -10,7 +10,6 @@ mod net;
 pub use e2e::e2e;
 
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use std::time::Duration;
@@ -43,6 +42,7 @@ use wg_types::parse_id;
 use wg_verify_feature::service::api as verification;
 
 use crate::spec::{self, REPOS, RepoSpec, written};
+use wg_proc::Spawn;
 
 /// A fresh directory for `demo e2e` without `--home` (`tempfile.mkdtemp(prefix="workgraph-demo-")`).
 ///
@@ -418,7 +418,7 @@ fn create_repository(path: &Path, repo: &RepoSpec) -> Result<(), CliFailure> {
 
 /// `git -C <path> ...` with the demo's author identity, output captured as `_git` does.
 fn git(path: &Path, args: &[&str]) -> Result<(), CliFailure> {
-    let output = Command::new("git")
+    let output = Spawn::new("git")
         .arg("-C")
         .arg(path)
         .args(args)

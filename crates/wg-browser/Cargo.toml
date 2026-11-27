@@ -11,6 +11,7 @@ description = "locating Chromium-family browsers and CDP screenshots"
 workspace = true
 
 [dependencies]
+wg-proc = { path = "../wg-proc" }
 wg-types = { path = "../wg-types" }
 wg-browserspec = { path = "../wg-browserspec" }
 serde_json = "1"

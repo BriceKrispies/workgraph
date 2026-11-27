@@ -15,9 +15,10 @@ use crate::runner::{Outcome, RunResult, Status, StepRecord};
 use serde_json::{Value, json};
 use std::io::{BufRead, BufReader, Write};
 use std::path::{Path, PathBuf};
-use std::process::{Child, ChildStdin, Command, ExitCode, Stdio};
+use std::process::{Child, ChildStdin, ExitCode, Stdio};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError};
 use std::sync::{Arc, Mutex};
+use wg_proc::Spawn;
 
 /// The protocol version the recorder negotiated (`contracts/mcp/stdio.jsonl`).
 pub const PROTOCOL_VERSION: &str = "2025-06-18";
@@ -69,7 +70,7 @@ impl StdioClient {
         env: &[(String, String)],
         dir: &Path,
     ) -> Result<Self, String> {
-        let mut child = Command::new(program)
+        let mut child = Spawn::new(program)
             .args(args)
             .envs(env.iter().map(|(k, v)| (k.as_str(), v.as_str())))
             .current_dir(dir)

@@ -1,2 +1,10 @@
 allow-unwrap-in-tests = true
 allow-expect-in-tests = true
+
+# Every child process is created through `wg_proc::Spawn`, the one chokepoint that hides the
+# console on Windows (WG-5716). A direct spawn would open a console window for each child of a
+# detached daemon, so these calls fail `cargo clippy -- -D warnings`.
+disallowed-methods = [
+    { path = "std::process::Command::new", reason = "create children with wg_proc::Spawn::new, which hides their console on Windows" },
+    { path = "std::os::windows::process::CommandExt::creation_flags", reason = "set creation flags through wg_proc::Spawn, which always keeps CREATE_NO_WINDOW" },
+]

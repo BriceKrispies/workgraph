@@ -25,10 +25,6 @@ pub const PROBE_TIMEOUT: f64 = 1.0;
 /// Log file of a server started by this command, under the log directory.
 pub const SERVE_LOG: &str = "serve-detached.log";
 
-/// `DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP`: the flags that detach a started server from the
-/// console on Windows.
-pub const WINDOWS_DETACHED: u32 = 0x0000_0008 | 0x0000_0200;
-
 /// The clap command of the `ui` group, built from the snapshot (`screenshot` stays a placeholder
 /// until its task lands).
 #[must_use]

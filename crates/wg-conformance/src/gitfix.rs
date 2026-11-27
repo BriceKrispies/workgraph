@@ -11,7 +11,7 @@
 
 use crate::runner::{Outcome, run_process};
 use std::path::{Path, PathBuf};
-use std::process::Command;
+use wg_proc::Spawn;
 
 const AUTHOR_NAME: &str = "Test Author";
 const AUTHOR_EMAIL: &str = "author@example.com";
@@ -170,7 +170,7 @@ impl<'a> Repo<'a> {
 
     /// Run `git <args>` in the repository. `date` sets both commit dates.
     fn git(&self, args: &[&str], date: Option<&str>) -> Result<Outcome, String> {
-        let mut cmd = Command::new("git");
+        let mut cmd = Spawn::new("git");
         cmd.args(["-c", "core.autocrlf=false", "-c", "init.defaultBranch=main"])
             .args(args)
             .current_dir(&self.dir)
@@ -206,7 +206,7 @@ mod tests {
     }
 
     fn head_of(dir: &Path) -> String {
-        Command::new("git")
+        Spawn::new("git")
             .args(["rev-parse", "HEAD"])
             .current_dir(dir)
             .output()
@@ -241,7 +241,7 @@ mod tests {
 
     /// Run a git command in `dir` and return its trimmed stdout (panics on failure).
     fn git_out(dir: &Path, args: &[&str]) -> String {
-        let out = Command::new("git")
+        let out = Spawn::new("git")
             .args(args)
             .current_dir(dir)
             .env("GIT_CONFIG_NOSYSTEM", "1")

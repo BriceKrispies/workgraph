@@ -2359,6 +2359,7 @@ dependencies = [
  "tungstenite",
  "ureq",
  "wg-browserspec",
+ "wg-proc",
  "wg-types",
 ]
 
@@ -2401,6 +2402,7 @@ dependencies = [
  "wg-mcp",
  "wg-model",
  "wg-net",
+ "wg-proc",
  "wg-registry-feature",
  "wg-render",
  "wg-runtime",
@@ -2452,6 +2454,7 @@ dependencies = [
  "serde_json",
  "toml",
  "wg-json",
+ "wg-proc",
 ]
 
 [[package]]
@@ -2501,6 +2504,7 @@ dependencies = [
  "wg-iface",
  "wg-intel-feature",
  "wg-json",
+ "wg-proc",
  "wg-registry-feature",
  "wg-render",
  "wg-runtime",
@@ -2898,6 +2902,7 @@ dependencies = [
  "wg-json",
  "wg-model",
  "wg-net",
+ "wg-proc",
  "wg-registry",
  "wg-render",
  "wg-rows",

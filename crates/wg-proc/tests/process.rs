@@ -11,7 +11,7 @@ use std::ffi::OsString;
 use std::io::{Read, Write};
 use std::panic::{AssertUnwindSafe, catch_unwind};
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -76,7 +76,7 @@ fn helper(mode: &str) -> i32 {
             0
         }
         "tree" => {
-            let child = Command::new(std::env::current_exe().unwrap_or_default())
+            let child = wg_proc::Spawn::new(std::env::current_exe().unwrap_or_default())
                 .env(HELPER, "sleep")
                 .stdin(Stdio::null())
                 .stdout(Stdio::inherit())

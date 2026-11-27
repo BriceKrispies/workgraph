@@ -7,11 +7,12 @@
 //! so the many call sites that wait do not each carry it.
 
 use std::io::{Read, Write};
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::mpsc::{self, RecvTimeoutError};
 use std::thread;
 use std::time::{Duration, Instant};
+use wg_proc::Spawn;
 
 /// The default no-progress window: long enough for a cold `uv run` to print, short enough that a
 /// hung command costs seconds, not minutes.
@@ -62,14 +63,14 @@ enum Event {
 /// (with its tree on Windows) and the error says so. A process that exits while a grandchild still
 /// holds its pipes is not waited for beyond that same window.
 pub fn run_bounded(
-    cmd: &mut Command,
+    cmd: &mut Spawn,
     stdin: Option<&str>,
 ) -> Result<(i32, Vec<u8>, Vec<u8>), String> {
     run_bounded_with(cmd, stdin, stall_timeout())
 }
 
 fn run_bounded_with(
-    cmd: &mut Command,
+    cmd: &mut Spawn,
     stdin: Option<&str>,
     window: Duration,
 ) -> Result<(i32, Vec<u8>, Vec<u8>), String> {
@@ -160,7 +161,7 @@ fn join_reader(reader: Option<thread::JoinHandle<Vec<u8>>>) -> Vec<u8> {
 /// behind on a plain kill.
 fn kill_tree(child: &mut Child) {
     if cfg!(windows) {
-        let _ = Command::new("taskkill")
+        let _ = Spawn::new("taskkill")
             .args(["/F", "/T", "/PID", &child.id().to_string()])
             .stdout(Stdio::null())
             .stderr(Stdio::null())
@@ -188,11 +189,11 @@ mod tests {
     #[test]
     fn a_quiet_process_is_killed_after_the_window() {
         let mut cmd = if cfg!(windows) {
-            let mut c = Command::new("cmd");
+            let mut c = Spawn::new("cmd");
             c.args(["/C", "ping -n 30 127.0.0.1 > nul"]);
             c
         } else {
-            let mut c = Command::new("sleep");
+            let mut c = Spawn::new("sleep");
             c.arg("30");
             c
         };
@@ -205,11 +206,11 @@ mod tests {
     #[test]
     fn output_keeps_the_wait_alive_and_is_collected() {
         let mut cmd = if cfg!(windows) {
-            let mut c = Command::new("cmd");
+            let mut c = Spawn::new("cmd");
             c.args(["/C", "echo hello"]);
             c
         } else {
-            let mut c = Command::new("sh");
+            let mut c = Spawn::new("sh");
             c.args(["-c", "echo hello; echo oops 1>&2; exit 3"]);
             c
         };

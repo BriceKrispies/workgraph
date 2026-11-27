@@ -6,7 +6,7 @@
 //! browser.
 
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 use std::time::Duration;
 
 use crate::spec::ui::{
@@ -22,6 +22,7 @@ use wg_uispec::{Platform, Start};
 use super::Group;
 use super::daemon::{answering, start_and_wait};
 use crate::CliState;
+use wg_proc::Spawn;
 
 /// The `ui` group.
 pub const GROUP: Group = Group {
@@ -82,7 +83,7 @@ fn open_browser(url: &str) {
         Platform::Other
     };
     let (program, args) = wg_uispec::browser_command(platform, url);
-    let _ = Command::new(program)
+    let _ = Spawn::new(program)
         .args(args)
         .stdin(Stdio::null())
         .stdout(Stdio::null())

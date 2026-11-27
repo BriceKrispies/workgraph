@@ -54,11 +54,11 @@ mod tests {
     #[test]
     fn an_exited_child_is_not_alive() {
         let mut child = if cfg!(windows) {
-            std::process::Command::new("cmd")
+            crate::spawn::Spawn::new("cmd")
                 .args(["/C", "exit 0"])
                 .spawn()
         } else {
-            std::process::Command::new("sh")
+            crate::spawn::Spawn::new("sh")
                 .args(["-c", "exit 0"])
                 .spawn()
         };

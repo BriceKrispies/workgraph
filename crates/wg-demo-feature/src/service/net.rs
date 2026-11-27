@@ -5,7 +5,7 @@
 
 use std::io::{BufRead, BufReader, Write};
 use std::path::Path;
-use std::process::{Child, ChildStdin, Command, Stdio};
+use std::process::{Child, ChildStdin, Stdio};
 use std::sync::mpsc::{Receiver, channel};
 use std::time::{Duration, Instant};
 
@@ -13,6 +13,7 @@ use serde_json::{Value, json};
 use wg_iface::cli::CliFailure;
 
 use crate::spec::e2e::failed;
+use wg_proc::Spawn;
 
 /// The longest the demonstration waits for one reply from a child process.
 const REPLY_WINDOW: Duration = Duration::from_secs(60);
@@ -40,7 +41,7 @@ impl McpSession {
     ///
     /// Returns a failure when the process or the handshake fails.
     pub fn start(home: &Path, agent_name: &str) -> Result<Self, CliFailure> {
-        let mut child = Command::new(workgraph()?)
+        let mut child = Spawn::new(workgraph()?)
             .args(["mcp", "--agent-name", agent_name])
             .env("WORKGRAPH_HOME", home)
             .stdin(Stdio::piped())
@@ -175,7 +176,7 @@ impl ApiServer {
             .and_then(|listener| listener.local_addr())
             .map_err(|err| failed(format!("no free port: {err}")))?
             .port();
-        let child = Command::new(workgraph()?)
+        let child = Spawn::new(workgraph()?)
             .args(["serve", "--host", "127.0.0.1", "--port", &port.to_string()])
             .args(["--no-worker", "--no-mcp"])
             .env("WORKGRAPH_HOME", home)

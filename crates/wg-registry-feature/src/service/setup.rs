@@ -32,6 +32,7 @@ use wg_types::WgError;
 use wg_wire::convention::json_value;
 use wg_wire::dto::{agents as agents_dto, llm as llm_dto};
 
+use wg_proc::Spawn;
 use wg_runtime::App;
 use wg_runtime::write_atomic;
 
@@ -62,10 +63,7 @@ fn read_text(path: &Path) -> Result<String, WgError> {
 
 /// `git --version`, when git runs.
 fn git_version() -> Option<String> {
-    let output = std::process::Command::new("git")
-        .arg("--version")
-        .output()
-        .ok()?;
+    let output = Spawn::new("git").arg("--version").output().ok()?;
     Some(String::from_utf8_lossy(&output.stdout).trim().to_owned())
 }
 

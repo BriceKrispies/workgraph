@@ -11,11 +11,11 @@
 #![allow(clippy::expect_used)]
 
 use std::path::{Path, PathBuf};
-use std::process::Command;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde_json::json;
 use wg_git_feature::service::git_sync;
+use wg_proc::Spawn;
 use wg_registry::admin::Patch;
 use wg_registry_feature::service::{
     repo_integration_branch, repo_register, repo_update, workspace_create, workspace_set_roots,
@@ -43,7 +43,7 @@ fn git(dir: &Path, args: &[&str]) -> String {
 
 /// Runs git, with the committer date `offset` seconds from now when given.
 fn git_dated(dir: &Path, args: &[&str], offset: Option<i64>) -> String {
-    let mut command = Command::new("git");
+    let mut command = Spawn::new("git");
     command
         .current_dir(dir)
         .args([

@@ -170,6 +170,19 @@ same `--agent <name>` (or `WORKGRAPH_AGENT`), or run as the holder without `--ag
 
 The two options cannot be combined; giving both is a usage error (exit `2`). `--add-criterion` needs a single REF, so it is refused with `--tag`; use `-c` to set one list on several tasks at once.
 
+## Setting or clearing the parent
+
+`task update REF --parent REF` sets or changes a task's parent, and `--clear-parent` removes it. Both take the
+same references as `task create --parent` (a key such as `WG-12` or a UUID, in the task's own workspace). A
+nonexistent parent, a parent in another workspace, and a parent that would close a cycle in the parent chain are
+refused, the cycle error naming it (`WG-1 -> WG-2 -> WG-1`). Giving `--parent` and `--clear-parent` together is
+refused as a validation error. The change is recorded in the task's history.
+
+```sh
+workgraph task update WG-12 --parent WG-3
+workgraph task update WG-12 --clear-parent
+```
+
 ## Showing several tasks
 
 `task show REF [REF ...]` accepts any number of refs. A single ref prints and returns exactly what it always did. With several refs, the tasks are shown in the order given, each opened through the same app session. With `--json` the output is `{"items": [...], "errors": [...]}`: each item is the same object a single `show` returns, and `errors` lists `{"ref", "error"}` for each ref that failed (`error` is the usual `{"code","message","details"}` object). An unknown ref does not stop the others: they are still printed, the failures are reported (on stderr in human output), and the command exits with the first failure's code (`4` for a not-found ref).

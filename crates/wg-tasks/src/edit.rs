@@ -274,6 +274,11 @@ pub fn update_task(
                 .collect::<Result<Vec<_>, _>>()
         })
         .transpose()?;
+    if read.clear_parent && read.parent.is_some() {
+        return Err(WgError::validation(
+            "give either parent or clear_parent, not both",
+        ));
+    }
     let parent = match (read.clear_parent && task.parent_id.is_some(), &read.parent) {
         (false, Some(reference)) => {
             Some(resolve::task(tasks, Some(task.workspace_id), reference)?.id)

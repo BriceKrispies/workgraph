@@ -173,6 +173,8 @@
    "acceptance_criteria",
    "files",
    "add_files",
+   "parent",
+   "clear_parent",
    "reason",
    "workspace"
   ],

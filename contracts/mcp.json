@@ -3837,6 +3837,12 @@
             "default": null,
             "title": "Add Tags"
           },
+          "clear_parent": {
+            "default": false,
+            "description": "Removes the task's parent; cannot be combined with parent",
+            "title": "Clear Parent",
+            "type": "boolean"
+          },
           "description": {
             "anyOf": [
               {
@@ -3876,6 +3882,19 @@
             "default": null,
             "description": "Replaces the task's files; [] clears them",
             "title": "Files"
+          },
+          "parent": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "description": "Key or UUID of the task's new parent, in the same workspace; use clear_parent to remove it",
+            "title": "Parent"
           },
           "priority": {
             "anyOf": [

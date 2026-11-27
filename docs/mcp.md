@@ -53,6 +53,12 @@ present only when there is one.
 takes `add_files`, and `files: []` clears them). `task_get` returns them as `files`, and `task_list`
 takes `file` to filter by an exact path.
 
+`task_update` takes `parent` (a key such as `WG-12` or a UUID) to set or change the task's parent, and
+`clear_parent: true` to remove it; both together are refused. The parent is resolved in the task's own workspace
+and checked with the same rules as `task_create`: a nonexistent or other-workspace parent is `not_found`, and a
+parent that would close a cycle in the parent chain is refused with `dependency_cycle`, naming the cycle
+(`WG-1 -> WG-2 -> WG-1`). The change is recorded in the task's history as a `parent_id` change.
+
 `experiment_next` creates the next planned trial of an experiment, so it needs the `experiment:write` permission
 (`workgraph mcp --grant experiment:write`), like `trial_classify`.
 

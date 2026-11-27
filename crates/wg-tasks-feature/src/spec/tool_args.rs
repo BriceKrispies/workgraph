@@ -115,12 +115,17 @@ pub fn update_body(arguments: &Value) -> Value {
             "acceptance_criteria",
             "files",
             "add_files",
+            "parent",
             "reason",
         ],
     );
     // `project` is one slug or id, or `none` to clear; it sets the task's `projects`.
     if let Some(project) = arguments.get("project").and_then(Value::as_str) {
         body["projects"] = project_refs(project);
+    }
+    // `clear_parent` removes the parent; it is sent only when the call asked for it.
+    if flag(arguments, "clear_parent") {
+        body["clear_parent"] = json!(true);
     }
     body
 }

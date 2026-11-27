@@ -47,7 +47,7 @@
       "index": 6,
       "kind": "mcp",
       "exit": 0,
-      "stdout": "{\n  \"promoted\": [],\n  \"by_project\": {},\n  \"dry_run\": true\n}",
+      "stdout": "{\n  \"promoted\": [],\n  \"by_project\": {},\n  \"dry_run\": true,\n  \"skipped\": {\n    \"WG-2\": \"waits for unaccepted dependencies: WG-1\"\n  }\n}",
       "stderr": ""
     },
     {

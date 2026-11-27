@@ -117,7 +117,7 @@ pub fn similarity(
 }
 
 /// Whether `task` counts as an open task a new one can duplicate.
-fn is_open(task: &Task) -> bool {
+pub(crate) fn is_open(task: &Task) -> bool {
     !matches!(task.status, TaskStatus::Accepted | TaskStatus::Cancelled)
         && task.archived_at.is_none()
 }

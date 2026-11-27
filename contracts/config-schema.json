@@ -820,6 +820,12 @@
           "title": "Intake Proposed",
           "type": "boolean"
         },
+        "max_open_children": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Max Open Children",
+          "type": "integer"
+        },
         "require_acceptance_criteria": {
           "default": false,
           "title": "Require Acceptance Criteria",
@@ -995,6 +1001,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },

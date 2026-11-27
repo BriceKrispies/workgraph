@@ -32,6 +32,7 @@ use wg_runtime::spec::RequestContext;
 use wg_runtime::{App, index_written};
 use wg_store::{EventQuery, Session, TaskWorld};
 use wg_tasks::bulk::bulk_results;
+use wg_tasks::children::{child_limit, refuse_over_limit};
 use wg_tasks::create::{acceptance_warning, criteria_required, refuse_without_criteria};
 use wg_tasks::duplicates::{DuplicateMode, duplicate_guard, duplicates_warning, refuse_duplicates};
 use wg_tasks::edit::{self, read_update, validate_update};
@@ -84,6 +85,15 @@ pub fn task_create_from(
         } else if !candidates.is_empty() && read.distinct_reason.is_none() {
             warnings.push(duplicates_warning(&candidates));
             duplicate_warned = true;
+        }
+    }
+    if let Some(limit) = child_limit(&app.effective_config(Some(&slug))?) {
+        let parent = app.runtime.query(
+            |session| session.task_world(Some(scope), &[]),
+            |world| writes::parent_open_children(world, scope, &read),
+        )?;
+        if let Some((parent_key, children)) = parent {
+            refuse_over_limit(&parent_key, &children, limit)?;
         }
     }
     if from_agent {

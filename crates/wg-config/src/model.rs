@@ -330,6 +330,7 @@ fn tasks() -> Model {
                 json!(0.6),
             ),
             def("intake_proposed", Schema::Bool, json!(false)),
+            def("max_open_children", int(Some(0), None), json!(0)),
         ],
     }
 }

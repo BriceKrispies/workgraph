@@ -164,6 +164,7 @@ wg-tasks::accept Pure
 wg-tasks::archive Core
 wg-tasks::breakdown Pure
 wg-tasks::bulk Core
+wg-tasks::children Core
 wg-tasks::claims Core
 wg-tasks::comments Core
 wg-tasks::content Core

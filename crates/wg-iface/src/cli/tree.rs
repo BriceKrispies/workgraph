@@ -53,6 +53,9 @@ pub fn to_args(param: &ParamSpec) -> Vec<Arg> {
         let mut arg = Arg::new(key.clone())
             .value_name(upper(&key))
             .required(param.required);
+        if let Some(text) = &param.help {
+            arg = arg.help(text.clone());
+        }
         arg = if param.nargs == Some(-1) {
             arg.num_args(1..).action(ArgAction::Append)
         } else {
@@ -61,6 +64,9 @@ pub fn to_args(param: &ParamSpec) -> Vec<Arg> {
         return vec![arg];
     }
     let mut arg = Arg::new(key.clone()).required(param.required);
+    if let Some(text) = &param.help {
+        arg = arg.help(text.clone());
+    }
     for opt in &param.opts {
         if let Some(long) = opt.strip_prefix("--") {
             arg = arg.long(long.to_owned());
@@ -253,6 +259,7 @@ pub fn params_of(cmd: &Command) -> Vec<ParamSpec> {
                     nargs: Some(if variadic { -1 } else { 1 }),
                     envvar: None,
                     choices: None,
+                    help: arg.get_help().map(ToString::to_string),
                 };
             }
             let mut opts = Vec::new();
@@ -289,6 +296,7 @@ pub fn params_of(cmd: &Command) -> Vec<ParamSpec> {
                 } else {
                     Some(choices)
                 },
+                help: arg.get_help().map(ToString::to_string),
             }
         })
         .collect()

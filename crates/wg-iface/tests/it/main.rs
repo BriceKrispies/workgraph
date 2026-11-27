@@ -3,5 +3,6 @@ mod click_numbers;
 mod click_types;
 mod if01_clispec;
 mod if30_mcp;
+mod if31_help;
 mod wg3738_arguments;
 mod wg3738_resources;

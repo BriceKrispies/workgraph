@@ -39,6 +39,8 @@ pub struct ParamSpec {
     pub nargs: Option<i64>,
     pub envvar: Option<String>,
     pub choices: Option<Vec<String>>,
+    /// The one-line description `--help` shows. `None` when the snapshot has none.
+    pub help: Option<String>,
 }
 
 impl ParamSpec {
@@ -155,6 +157,7 @@ fn param(value: &Json) -> Result<ParamSpec, SnapshotError> {
             .get("choices")
             .filter(|choices| choices.is_array())
             .map(|choices| strings(Some(choices))),
+        help: map.get("help").and_then(Json::as_str).map(str::to_owned),
     })
 }
 

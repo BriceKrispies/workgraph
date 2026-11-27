@@ -25,7 +25,7 @@ pub use alive::process_alive;
 pub use env::base_environment;
 pub use resolve::{resolve_executable, resolve_executable_in};
 pub use run::{Cancel, run_capture, run_process};
-pub use spawn::{Spawn, effective_creation_flags};
+pub use spawn::{Spawn, creation_flags_for};
 pub use wg_procspec::{
     CaptureLimits, CaptureResult, LineOptions, ProcError, ProcessResult, ProcessSpec,
     SAFE_ENV_KEYS, base_environment_from,

@@ -117,7 +117,7 @@ pub fn spawn_serve(
     #[cfg(windows)]
     stop_std_handles_inheritance();
     let mut command = Spawn::new(exe);
-    command.own_process_group();
+    command.own_process_group().force_hidden_console();
     command
         .args(args)
         .stdin(Stdio::null())

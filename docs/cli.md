@@ -175,7 +175,7 @@ The two options cannot be combined; giving both is a usage error (exit `2`). `--
 `task update REF --parent REF` sets or changes a task's parent, and `--clear-parent` removes it. Both take the
 same references as `task create --parent` (a key such as `WG-12` or a UUID, in the task's own workspace). A
 nonexistent parent, a parent in another workspace, and a parent that would close a cycle in the parent chain are
-refused, the cycle error naming it (`WG-1 -> WG-2 -> WG-1`). Giving `--parent` and `--clear-parent` together is
+refused; the cycle error names the task and the parent that would close the loop. Giving `--parent` and `--clear-parent` together is
 refused as a validation error. The change is recorded in the task's history.
 
 ```sh

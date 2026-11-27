@@ -185,7 +185,7 @@ fn a_parent_cycle_is_refused_and_named_on_mcp_and_cli() -> TestResult {
         .unwrap_or_default();
     assert!(refusal.starts_with("dependency_cycle"), "{refusal}");
     assert!(
-        refusal.contains("WG-1 -> WG-3 -> WG-2 -> WG-1"),
+        refusal.contains("setting WG-3 as parent of WG-1 would create a hierarchy cycle"),
         "{refusal}"
     );
 
@@ -194,7 +194,7 @@ fn a_parent_cycle_is_refused_and_named_on_mcp_and_cli() -> TestResult {
         .unwrap_or_default();
     assert!(refusal.starts_with("dependency_cycle"), "{refusal}");
     assert!(
-        refusal.contains("WG-1 -> WG-3 -> WG-2 -> WG-1"),
+        refusal.contains("setting WG-3 as parent of WG-1 would create a hierarchy cycle"),
         "{refusal}"
     );
 

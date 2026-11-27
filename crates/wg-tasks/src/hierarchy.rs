@@ -82,34 +82,11 @@ pub fn check_set_parent(tasks: &TaskSlice, task_id: Id, parent_id: Id) -> Result
     let parent = tasks.task(parent_id).ok_or_else(|| missing(parent_id))?;
     if parent.id == task.id || is_ancestor(tasks, task.id, parent.id) {
         return Err(WgError::dependency_cycle(format!(
-            "setting {} as parent of {} would create a hierarchy cycle: {}",
-            parent.key,
-            task.key,
-            cycle_path(tasks, task.id, parent.id)
+            "setting {} as parent of {} would create a hierarchy cycle",
+            parent.key, task.key
         )));
     }
     Ok(())
-}
-
-/// The parent chain a new parent closes, written from the task through the new parent and up to
-/// the task again (`WG-1 -> WG-2 -> WG-1`). A loop in the parent column ends the walk.
-fn cycle_path(tasks: &TaskSlice, task_id: Id, parent_id: Id) -> String {
-    let start = tasks
-        .task(task_id)
-        .map(|task| task.key.to_string())
-        .unwrap_or_default();
-    let mut keys = vec![start];
-    let mut seen = BTreeSet::new();
-    let mut current = Some(parent_id);
-    while let Some(id) = current {
-        let Some(task) = tasks.task(id) else { break };
-        keys.push(task.key.to_string());
-        if id == task_id || !seen.insert(id) {
-            break;
-        }
-        current = task.parent_id;
-    }
-    keys.join(" -> ")
 }
 
 /// Rounds to four places the way Python's `round(x, 4)` does: the exact binary value, ties to even.

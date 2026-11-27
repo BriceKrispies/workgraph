@@ -4,6 +4,7 @@ pub mod accept;
 pub mod archive;
 pub mod breakdown;
 pub mod bulk;
+pub mod children;
 pub mod claims;
 pub mod comments;
 pub mod content;

@@ -96,6 +96,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -200,6 +201,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -367,6 +369,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -471,6 +474,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -575,6 +579,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -679,6 +684,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -888,6 +894,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -994,6 +1001,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -1129,6 +1137,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },
@@ -1251,6 +1260,7 @@
         "duplicate_check": "off",
         "duplicate_threshold": 0.6,
         "intake_proposed": false,
+        "max_open_children": 0,
         "require_acceptance_criteria": false
       }
     },

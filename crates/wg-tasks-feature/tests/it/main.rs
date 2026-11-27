@@ -3,5 +3,6 @@
 //! remedy.
 
 mod agent_actor;
+mod child_limit;
 mod intake_ready;
 mod update_criteria;

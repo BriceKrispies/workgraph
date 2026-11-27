@@ -14,6 +14,7 @@ use wg_model::{Decision, Write};
 use wg_registry::resolve;
 use wg_rows::task_world_sql::TaskWorld;
 use wg_tasks::archive::{ArchiveChange, archive_plan};
+use wg_tasks::children::{OpenChild, open_children};
 use wg_tasks::create::refuse_without_criteria;
 use wg_tasks::create::{Allocation, NewTask, RepositoryLink, create_plan};
 use wg_tasks::duplicates::{DuplicateCandidate, find_duplicates};
@@ -209,6 +210,24 @@ pub fn duplicate_candidates(
         (&repositories, &projects),
         threshold,
     ))
+}
+
+/// The parent a create names, by key, and its open children; `None` when the create names no
+/// parent (`tasks.max_open_children`).
+pub fn parent_open_children(
+    world: &TaskWorld,
+    workspace: Id,
+    read: &CreateRead,
+) -> Result<Option<(String, Vec<OpenChild>)>, WgError> {
+    let Some(reference) = read.parent.as_deref() else {
+        return Ok(None);
+    };
+    let tasks = &world.tasks;
+    let parent = resolve::task(tasks, Some(workspace), reference)?;
+    Ok(Some((
+        parent.key.to_string(),
+        open_children(tasks, parent.id),
+    )))
 }
 
 /// `TaskService.archive`.

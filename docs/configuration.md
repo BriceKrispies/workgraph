@@ -178,6 +178,15 @@ body field `distinct_reason`); the reason is stored in the task's `metadata.dist
 `task show` prints it. With `warn` the task is created and the matches come back in the `warning`
 field; with `off` nothing is compared.
 
+`[tasks] max_open_children` (a non-negative integer; default `0`, which turns the check off) limits
+how many open children (not accepted, cancelled or archived) a parent may have. A `task create`
+(CLI, HTTP or MCP) that names a parent already at the limit is refused with a `validation_failed`
+error whose `reason` detail is `too_many_children` and whose `children` detail lists each open
+child's key, title and status. The limit keeps orchestrators from writing one task per step: the
+refusal tells the agent to fold the work into an existing child's acceptance criteria or a comment,
+finish or cancel a child first, or put it under a new milestone parent. Tasks without a parent are
+not counted, and `task import-breakdown` is not limited. See [Breaking down large work](breakdown.md).
+
 `[tasks] intake_proposed` (default `false`) puts every task created through the MCP `task_create` tool
 into the `proposed` status instead of `backlog`, `ready` included. Intake is the owner's triage of agent creates, so an agent's `ready` argument does not bypass it: the reply's `warning` says the task stayed proposed because intake is on, and how a human promotes it (`task intake admit KEY --ready`). Proposed tasks
 are not in `task ready`, are not promoted by `task promote-ready` and are reviewed with `task intake`

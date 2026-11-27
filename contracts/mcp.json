@@ -2301,7 +2301,7 @@
       }
     },
     {
-      "description": "Create a task. Search first (task_search, task_list): a create whose title and description closely match an open task in the same repository or project is refused, and the reply lists the matching tasks with key, title, status and similarity. Add a comment to the existing task instead, or create anyway by passing distinct_reason, a sentence on why the new task is different; the reason is stored on the task. Acceptance criteria are expected: a task created without them returns a warning field, or is refused when the workspace sets tasks.require_acceptance_criteria. Repositories/projects/dependencies may be given by name or key.",
+      "description": "Create a task. A task is a milestone: a change that leaves the system working in a new state that a check can prove, and that the next tasks build on. A step of the work (write a struct, add a test, wire a flag) is not a task: put it in the acceptance criteria of the task it belongs to. Break large work into a few milestone parents and give children only to the next one; keep later milestones as single tasks. Something you notice while working on a task goes in a comment on that task unless it is a separate milestone. A parent at tasks.max_open_children open children refuses more. Search first (task_search, task_list): a create whose title and description closely match an open task in the same repository or project is refused, and the reply lists the matching tasks with key, title, status and similarity. Add a comment to the existing task instead, or create anyway by passing distinct_reason, a sentence on why the new task is different; the reason is stored on the task. Acceptance criteria are expected: a task created without them returns a warning field, or is refused when the workspace sets tasks.require_acceptance_criteria. Repositories/projects/dependencies may be given by name or key.",
       "input_schema": {
         "$defs": {
           "TaskFileIn": {
@@ -2741,7 +2741,7 @@
       }
     },
     {
-      "description": "Create or update the tasks of one section of a markdown breakdown document, given as text. Bold headers (**V1. Title**) are tasks; a ranged header followed by a table makes one task per row; 'Depends on:' / 'Deps:' lists link tasks. SOURCE names the document (stored with each task so a re-run updates instead of duplicating). dry_run reports the plan and changes nothing.",
+      "description": "Create or update the tasks of one section of a markdown breakdown document, given as text. Bold headers (**V1. Title**) are tasks; a ranged header followed by a table makes one task per row; 'Depends on:' / 'Deps:' lists link tasks. SOURCE names the document (stored with each task so a re-run updates instead of duplicating). dry_run reports the plan and changes nothing. Each task should be a milestone that leaves the system working in a new, checkable state; steps belong in its Acceptance: bullets, not in tasks of their own.",
       "input_schema": {
         "properties": {
           "dry_run": {

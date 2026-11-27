@@ -37,3 +37,5 @@ workgraph demo e2e     # full walkthrough in temporary repositories
 ```
 
 The [`docs/`](docs/) folder covers the CLI, the MCP tools, configuration and the data model.
+[docs/breakdown.md](docs/breakdown.md) explains how to have an orchestrator break a large project into
+milestones instead of hundreds of tiny tasks.

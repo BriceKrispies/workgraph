@@ -26,6 +26,9 @@ use crate::spec::ui::base_url;
 /// The file a restart writes into the data directory. The running daemon removes it and stops.
 pub const STOP_FILE: &str = "serve.stop";
 
+/// The lock file `serve --ensure` holds while it probes and starts the daemon (WG-5714).
+const ENSURE_LOCK_FILE: &str = "serve.ensure.lock";
+
 /// How often the stop file is looked for, and a started server is probed while waiting.
 const POLL_INTERVAL: Duration = Duration::from_millis(250);
 
@@ -173,6 +176,26 @@ fn log_path(state: &CliState) -> Result<PathBuf, CliFailure> {
     Ok(PathBuf::from(paths.log_dir().as_str()).join(wg_uispec::SERVE_LOG))
 }
 
+/// Takes the exclusive lock that serialises `serve --ensure` invocations. The returned handle holds
+/// the lock until it is dropped.
+fn acquire_ensure_lock(state: &CliState) -> Result<std::fs::File, CliFailure> {
+    let paths = resolve_paths(state.home.as_deref())?;
+    let dir = PathBuf::from(paths.data_dir().as_str());
+    std::fs::create_dir_all(&dir)
+        .map_err(|err| CliFailure::fail(format!("cannot create {}: {err}", dir.display()), 1))?;
+    let path = dir.join(ENSURE_LOCK_FILE);
+    let file = std::fs::OpenOptions::new()
+        .create(true)
+        .truncate(false)
+        .read(true)
+        .write(true)
+        .open(&path)
+        .map_err(|err| CliFailure::fail(format!("cannot open {}: {err}", path.display()), 1))?;
+    file.lock()
+        .map_err(|err| CliFailure::fail(format!("cannot lock {}: {err}", path.display()), 1))?;
+    Ok(file)
+}
+
 fn stop_path(state: &CliState) -> Result<PathBuf, CliFailure> {
     let paths = resolve_paths(state.home.as_deref())?;
     Ok(PathBuf::from(paths.data_dir().as_str()).join(STOP_FILE))
@@ -227,6 +250,10 @@ fn ensure_outcome(state: &mut CliState, m: &ArgMatches) -> Result<Outcome, CliFa
     let (host, port) = daemon_listen(state, m)?;
     let base = base_url(None, &host, port);
     let probe = probe_for(&base)?;
+    // The lock covers the probe, the start and the wait for the started server to answer. A racing
+    // invocation blocks here, then finds the server answering and starts nothing. The lock is an
+    // open file handle, so the operating system releases it when this call ends or dies.
+    let _lock = acquire_ensure_lock(state)?;
     if answering(&probe) {
         return Ok(Outcome {
             status: "running",

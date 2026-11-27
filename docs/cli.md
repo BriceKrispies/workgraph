@@ -17,7 +17,7 @@ busy resource), `4` not found, `5` permission denied, `6` provider unavailable, 
 | Group | Commands |
 | --- | --- |
 | `init`, `doctor` | create storage/schema/first workspace; health checks (`--verify-events`) |
-| `serve` | HTTP API + UI + Streamable HTTP MCP at `/mcp/` + in-process worker (`--no-worker`, `--no-mcp`); also serves paired devices on the local network unless `--local` |
+| `serve` | HTTP API + UI + Streamable HTTP MCP at `/mcp/` + in-process worker (`--no-worker`, `--no-mcp`); also serves paired devices on the local network unless `--local`; `--ensure`, `--restart` and `--passive` run the one daemon (see [below](#the-daemon)) |
 | `mcp` | MCP server over stdio (default) or HTTP; `--agent-name`, `--grant run:start` |
 | `workspace` | `create`, `list`, `show`, `use`, `archive`, `set --allowed-root --review-on-land on|off` |
 | `project` | `create`, `list`, `show`, `update` (`--name`, `--description`, `--status`), `add-repo`, `remove-repo`, `rename-term PROJECT --from OLD --to NEW [--keep TOKEN]... [--dry-run]` (renames a word, such as a language's name, across the project's live records: open tasks' title, description, acceptance criteria and file paths; every task's tags; the project's slug, name and description; its repositories' names and descriptions; and every string in the checks of verification configs scoped to them. Accepted, cancelled and archived tasks keep their text as records and take only the renamed tags. The word matches in three spellings (`rho`, `Rho`, `RHO`) when no letter precedes it and no letter of its case follows, so `rhombus` stays; `--keep` protects tokens that contain it but are not it. Each change is an ordinary event with reason `rename OLD to NEW` and queues no reclassification. A rewritten absolute path in a check that names nothing on disk is reported; checkout paths are not moved) |
@@ -230,6 +230,33 @@ workgraph ui open decisions
 workgraph ui open "tasks/WG-12" --no-start
 workgraph ui open graph --print --json   # {"url": "...", "started": false}
 ```
+
+## The daemon
+
+One long-running `workgraph serve` process serves every Claude session on the machine (WG-5702).
+
+```sh
+workgraph serve --ensure               # start the daemon if nothing answers, then return
+workgraph serve --restart              # stop the running daemon and start one from this binary
+workgraph serve --ensure --passive     # the form the SessionStart hook runs: silent, always exits 0
+```
+
+`--ensure` probes `/api/v1/health` on the configured host and port. When nothing answers it starts
+`workgraph serve` detached, with the same start `ui open` uses, and waits up to 20 seconds for it to answer; it
+prints the status (`running` or `started`), the base URL and the process id of a server it started. Two
+invocations that race leave one server: the second server cannot bind the port and exits, and its invocation
+finds the first one answering.
+
+`--restart` writes a stop-request file (`serve.stop`) into the data directory. The running daemon polls for
+it, removes it and shuts down gracefully (its worker and HTTP listeners stop as they do on Ctrl+C). The command
+waits up to 60 seconds for the daemon to stop answering, then starts one from the binary it was run from, and
+prints the new process id and the `version` the health endpoint answers. A daemon that predates this command
+does not poll the file; the restart then fails after 60 seconds and says so, and that daemon must be stopped by
+hand once.
+
+The SessionStart hook installed by `workgraph claude install` runs `serve --ensure --passive`, and `claude install`
+also writes a per-user logon autostart file (Windows: `workgraph-serve.cmd` in the Startup folder) that runs the same
+command at logon. `workgraph claude uninstall` removes both. See [claude-code.md](claude-code.md#the-daemon).
 
 ## UI screenshots
 

@@ -5,6 +5,7 @@
 //! group's clap command against `contracts/cli.json`. A top-level command or group that is not
 //! implemented is a placeholder built from the snapshot (see `wg_iface::cli::tree`).
 
+pub mod daemon;
 pub mod job;
 pub mod serve;
 pub mod ui;

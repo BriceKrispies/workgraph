@@ -15,6 +15,7 @@ use rmcp::model::{
 use rmcp::service::RequestContext;
 use rmcp::{ErrorData, RoleServer, ServerHandler};
 use serde_json::Value;
+use wg_iface::mcp::options::{AGENT_HEADER, agent_named};
 use wg_iface::mcp::{
     Catalog, INVALID_PARAMS_MESSAGE, has_params_to_parse, read_result, respond_to_call,
 };
@@ -78,11 +79,12 @@ impl ServerHandler for WgMcp {
     async fn call_tool(
         &self,
         request: CallToolRequestParams,
-        _context: RequestContext<RoleServer>,
+        context: RequestContext<RoleServer>,
     ) -> Result<CallToolResponse, ErrorData> {
         let session = Arc::clone(&self.session);
         let name = request.name.to_string();
         let arguments = request.arguments.map(Value::Object);
+        let header = agent_header(&context);
         let result: rmcp::model::CallToolResult = tokio::task::spawn_blocking(move || {
             with_session(&session, |s| {
                 let Session {
@@ -90,11 +92,12 @@ impl ServerHandler for WgMcp {
                     agent,
                     backend,
                 } = s;
+                let agent = agent_named(agent, header.as_deref());
                 Ok(respond_to_call(
                     catalog,
                     &name,
                     arguments.as_ref(),
-                    |valid| backend.call_tool(agent, &name, valid),
+                    |valid| backend.call_tool(&agent, &name, valid),
                 ))
             })
         })
@@ -142,15 +145,17 @@ impl ServerHandler for WgMcp {
     async fn read_resource(
         &self,
         request: ReadResourceRequestParams,
-        _context: RequestContext<RoleServer>,
+        context: RequestContext<RoleServer>,
     ) -> Result<ReadResourceResponse, ErrorData> {
         let session = Arc::clone(&self.session);
         let uri = request.uri;
+        let header = agent_header(&context);
         let result: rmcp::model::ReadResourceResult = tokio::task::spawn_blocking(move || {
             with_session(&session, |s| {
                 let Session { agent, backend, .. } = s;
+                let agent = agent_named(agent, header.as_deref());
                 backend
-                    .read_resource(agent, &uri)
+                    .read_resource(&agent, &uri)
                     .map(|text| read_result(&uri, &text))
                     .map_err(|err| resource_error(&uri, err))
             })
@@ -159,6 +164,17 @@ impl ServerHandler for WgMcp {
         .map_err(|err| ErrorData::internal_error(err.to_string(), None))??;
         Ok(result.into())
     }
+}
+
+/// The `X-Workgraph-Agent` header of the HTTP request behind a call. A call over stdio has no
+/// HTTP request and yields `None`.
+fn agent_header(context: &RequestContext<RoleServer>) -> Option<String> {
+    context
+        .extensions
+        .get::<axum::http::request::Parts>()
+        .and_then(|parts| parts.headers.get(AGENT_HEADER))
+        .and_then(|value| value.to_str().ok())
+        .map(str::to_owned)
 }
 
 /// The JSON-RPC error a failed resource read answers with, as the Python server does: a missing

@@ -9,6 +9,9 @@
 use std::sync::Arc;
 use std::sync::atomic::Ordering;
 
+use std::path::PathBuf;
+
+use crate::commands::daemon;
 use crate::spec::servers::{self, mcp_arguments, pair, port_option};
 use clap::ArgMatches;
 use tokio_util::sync::CancellationToken;
@@ -59,6 +62,12 @@ fn note(state: &mut CliState, markup: &str) {
 }
 
 fn run_serve(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
+    if option_flag(m, "--restart") {
+        return daemon::restart(state, m);
+    }
+    if option_flag(m, "--ensure") {
+        return daemon::ensure(state, m);
+    }
     let settings = Settings::from_config(&state.app()?.config()?);
     let host = option_text(m, "--host").unwrap_or_else(|| settings.host.clone());
     let port = port_option(m)?
@@ -87,6 +96,12 @@ fn run_serve(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(
     let home = state.home.clone();
     let with_mcp = pair(m, "--mcp").unwrap_or(true);
     let cancel = CancellationToken::new();
+    // A stop file left by an earlier restart would stop this daemon at once; `serve --restart`
+    // writes one only for the daemon it is replacing.
+    let stop_file = PathBuf::from(state.app()?.paths.data_dir().as_str()).join(daemon::STOP_FILE);
+    let _ = std::fs::remove_file(&stop_file);
+    let stop = CancellationToken::new();
+    daemon::watch_stop_file(stop_file, stop.clone());
     let mcp = if with_mcp {
         let agent = Agent {
             name: "mcp-http-client".to_owned(),
@@ -131,14 +146,32 @@ fn run_serve(state: &mut CliState, _path: &[String], m: &ArgMatches) -> Result<(
         tokio::select! {
             result = wg_server::serve(Arc::clone(&server), listeners) => result.map_err(|err| failed(err.to_string())),
             _ = tokio::signal::ctrl_c() => Ok(()),
+            _ = stop.cancelled() => Ok(()),
         }
     });
     cancel.cancel();
-    if let Some((stop, thread)) = background {
-        stop.store(true, Ordering::SeqCst);
-        let _ = thread.join();
+    if let Some((worker_stop, thread)) = background {
+        worker_stop.store(true, Ordering::SeqCst);
+        join_worker(thread);
     }
     served
+}
+
+/// Seconds the shutdown waits for the worker thread: its own grace period for running jobs
+/// (30 seconds) and a margin. A worker still busy after that is left behind; the process ends and
+/// the next start recovers the jobs it held (WG-5702: a daemon that a restart asks to stop must stop).
+const WORKER_JOIN_SECONDS: u64 = 40;
+
+/// Joins the worker thread for at most [`WORKER_JOIN_SECONDS`].
+fn join_worker(thread: std::thread::JoinHandle<()>) {
+    let (done, joined) = std::sync::mpsc::channel::<()>();
+    let _ = std::thread::Builder::new()
+        .name("workgraph-worker-join".to_owned())
+        .spawn(move || {
+            let _ = thread.join();
+            let _ = done.send(());
+        });
+    let _ = joined.recv_timeout(std::time::Duration::from_secs(WORKER_JOIN_SECONDS));
 }
 
 type Background = (

@@ -4,15 +4,24 @@
 
 use std::path::PathBuf;
 
-use clap::{ArgMatches, Command};
+use clap::{Arg, ArgAction, ArgMatches, Command};
 use wg_iface::cli::args::{number, one};
 use wg_iface::cli::{CliFailure, Usage};
 
 /// The clap command of the `claude` group: the snapshot's own tree, so help and parameters match
-/// `contracts/cli.json`.
+/// `contracts/cli.json`. `install` adds `--mcp-http`, the HTTP registration of the daemon (WG-5702).
 #[must_use]
 pub fn command() -> Command {
-    wg_iface::cli::tree::snapshot_command("claude")
+    wg_iface::cli::tree::snapshot_command("claude").mut_subcommand("install", |install| {
+        install.arg(
+            Arg::new("--mcp-http")
+                .long("mcp-http")
+                .action(ArgAction::SetTrue)
+                .help(
+                    "Register the daemon's HTTP endpoint as the user-scope workgraph MCP server, replacing the registration.",
+                ),
+        )
+    })
 }
 
 /// The usage line of `claude status`.

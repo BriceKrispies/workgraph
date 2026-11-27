@@ -189,13 +189,28 @@ With the lock held:
 
    If any of these fail, rename the backup back to `workgraph.exe` (and restore the database
    backup with `workgraph restore` if a migration ran). Release the lock, then stop and report.
-5. **Restart the web server if it was running.** If `workgraph serve` was running before step 3
-   (`Get-CimInstance Win32_Process -Filter "Name='workgraph.exe'"` shows its command line), stop it
-   and start it again with the same command line, detached.
-6. **Leave stdio MCP servers alone.** Do not kill the `workgraph.exe mcp ...` processes. Each one
-   belongs to a Claude Code session and keeps running the old binary until that session reconnects
-   (`/mcp` → reconnect) or restarts. Record their PIDs and start times for the report.
-7. **Release the lock:** `rmdir`.
+5. **Restart the one daemon from the new binary.** Every Claude Code session on the machine talks to
+   the single `workgraph serve` daemon over HTTP (WG-5702), so the install replaces that daemon:
+   ```sh
+   C:/Users/Brice/.local/bin/workgraph.exe serve --restart
+   ```
+   It stops the running daemon through its stop-request file, waits for it to stop, and starts one
+   from the installed binary. It prints the new `pid` and `version`. Record both for the report.
+   If it fails, the daemon that was running is either still up (the restart could not stop it) or
+   gone; check with `workgraph doctor` and the health endpoint, then stop and report.
+6. **Check the daemon.** Exactly one `workgraph.exe serve` process must exist, and the health endpoint
+   must answer the new version:
+   ```sh
+   curl -s http://127.0.0.1:8765/api/v1/health
+   ```
+   Record the process list (`Get-CimInstance Win32_Process -Filter "Name='workgraph.exe'"`) in the
+   report. A `workgraph.exe mcp` process here is a leftover from a session started before the HTTP
+   switch; it is not an error, and it is listed under "Still on the old binary".
+7. **Leave leftover stdio MCP servers alone.** Do not kill the `workgraph.exe mcp ...` processes. Each
+   one belongs to a Claude Code session started before the switch, keeps running the old binary, and
+   is replaced when that session reconnects (`/mcp` → reconnect) or restarts. Record their PIDs and
+   start times for the report.
+8. **Release the lock:** `rmdir`.
 
 Keep at most the five newest dated backups of `workgraph.exe` in `.local/bin`. Delete older ones
 only if they match the `workgraph.<date>-<sha>.exe` pattern; leave other files alone.
@@ -238,8 +253,9 @@ Reply to the session that sent you with exactly these sections:
 - **Outcome:** landed and installed / landed, not installed / not landed, with the reason.
 - **Commits:** SHAs and one-line subjects on `origin/main`.
 - **Verification:** the gate result, and the smoke command with its output.
-- **Install:** the new version, the backup file, the database backup, and whether `workgraph serve`
-  was restarted.
-- **Still on the old binary:** the MCP server PIDs. Tell the user to run `/mcp` and reconnect
-  `workgraph` in those sessions, including the one that sent you.
+- **Install:** the new version, the backup file, the database backup, and the daemon's pid and
+  version after `serve --restart`.
+- **Still on the old binary:** the leftover `workgraph.exe mcp` PIDs, only from sessions started before the
+  HTTP switch. Tell the user to run `/mcp` and reconnect `workgraph` in those sessions, including the one
+  that sent you. Sessions started after the switch use the daemon and have nothing to reconnect.
 - **Left behind:** worktree, branch or lock, if any step stopped early.

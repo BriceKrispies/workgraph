@@ -5,9 +5,9 @@
 //! read, the health probe, starting `workgraph serve` detached and polling it, and launching the
 //! browser.
 
-use std::path::{Path, PathBuf};
-use std::process::{Child, Command, Stdio};
-use std::time::{Duration, Instant};
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
+use std::time::Duration;
 
 use crate::spec::ui::{
     SCREENSHOT, Shot, base_url, health_url, no_server_message, number, target_url, wait_selector,
@@ -17,9 +17,10 @@ use wg_browser::{CaptureOptions, screenshot};
 use wg_iface::cli::args::{option_flag, option_text};
 use wg_iface::cli::{CliFailure, not_implemented_message};
 use wg_iface::http::serve::Settings;
-use wg_uispec::{Platform, Start, Wait};
+use wg_uispec::{Platform, Start};
 
 use super::Group;
+use super::daemon::{answering, start_and_wait};
 use crate::CliState;
 
 /// The `ui` group.
@@ -28,9 +29,6 @@ pub const GROUP: Group = Group {
     command: wg_uispec::command,
     run,
 };
-
-/// How often a started server is probed while waiting for it.
-const POLL_INTERVAL: Duration = Duration::from_millis(250);
 
 fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliFailure> {
     match path.get(1).map(String::as_str) {
@@ -71,87 +69,6 @@ fn open(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
     let value = wg_uispec::opened_value(&target, started);
     let human = wg_uispec::human(&target, &base, started, request.print);
     state.emit(&value, Some(&|_| human.clone()))
-}
-
-/// One health probe: true when the server answers with a success status.
-fn answering(probe: &wg_uispec::Probe) -> bool {
-    wg_net::http_status_line(
-        &probe.authority,
-        &wg_uispec::request_text(probe),
-        Duration::from_secs_f64(wg_uispec::PROBE_TIMEOUT),
-    )
-    .is_ok_and(|line| wg_uispec::answers_line(&line))
-}
-
-/// Starts `workgraph serve` detached and polls it until it answers, the process ends or the
-/// timeout passes.
-fn start_and_wait(
-    home: Option<&Path>,
-    log: &Path,
-    probe: &wg_uispec::Probe,
-    base: &str,
-    timeout: f64,
-) -> Result<(), CliFailure> {
-    let log_text = log.display().to_string();
-    let mut child = spawn_serve(home, log)
-        .map_err(|err| CliFailure::fail(format!("cannot start `workgraph serve`: {err}"), 1))?;
-    let started_at = Instant::now();
-    loop {
-        let up = answering(probe);
-        let exited = child
-            .try_wait()
-            .map_err(|err| CliFailure::fail(format!("cannot watch `workgraph serve`: {err}"), 1))?
-            .map(|status| status.code().unwrap_or(1));
-        let elapsed = started_at.elapsed().as_secs_f64();
-        match wg_uispec::wait_step(up, exited, elapsed, timeout) {
-            Wait::Ready => return Ok(()),
-            Wait::Keep => std::thread::sleep(POLL_INTERVAL),
-            Wait::Exited(code) => {
-                return Err(CliFailure::fail(
-                    wg_uispec::exited_message(code, &log_text),
-                    1,
-                ));
-            }
-            Wait::TimedOut => {
-                return Err(CliFailure::fail(
-                    wg_uispec::timed_out_message(base, timeout, &log_text),
-                    1,
-                ));
-            }
-        }
-    }
-}
-
-/// Launches this binary's `serve` with its output appended to `log`. On Windows the server is
-/// detached from the console; on POSIX it gets its own process group.
-fn spawn_serve(home: Option<&Path>, log: &Path) -> std::io::Result<Child> {
-    let exe = std::env::current_exe()?;
-    if let Some(dir) = log.parent() {
-        std::fs::create_dir_all(dir)?;
-    }
-    let file = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(log)?;
-    let errors = file.try_clone()?;
-    let home_text = home.map(|path| path.to_string_lossy().into_owned());
-    let mut command = Command::new(exe);
-    command
-        .args(wg_uispec::serve_args(home_text.as_deref()))
-        .stdin(Stdio::null())
-        .stdout(Stdio::from(file))
-        .stderr(Stdio::from(errors));
-    #[cfg(windows)]
-    {
-        use std::os::windows::process::CommandExt;
-        command.creation_flags(wg_uispec::WINDOWS_DETACHED);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::process::CommandExt;
-        command.process_group(0);
-    }
-    command.spawn()
 }
 
 /// Opens `url` in the default browser. Like `webbrowser.open`, a browser that cannot be started

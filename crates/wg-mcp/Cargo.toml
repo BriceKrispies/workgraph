@@ -43,3 +43,6 @@ doctest = false
 name = "wg-mcp"
 path = "src/main.rs"
 test = false
+
+[dev-dependencies]
+ureq = "3.5"

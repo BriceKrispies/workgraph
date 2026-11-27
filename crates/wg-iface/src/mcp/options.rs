@@ -45,6 +45,40 @@ impl ServeOptions {
     }
 }
 
+/// The request header that names the agent an HTTP call is attributed to, as `--agent-name` does
+/// over stdio (WG-5702). Header names are case-insensitive; this is the lowercase form.
+pub const AGENT_HEADER: &str = "x-workgraph-agent";
+
+/// The longest agent name a request header may carry.
+const AGENT_NAME_LIMIT: usize = 64;
+
+/// The name in an agent header: one to 64 characters from ASCII letters, digits, `-`, `_` and `.`,
+/// surrounding white space trimmed. Anything else is not a name.
+#[must_use]
+pub fn valid_agent_name(text: &str) -> Option<String> {
+    let name = text.trim();
+    let valid = !name.is_empty()
+        && name.len() <= AGENT_NAME_LIMIT
+        && name
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || matches!(c, '-' | '_' | '.'));
+    valid.then(|| name.to_owned())
+}
+
+/// The agent a call runs under: `agent`, renamed to the `X-Workgraph-Agent` header when the header
+/// names a valid agent, with the same permissions. A missing or invalid header leaves `agent` as
+/// the flags set it, so a call without the header behaves as it did before.
+#[must_use]
+pub fn agent_named(agent: &Agent, header: Option<&str>) -> Agent {
+    match header.and_then(valid_agent_name) {
+        Some(name) => Agent {
+            name,
+            permissions: agent.permissions.clone(),
+        },
+        None => agent.clone(),
+    }
+}
+
 /// Whether `host` is a loopback address, the only kind the HTTP transport binds.
 pub fn is_loopback(host: &str) -> bool {
     host == "localhost" || host == "::1" || host.starts_with("127.")
@@ -128,6 +162,39 @@ mod tests {
                 .as_ref()
                 .is_some_and(|o| o.permissions.contains(&Permission::RunStart))
         );
+    }
+
+    #[test]
+    fn agent_header_renames_the_agent_and_keeps_its_permissions() {
+        let flags = ServeOptions::parse(&args(&[
+            "--agent-name",
+            "mcp-client",
+            "--grant",
+            "run:start",
+        ]));
+        let Ok(flags) = flags else {
+            panic!("the flags parse");
+        };
+        let base = flags.agent();
+        let named = agent_named(&base, Some(" claude-code "));
+        assert_eq!(named.name, "claude-code");
+        assert_eq!(named.permissions, base.permissions);
+        assert_eq!(agent_named(&base, None), base);
+        assert_eq!(agent_named(&base, Some("bad name")), base);
+        assert_eq!(agent_named(&base, Some("")), base);
+    }
+
+    #[test]
+    fn agent_names_are_short_plain_tokens() {
+        assert_eq!(
+            valid_agent_name("claude-code"),
+            Some("claude-code".to_owned())
+        );
+        assert_eq!(valid_agent_name("agent_1.2"), Some("agent_1.2".to_owned()));
+        assert_eq!(valid_agent_name("a/b"), None);
+        assert_eq!(valid_agent_name("a\nb"), None);
+        assert_eq!(valid_agent_name(&"x".repeat(65)), None);
+        assert_eq!(valid_agent_name(&"x".repeat(64)).map(|s| s.len()), Some(64));
     }
 
     #[test]

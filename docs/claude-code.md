@@ -26,6 +26,32 @@ claude -p --output-format stream-json --verbose --permission-mode <mode> --sessi
 - If `claude` is missing, starting a run fails immediately with an actionable error and no
   state changes.
 
+## The daemon
+
+All Claude Code sessions share one `workgraph serve` daemon, which serves HTTP MCP at
+`http://127.0.0.1:8765/mcp/` (WG-5702). `workgraph claude install` arranges for it to be up before a session
+connects:
+
+- a SessionStart handler runs `workgraph serve --ensure --passive`: it starts the daemon only when nothing
+  answers on the configured address, is async and passive, and always exits 0;
+- a per-user logon autostart (on Windows a `workgraph-serve.cmd` in the Startup folder) runs the same command at
+  logon, so the daemon is up even before a session starts.
+
+`workgraph claude uninstall` removes the SessionStart handler and the autostart file, and leaves the daemon
+running. After an upgrade, `workgraph serve --restart` replaces the daemon (the maintainer procedure does this).
+
+The Claude Code registration is the daemon itself, over HTTP, with the bearer token and the
+`X-Workgraph-Agent: claude-code` header:
+
+```sh
+workgraph claude install --mcp-http
+```
+
+The command replaces the user-scope `workgraph` MCP server (`claude mcp remove`, then `claude mcp add --transport
+http`); see [mcp.md](mcp.md#register-with-claude-code). Without `--mcp-http` the registration is left as it is, and
+`--mcp` writes the older stdio registration, one `workgraph mcp` process per session. The two registrations
+cannot be written in one call.
+
 ## Lifecycle hooks
 
 ```sh
@@ -42,7 +68,8 @@ into `~/.claude/settings.json` (or `--scope project|local --project-dir DIR`). I
 - writes a timestamped backup before changing anything, then writes atomically,
 - adds handlers in exec form (`command` = the workgraph executable, `args = ["claude", "hook"]`)
   with `"async": true`, so hooks never block Claude Code,
-- is idempotent, and `uninstall` removes only Workgraph-owned handlers.
+- is idempotent, and `uninstall` removes only Workgraph-owned handlers (the hooks, and the daemon ensure handler of
+  [The daemon](#the-daemon)).
 
 Hooks are **passive**: the handler prints nothing and always exits 0, so it cannot block tools,
 change permissions or add context.

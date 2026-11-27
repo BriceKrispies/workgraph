@@ -10,6 +10,13 @@ Workgraph implements an MCP server with the official Python SDK (`mcp` 2.x, `MCP
 The HTTP endpoint requires `Authorization: Bearer <token>` (the token is in `config/api-token`,
 see `workgraph config path`) and validates `Host`/`Origin` against DNS rebinding.
 
+One daemon serves every client on a machine: `workgraph serve --ensure` starts it only when nothing
+answers, and `workgraph serve --restart` replaces it after an upgrade (see [claude-code.md](claude-code.md)
+and [cli.md](cli.md#the-daemon)). Over HTTP the agent identity comes from the `X-Workgraph-Agent` request
+header (WG-5702): a call with `X-Workgraph-Agent: claude-code` runs as `agent:claude-code`, exactly as the
+same call over stdio with `--agent-name claude-code` does. A missing header keeps the agent the server was
+started with; a header that is not 1 to 64 characters of letters, digits, `-`, `_` or `.` is ignored.
+
 ## Identity and permissions
 
 Every MCP call runs as an **agent** identity (`agent:<name>`, set with `--agent-name`) with the
@@ -94,6 +101,19 @@ All tools have JSON-Schema input validation and structured output. List tools ac
 | `workgraph://analytics/catalog` | metric definitions |
 
 ## Register with Claude Code
+
+Claude Code connects to the one daemon over HTTP, with the bearer token and the `X-Workgraph-Agent:
+claude-code` header:
+
+```sh
+workgraph claude install --mcp-http
+```
+
+`--mcp-http` runs `claude mcp remove workgraph -s user` and then
+`claude mcp add --transport http -s user workgraph http://127.0.0.1:8765/mcp/ --header "Authorization: Bearer <token>" --header "X-Workgraph-Agent: claude-code"`.
+It reads the token from `config/api-token`; start the daemon first with `workgraph serve --ensure`.
+
+A stdio registration (one `workgraph mcp` process per session) remains available for clients that need it:
 
 ```sh
 workgraph claude install --mcp

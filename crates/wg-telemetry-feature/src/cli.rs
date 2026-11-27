@@ -102,6 +102,11 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             let events = wg_iface::cli::args::many(m, "--event");
             let command = args::text(m, "--command");
             let mcp = wg_iface::cli::args::flag(m, "--mcp");
+            let http = if wg_iface::cli::args::flag(m, "--mcp-http") {
+                Some(http_registration(state)?)
+            } else {
+                None
+            };
             let out = claude::install(
                 &env,
                 &scope,
@@ -109,6 +114,7 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
                 &events,
                 command.as_deref(),
                 mcp,
+                http.as_ref(),
             )?;
             state.emit(
                 &json_value(&out),
@@ -130,4 +136,23 @@ fn run(state: &mut CliState, path: &[String], m: &ArgMatches) -> Result<(), CliF
             1,
         )),
     }
+}
+
+/// The endpoint and token `install --mcp-http` registers: the daemon's `/mcp/` on the configured
+/// address, with the bearer token from the API token file.
+fn http_registration(state: &mut CliState) -> Result<claude::McpHttp, CliFailure> {
+    let settings = wg_iface::http::serve::Settings::from_config(&state.app()?.config()?);
+    let token_file = state.app()?.paths.api_token_file().to_string();
+    let token = std::fs::read_to_string(&token_file).map_err(|err| {
+        CliFailure::fail(
+            format!(
+                "no API token at {token_file} ({err}); start the daemon once with `workgraph serve --ensure`"
+            ),
+            1,
+        )
+    })?;
+    Ok(claude::McpHttp {
+        url: format!("http://{}:{}/mcp/", settings.host, settings.port),
+        token: token.trim().to_owned(),
+    })
 }

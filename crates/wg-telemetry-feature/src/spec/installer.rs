@@ -109,20 +109,54 @@ pub fn is_workgraph_handler(handler: &Value) -> bool {
     }
     let command = text(object.get("command"));
     let forward = command.replace('\\', "/");
+    let exec_form = matches!(
+        object.get("args"),
+        Some(Value::Array(items))
+            if items.first().and_then(Value::as_str) == Some(HOOK_ARGS[0])
+                && items.get(1).and_then(Value::as_str) == Some(HOOK_ARGS[1])
+    ) && is_workgraph_executable(command);
+    exec_form || forward.contains("workgraph claude hook")
+}
+
+/// Whether `command` names the workgraph executable, by its file stem, in any directory.
+fn is_workgraph_executable(command: &str) -> bool {
+    let forward = command.replace('\\', "/");
     let last = forward.rsplit('/').next().unwrap_or("");
     let stem = Path::new(last)
         .file_stem()
         .and_then(|stem| stem.to_str())
         .unwrap_or("")
         .to_lowercase();
-    let exec_form = matches!(
+    !command.is_empty() && stem == "workgraph"
+}
+
+/// Whether `handler` is the SessionStart handler that starts the daemon: the exec form of the
+/// workgraph executable with `serve --ensure --passive` (WG-5702).
+#[must_use]
+pub fn is_workgraph_ensure_handler(handler: &Value) -> bool {
+    let Some(object) = handler.as_object() else {
+        return false;
+    };
+    if object.get("type").and_then(Value::as_str) != Some("command") {
+        return false;
+    }
+    let args_match = matches!(
         object.get("args"),
         Some(Value::Array(items))
-            if items.first().and_then(Value::as_str) == Some(HOOK_ARGS[0])
-                && items.get(1).and_then(Value::as_str) == Some(HOOK_ARGS[1])
-    ) && !command.is_empty()
-        && stem == "workgraph";
-    exec_form || forward.contains("workgraph claude hook")
+            if items.len() == ENSURE_ARGS.len()
+                && items
+                    .iter()
+                    .zip(ENSURE_ARGS)
+                    .all(|(item, want)| item.as_str() == Some(want))
+    );
+    args_match && is_workgraph_executable(text(object.get("command")))
+}
+
+/// Whether Workgraph owns `handler`: a hook handler or the daemon's ensure handler. Uninstall
+/// removes both.
+#[must_use]
+pub fn is_owned_handler(handler: &Value) -> bool {
+    is_workgraph_handler(handler) || is_workgraph_ensure_handler(handler)
 }
 
 /// The command of each event that has a Workgraph handler (the last one wins, as the Python dict
@@ -189,6 +223,106 @@ pub fn mcp_server_config(command: &str) -> Value {
 
 /// The `timeout` of an installed hook handler (`install(timeout=10)`).
 pub const HOOK_TIMEOUT: i64 = 10;
+
+/// The exec-form arguments of the SessionStart handler that ensures the daemon (WG-5702).
+pub const ENSURE_ARGS: [&str; 3] = ["serve", "--ensure", "--passive"];
+
+/// The timeout of the ensure handler: starting the daemon waits for it to answer.
+pub const ENSURE_TIMEOUT: i64 = 30;
+
+/// The matcher group of the daemon's ensure handler: an async, passive exec-form handler.
+#[must_use]
+pub fn ensure_group(command: &str) -> Value {
+    json!({
+        "matcher": "",
+        "hooks": [{
+            "type": "command",
+            "command": command,
+            "args": ENSURE_ARGS,
+            "timeout": ENSURE_TIMEOUT,
+            "async": true
+        }]
+    })
+}
+
+/// The `install` edit for the daemon: adds the ensure group to SessionStart unless one of its
+/// groups already has the ensure handler. Returns the edited document and whether it was added.
+pub fn install_ensure(
+    mut data: Map<String, Value>,
+    path: &str,
+    command: &str,
+) -> Result<(Map<String, Value>, bool), String> {
+    let Value::Object(hooks) = data
+        .entry("hooks")
+        .or_insert_with(|| Value::Object(Map::new()))
+    else {
+        return Err(format!(
+            "'hooks' in {path} is not an object; refusing to modify it"
+        ));
+    };
+    let Value::Array(groups) = hooks
+        .entry("SessionStart")
+        .or_insert_with(|| Value::Array(Vec::new()))
+    else {
+        return Err(format!(
+            "hooks.SessionStart in {path} is not a list; refusing to modify it"
+        ));
+    };
+    let present = groups
+        .iter()
+        .filter_map(Value::as_object)
+        .any(|group| handlers_of(group).iter().any(is_workgraph_ensure_handler));
+    if !present {
+        groups.push(ensure_group(command));
+    }
+    Ok((data, !present))
+}
+
+/// The per-user logon autostart file: a command file for the Startup folder that starts the daemon
+/// without a window (WG-5702).
+#[must_use]
+pub fn autostart_text(command: &str) -> String {
+    format!("@echo off\r\nstart \"\" /B \"{command}\" serve --ensure --passive\r\n")
+}
+
+/// The argument vector of `claude mcp remove workgraph -s {scope}`.
+#[must_use]
+pub fn mcp_remove_argv(claude: &str, scope: &str) -> Vec<String> {
+    [claude, "mcp", "remove", "workgraph", "-s", scope]
+        .iter()
+        .map(|part| (*part).to_owned())
+        .collect()
+}
+
+/// The request header that names the agent over HTTP (`wg_iface::mcp::options::AGENT_HEADER`).
+pub const HTTP_AGENT_HEADER: &str = "X-Workgraph-Agent";
+
+/// The argument vector of the HTTP registration: `claude mcp add --transport http -s {scope}
+/// workgraph {url}` with the bearer token and the agent-name header (WG-5702).
+#[must_use]
+pub fn mcp_add_http_argv(
+    claude: &str,
+    scope: &str,
+    url: &str,
+    token: &str,
+    agent: &str,
+) -> Vec<String> {
+    vec![
+        claude.to_owned(),
+        "mcp".to_owned(),
+        "add".to_owned(),
+        "--transport".to_owned(),
+        "http".to_owned(),
+        "-s".to_owned(),
+        scope.to_owned(),
+        "workgraph".to_owned(),
+        url.to_owned(),
+        "--header".to_owned(),
+        format!("Authorization: Bearer {token}"),
+        "--header".to_owned(),
+        format!("{HTTP_AGENT_HEADER}: {agent}"),
+    ]
+}
 
 /// The matcher group Workgraph adds for one event: an async, passive exec-form handler.
 #[must_use]
@@ -309,7 +443,7 @@ fn uninstall_groups(event: &str, groups: Vec<Value>, removed: &mut Vec<String>) 
         let handlers = handlers_of(members);
         let kept: Vec<Value> = handlers
             .iter()
-            .filter(|handler| !is_workgraph_handler(handler))
+            .filter(|handler| !is_owned_handler(handler))
             .cloned()
             .collect();
         if kept.len() != handlers.len() {
@@ -498,6 +632,69 @@ mod tests {
         assert_eq!(
             mcp_server_config("/x/workgraph").to_string(),
             r#"{"mcpServers":{"workgraph":{"type":"stdio","command":"/x/workgraph","args":["mcp"]}}}"#
+        );
+    }
+
+    #[test]
+    fn the_daemon_handler_is_recognised_and_owned() {
+        let exe = "C:/Users/u/.local/bin/workgraph.exe";
+        let ensure = ensure_group(exe);
+        let handler = &ensure["hooks"][0];
+        assert!(is_workgraph_ensure_handler(handler));
+        assert!(is_owned_handler(handler));
+        assert!(!is_workgraph_handler(handler));
+        let hook = hook_group(exe);
+        assert!(!is_workgraph_ensure_handler(&hook["hooks"][0]));
+    }
+
+    #[test]
+    fn install_ensure_adds_one_session_start_handler() {
+        let exe = "C:/x/workgraph.exe";
+        let (data, added) = install_ensure(Map::new(), "s.json", exe).expect("installs");
+        assert!(added);
+        let (data, again) = install_ensure(data, "s.json", exe).expect("installs");
+        assert!(!again);
+        let groups = data["hooks"]["SessionStart"].as_array().map_or(0, Vec::len);
+        assert_eq!(groups, 1);
+    }
+
+    #[test]
+    fn uninstall_removes_the_daemon_handler_with_the_hooks() {
+        let exe = "C:/x/workgraph.exe";
+        let (data, _) = install_hooks(Map::new(), "s.json", &["SessionStart".to_owned()], exe)
+            .expect("installs");
+        let (data, _) = install_ensure(data, "s.json", exe).expect("installs");
+        let (data, removed) = uninstall_hooks(data);
+        assert_eq!(removed.len(), 2);
+        assert!(!data.contains_key("hooks"));
+    }
+
+    #[test]
+    fn the_http_registration_names_the_endpoint_token_and_agent() {
+        let argv = mcp_add_http_argv(
+            "claude",
+            "user",
+            "http://127.0.0.1:8765/mcp/",
+            "t0k",
+            "claude-code",
+        );
+        assert_eq!(
+            argv[5..],
+            [
+                "-s",
+                "user",
+                "workgraph",
+                "http://127.0.0.1:8765/mcp/",
+                "--header",
+                "Authorization: Bearer t0k",
+                "--header",
+                "X-Workgraph-Agent: claude-code",
+            ]
+            .map(str::to_owned)
+        );
+        assert_eq!(
+            mcp_remove_argv("claude", "user"),
+            ["claude", "mcp", "remove", "workgraph", "-s", "user"].map(str::to_owned)
         );
     }
 }

@@ -147,7 +147,13 @@ pub fn install(
     events: &[String],
     command: Option<&str>,
     mcp: bool,
+    http: Option<&McpHttp>,
 ) -> Result<Json, WgError> {
+    if mcp && http.is_some() {
+        return Err(WgError::validation(
+            "--mcp and --mcp-http each write the Claude Code registration; choose one",
+        ));
+    }
     let root = project_root(project_dir);
     let path = installer::settings_path(scope, env.config_dir.as_deref(), &env.home, &root);
     let shown = path.display().to_string();
@@ -166,20 +172,32 @@ pub fn install(
     };
     let (data, added) =
         installer::install_hooks(data, &shown, &events, &exe).map_err(installer::config_error)?;
-    let backup = if added.is_empty() {
+    let (data, ensure_added) =
+        installer::install_ensure(data, &shown, &exe).map_err(installer::config_error)?;
+    let backup = if added.is_empty() && !ensure_added {
         None
     } else {
         write_settings(&path, &data)?
     };
     let mut out = installer::install_object(&shown, &added, backup.as_deref(), &exe);
+    out.insert("ensure".to_owned(), Json::Bool(ensure_added));
+    out.insert(
+        "autostart".to_owned(),
+        Json::String(install_autostart(&exe)?),
+    );
     if mcp {
         let registration = register_mcp(scope, &exe)?;
         out.insert("mcp".to_owned(), Json::String(registration));
     }
+    if let Some(http) = http {
+        let registration = register_mcp_http(scope, http)?;
+        out.insert("mcp_http".to_owned(), Json::String(registration));
+    }
     Ok(Json::Object(out))
 }
 
-/// `installer.uninstall(scope, project_dir=...)`: removes only the Workgraph handlers.
+/// `installer.uninstall(scope, project_dir=...)`: removes only the Workgraph handlers (the hooks
+/// and the daemon's ensure handler) and the logon autostart.
 pub fn uninstall(
     env: &ClaudeEnv,
     scope: &str,
@@ -195,12 +213,103 @@ pub fn uninstall(
     } else {
         write_settings(&path, &data)?
     };
-    Ok(Json::Object(installer::uninstall_object(
-        &shown,
-        &removed,
-        backup.as_deref(),
-    )))
+    let mut out = installer::uninstall_object(&shown, &removed, backup.as_deref());
+    out.insert("autostart".to_owned(), Json::String(remove_autostart()?));
+    Ok(Json::Object(out))
 }
+
+/// The HTTP registration: the endpoint and the bearer token the daemon answers with.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct McpHttp {
+    pub url: String,
+    pub token: String,
+}
+
+/// The per-user logon autostart file (Windows: the Startup folder). None elsewhere.
+fn autostart_path() -> Option<PathBuf> {
+    if !cfg!(windows) {
+        return None;
+    }
+    std::env::var_os("APPDATA").map(|appdata| {
+        PathBuf::from(appdata)
+            .join("Microsoft")
+            .join("Windows")
+            .join("Start Menu")
+            .join("Programs")
+            .join("Startup")
+            .join(AUTOSTART_FILE)
+    })
+}
+
+/// The Startup-folder file's name.
+const AUTOSTART_FILE: &str = "workgraph-serve.cmd";
+
+/// Writes the logon autostart that starts the daemon with `exe`. Reports where it was written, or
+/// why it was not.
+fn install_autostart(exe: &str) -> Result<String, WgError> {
+    let Some(path) = autostart_path() else {
+        return Ok("not available: no per-user Startup folder on this platform".to_owned());
+    };
+    std::fs::write(&path, installer::autostart_text(exe))
+        .map_err(|err| WgError::workgraph(format!("could not write {}: {err}", path.display())))?;
+    Ok(format!("installed {}", path.display()))
+}
+
+/// Removes the logon autostart file, when it exists.
+fn remove_autostart() -> Result<String, WgError> {
+    let Some(path) = autostart_path() else {
+        return Ok("not available: no per-user Startup folder on this platform".to_owned());
+    };
+    if !path.exists() {
+        return Ok("absent".to_owned());
+    }
+    std::fs::remove_file(&path)
+        .map_err(|err| WgError::workgraph(format!("could not remove {}: {err}", path.display())))?;
+    Ok(format!("removed {}", path.display()))
+}
+
+/// `--mcp-http`: replaces the user-scope `workgraph` registration with the HTTP endpoint of the
+/// daemon, by `claude mcp remove` then `claude mcp add --transport http` (WG-5702). Returns the
+/// output of the add.
+fn register_mcp_http(scope: &str, http: &McpHttp) -> Result<String, WgError> {
+    let Some(claude) = find_on_path("claude") else {
+        return Err(WgError::workgraph(
+            "claude CLI not found on the search path; register the HTTP endpoint by hand",
+        ));
+    };
+    let claude = claude.to_string_lossy().into_owned();
+    // The old registration may be absent; a failed removal is not an error of the replacement.
+    let mut removal = ProcessSpec::new(installer::mcp_remove_argv(&claude, scope));
+    removal.timeout_ms = Some(MCP_ADD_TIMEOUT_MS);
+    let _ = run_capture(&removal, CaptureLimits::default(), None);
+    let argv = installer::mcp_add_http_argv(&claude, scope, &http.url, &http.token, HTTP_AGENT);
+    let mut spec = ProcessSpec::new(argv);
+    spec.timeout_ms = Some(MCP_ADD_TIMEOUT_MS);
+    let result = run_capture(&spec, CaptureLimits::default(), None)
+        .map_err(|err| WgError::workgraph(err.to_string()))?;
+    if result.timed_out {
+        return Err(WgError::workgraph(format!(
+            "claude mcp add timed out after {} seconds",
+            MCP_ADD_TIMEOUT_MS / 1000
+        )));
+    }
+    if result.exit_code != Some(0) {
+        return Err(WgError::workgraph(format!(
+            "claude mcp add failed: {}",
+            installer::mcp_output(
+                &String::from_utf8_lossy(&result.stdout),
+                &String::from_utf8_lossy(&result.stderr),
+            )
+        )));
+    }
+    Ok(installer::mcp_output(
+        &String::from_utf8_lossy(&result.stdout),
+        &String::from_utf8_lossy(&result.stderr),
+    ))
+}
+
+/// The agent name Claude Code's registration is attributed to (`X-Workgraph-Agent`).
+pub const HTTP_AGENT: &str = "claude-code";
 
 /// `_write(path, data)`: a timestamped copy of an existing file, then the new text written
 /// atomically. Returns the backup's path when one was made.

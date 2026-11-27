@@ -57,11 +57,11 @@ wg-verify-feature = { path = "../wg-verify-feature" }
 wg-demo-feature = { path = "../wg-demo-feature" }
 wg-server = { path = "../wg-server" }
 ureq = "3.5"
+serde_json = { version = "1", features = ["preserve_order"] }
 wg-net = { path = "../wg-net" }
 wg-uispec = { path = "../wg-uispec" }
 wg-types = { path = "../wg-types" }
 
 [dev-dependencies]
-serde_json = { version = "1", features = ["preserve_order"] }
 wg-model = { path = "../wg-model" }
 wg-jobs = { path = "../wg-jobs" }

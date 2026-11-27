@@ -1,7 +1,7 @@
 //! The clap shape and argument reading of `workgraph serve` and `workgraph mcp`
 //! (`cli/commands/servers.py`): the commands are the snapshot's own.
 
-use clap::{ArgMatches, Command};
+use clap::{Arg, ArgAction, ArgMatches, Command};
 
 use wg_iface::cli::args::{option_flag, option_list, option_text};
 use wg_iface::cli::failure::python_number_text;
@@ -14,10 +14,32 @@ const SERVE: Usage = Usage {
     command: "workgraph serve",
 };
 
-/// The clap command of `serve`.
+/// The clap command of `serve`: the snapshot's options plus the daemon's (WG-5702). `--ensure`
+/// starts a daemon only when none answers; `--restart` replaces the running one; `--passive` makes
+/// `--ensure` silent and always successful, as the Claude Code hooks need.
 #[must_use]
 pub fn serve_command() -> Command {
     snapshot_command("serve")
+        .arg(daemon_flag(
+            "--ensure",
+            "Start the daemon only when none answers, then return.",
+        ))
+        .arg(daemon_flag(
+            "--restart",
+            "Stop the running daemon and start one from this binary.",
+        ))
+        .arg(daemon_flag(
+            "--passive",
+            "With --ensure: print nothing and always exit 0.",
+        ))
+}
+
+/// A boolean `serve` flag under its own name, as the snapshot's flags are.
+fn daemon_flag(name: &'static str, help: &'static str) -> Arg {
+    Arg::new(name)
+        .long(name.trim_start_matches("--"))
+        .action(ArgAction::SetTrue)
+        .help(help)
 }
 
 /// The clap command of `mcp`.

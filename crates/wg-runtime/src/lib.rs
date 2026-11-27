@@ -31,7 +31,7 @@ mod stamp;
 pub use scope::index_written;
 mod worker;
 
-pub use app::{App, environment, resolve_paths};
+pub use app::{App, config_at, environment, resolve_paths};
 pub use bus::Bus;
 pub use cli_state::CliState;
 pub use cycle::{Flow, Outcome, Runtime, Step};

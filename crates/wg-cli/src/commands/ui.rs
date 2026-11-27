@@ -59,7 +59,7 @@ fn open(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
                 let log =
                     PathBuf::from(state.app()?.paths.log_dir().as_str()).join(wg_uispec::SERVE_LOG);
                 let home = state.home.as_deref();
-                start_and_wait(home, &log, &probe, &base, request.timeout)?;
+                start_and_wait(home, None, &log, &probe, &base, request.timeout)?;
                 true
             }
         };

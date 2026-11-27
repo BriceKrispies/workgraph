@@ -16,6 +16,7 @@ use wg_iface::cli::CliFailure;
 use wg_iface::cli::args::{option_flag, option_text};
 use wg_iface::http::serve::Settings;
 use wg_json::{PyStr, Value, dict};
+use wg_runtime::{config_at, resolve_paths};
 use wg_uispec::Wait;
 
 use crate::CliState;
@@ -49,13 +50,14 @@ pub fn answering(probe: &wg_uispec::Probe) -> bool {
 /// timeout passes. Returns the started server's process id.
 pub fn start_and_wait(
     home: Option<&Path>,
+    listen: Option<(&str, u16)>,
     log: &Path,
     probe: &wg_uispec::Probe,
     base: &str,
     timeout: f64,
 ) -> Result<u32, CliFailure> {
     let log_text = log.display().to_string();
-    let mut child = spawn_serve(home, log)
+    let mut child = spawn_serve(home, listen, log)
         .map_err(|err| CliFailure::fail(format!("cannot start `workgraph serve`: {err}"), 1))?;
     let pid = child.id();
     let started_at = Instant::now();
@@ -87,7 +89,11 @@ pub fn start_and_wait(
 
 /// Launches this binary's `serve` with its output appended to `log`. On Windows the server is
 /// detached from the console; on POSIX it gets its own process group.
-pub fn spawn_serve(home: Option<&Path>, log: &Path) -> std::io::Result<Child> {
+pub fn spawn_serve(
+    home: Option<&Path>,
+    listen: Option<(&str, u16)>,
+    log: &Path,
+) -> std::io::Result<Child> {
     let exe = std::env::current_exe()?;
     if let Some(dir) = log.parent() {
         std::fs::create_dir_all(dir)?;
@@ -98,15 +104,21 @@ pub fn spawn_serve(home: Option<&Path>, log: &Path) -> std::io::Result<Child> {
         .open(log)?;
     let errors = file.try_clone()?;
     let home_text = home.map(|path| path.to_string_lossy().into_owned());
+    let mut args = wg_uispec::serve_args(home_text.as_deref());
+    if let Some((host, port)) = listen {
+        args.extend(["--host".to_owned(), host.to_owned()]);
+        args.extend(["--port".to_owned(), port.to_string()]);
+    }
     let mut command = Command::new(exe);
     command
-        .args(wg_uispec::serve_args(home_text.as_deref()))
+        .args(args)
         .stdin(Stdio::null())
         .stdout(Stdio::from(file))
         .stderr(Stdio::from(errors));
     #[cfg(windows)]
     {
         use std::os::windows::process::CommandExt;
+        stop_std_handles_inheritance();
         command.creation_flags(wg_uispec::WINDOWS_DETACHED);
     }
     #[cfg(unix)]
@@ -117,15 +129,38 @@ pub fn spawn_serve(home: Option<&Path>, log: &Path) -> std::io::Result<Child> {
     command.spawn()
 }
 
-/// The base URL of the daemon the `serve` options name: `--host` and `--port`, else the
-/// configuration.
-fn daemon_base(state: &mut CliState, m: &ArgMatches) -> Result<String, CliFailure> {
-    let settings = Settings::from_config(&state.app()?.config()?);
+/// Stops this process's standard handles from being inherited by children (Windows). The daemon
+/// is started with its own stdio, but Windows also hands it every inheritable handle of this
+/// process: a `serve --ensure` whose output is a pipe would leave the daemon holding that pipe, so
+/// a caller waiting for the end of the output would wait for the daemon too (WG-5702).
+#[cfg(windows)]
+fn stop_std_handles_inheritance() {
+    use std::ffi::c_void;
+    /// `STD_INPUT_HANDLE`, `STD_OUTPUT_HANDLE` and `STD_ERROR_HANDLE` are `(DWORD)-10`, `-11`, `-12`.
+    const STD_HANDLES: [u32; 3] = [u32::MAX - 9, u32::MAX - 10, u32::MAX - 11];
+    const HANDLE_FLAG_INHERIT: u32 = 0x0000_0001;
+    unsafe extern "system" {
+        fn GetStdHandle(id: u32) -> *mut c_void;
+        fn SetHandleInformation(object: *mut c_void, mask: u32, flags: u32) -> i32;
+    }
+    for id in STD_HANDLES {
+        // SAFETY: `GetStdHandle` only reads its argument. `SetHandleInformation` changes only the
+        // inherit flag of the handle it is given; a missing or invalid handle makes it fail, which
+        // is ignored.
+        unsafe {
+            SetHandleInformation(GetStdHandle(id), HANDLE_FLAG_INHERIT, 0);
+        }
+    }
+}
+
+/// The address the `serve` options name: `--host` and `--port`, else the configuration.
+fn daemon_listen(state: &CliState, m: &ArgMatches) -> Result<(String, u16), CliFailure> {
+    let settings = Settings::from_config(&config_at(&resolve_paths(state.home.as_deref())?)?);
     let host = option_text(m, "--host").unwrap_or_else(|| settings.host.clone());
     let port = port_option(m)?
         .filter(|port| *port != 0)
         .unwrap_or(settings.port);
-    Ok(base_url(None, &host, port))
+    Ok((host, port))
 }
 
 fn probe_for(base: &str) -> Result<wg_uispec::Probe, CliFailure> {
@@ -133,12 +168,14 @@ fn probe_for(base: &str) -> Result<wg_uispec::Probe, CliFailure> {
         .map_err(|message| CliFailure::fail(message, 1))
 }
 
-fn log_path(state: &mut CliState) -> Result<PathBuf, CliFailure> {
-    Ok(PathBuf::from(state.app()?.paths.log_dir().as_str()).join(wg_uispec::SERVE_LOG))
+fn log_path(state: &CliState) -> Result<PathBuf, CliFailure> {
+    let paths = resolve_paths(state.home.as_deref())?;
+    Ok(PathBuf::from(paths.log_dir().as_str()).join(wg_uispec::SERVE_LOG))
 }
 
-fn stop_path(state: &mut CliState) -> Result<PathBuf, CliFailure> {
-    Ok(PathBuf::from(state.app()?.paths.data_dir().as_str()).join(STOP_FILE))
+fn stop_path(state: &CliState) -> Result<PathBuf, CliFailure> {
+    let paths = resolve_paths(state.home.as_deref())?;
+    Ok(PathBuf::from(paths.data_dir().as_str()).join(STOP_FILE))
 }
 
 /// What a daemon command reports: the status word, the base URL, and the process id when this
@@ -187,7 +224,8 @@ pub fn ensure(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
 }
 
 fn ensure_outcome(state: &mut CliState, m: &ArgMatches) -> Result<Outcome, CliFailure> {
-    let base = daemon_base(state, m)?;
+    let (host, port) = daemon_listen(state, m)?;
+    let base = base_url(None, &host, port);
     let probe = probe_for(&base)?;
     if answering(&probe) {
         return Ok(Outcome {
@@ -199,7 +237,14 @@ fn ensure_outcome(state: &mut CliState, m: &ArgMatches) -> Result<Outcome, CliFa
     }
     let log = log_path(state)?;
     let home = state.home.clone();
-    match start_and_wait(home.as_deref(), &log, &probe, &base, START_TIMEOUT) {
+    match start_and_wait(
+        home.as_deref(),
+        Some((&host, port)),
+        &log,
+        &probe,
+        &base,
+        START_TIMEOUT,
+    ) {
         Ok(pid) => Ok(Outcome {
             status: "started",
             base,
@@ -239,7 +284,8 @@ fn answering_within(probe: &wg_uispec::Probe, seconds: f64) -> bool {
 /// `serve --restart`: stops the running daemon through its stop file, then starts one from this
 /// binary. Reports the new process id and the version the health endpoint answers.
 pub fn restart(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
-    let base = daemon_base(state, m)?;
+    let (host, port) = daemon_listen(state, m)?;
+    let base = base_url(None, &host, port);
     let probe = probe_for(&base)?;
     let stop = stop_path(state)?;
     if answering(&probe) {
@@ -262,7 +308,14 @@ pub fn restart(state: &mut CliState, m: &ArgMatches) -> Result<(), CliFailure> {
     let _ = std::fs::remove_file(&stop);
     let log = log_path(state)?;
     let home = state.home.clone();
-    let pid = start_and_wait(home.as_deref(), &log, &probe, &base, START_TIMEOUT)?;
+    let pid = start_and_wait(
+        home.as_deref(),
+        Some((&host, port)),
+        &log,
+        &probe,
+        &base,
+        START_TIMEOUT,
+    )?;
     let outcome = Outcome {
         status: "restarted",
         base: base.clone(),

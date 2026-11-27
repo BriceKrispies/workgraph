@@ -74,6 +74,20 @@ pub fn resolve_paths(home: Option<&Path>) -> Result<AppPaths, WgError> {
 }
 
 /// Reads a text file; a missing file is `None`.
+/// `Workgraph.config` read from the paths alone: `config.toml`, validated, with defaults filled in.
+/// It does not open the database, so the daemon commands can read it while another process holds
+/// the database (WG-5702).
+pub fn config_at(paths: &AppPaths) -> Result<Map<String, Value>, WgError> {
+    let path = PathBuf::from(paths.config_file().as_str());
+    let files = ConfigFiles {
+        global: read_optional(&path)?,
+        ..ConfigFiles::default()
+    };
+    files
+        .load_global()
+        .map_err(|err| config_failure(&path.display().to_string(), err))
+}
+
 fn read_optional(path: &Path) -> Result<Option<String>, WgError> {
     match std::fs::read_to_string(path) {
         Ok(text) => Ok(Some(text)),
@@ -124,14 +138,7 @@ impl App {
 
     /// `Workgraph.config`: `config.toml`, migrated and validated, with defaults filled in.
     pub fn config(&self) -> Result<Map<String, Value>, WgError> {
-        let path = PathBuf::from(self.paths.config_file().as_str());
-        let files = ConfigFiles {
-            global: read_optional(&path)?,
-            ..ConfigFiles::default()
-        };
-        files
-            .load_global()
-            .map_err(|err| config_failure(&path.display().to_string(), err))
+        config_at(&self.paths)
     }
 
     /// `Workgraph.effective_config(slug)`: the global configuration with the workspace's

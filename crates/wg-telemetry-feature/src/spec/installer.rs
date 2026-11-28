@@ -230,7 +230,9 @@ pub const ENSURE_ARGS: [&str; 3] = ["serve", "--ensure", "--passive"];
 /// The timeout of the ensure handler: starting the daemon waits for it to answer.
 pub const ENSURE_TIMEOUT: i64 = 30;
 
-/// The matcher group of the daemon's ensure handler: an async, passive exec-form handler.
+/// The matcher group of the daemon's ensure handler: an exec-form, passive handler. It is not async,
+/// so Claude Code waits for the daemon to answer (up to `ENSURE_TIMEOUT`) before the session goes on.
+/// An async one could still be starting the daemon when the MCP connect runs and fail the connect.
 #[must_use]
 pub fn ensure_group(command: &str) -> Value {
     json!({
@@ -240,13 +242,21 @@ pub fn ensure_group(command: &str) -> Value {
             "command": command,
             "args": ENSURE_ARGS,
             "timeout": ENSURE_TIMEOUT,
-            "async": true
+            "async": false
         }]
     })
 }
 
-/// The `install` edit for the daemon: adds the ensure group to SessionStart unless one of its
-/// groups already has the ensure handler. Returns the edited document and whether it was added.
+/// Whether a SessionStart group holds the daemon's ensure handler.
+fn group_owns_ensure(group: &Value) -> bool {
+    group
+        .as_object()
+        .is_some_and(|group| handlers_of(group).iter().any(is_workgraph_ensure_handler))
+}
+
+/// The `install` edit for the daemon: makes SessionStart hold exactly one current ensure group,
+/// replacing any older one (an earlier install wrote it async). Returns the edited document and
+/// whether the groups changed.
 pub fn install_ensure(
     mut data: Map<String, Value>,
     path: &str,
@@ -268,21 +278,20 @@ pub fn install_ensure(
             "hooks.SessionStart in {path} is not a list; refusing to modify it"
         ));
     };
-    let present = groups
-        .iter()
-        .filter_map(Value::as_object)
-        .any(|group| handlers_of(group).iter().any(is_workgraph_ensure_handler));
-    if !present {
-        groups.push(ensure_group(command));
-    }
-    Ok((data, !present))
+    let before = groups.clone();
+    groups.retain(|group| !group_owns_ensure(group));
+    groups.push(ensure_group(command));
+    let changed = *groups != before;
+    Ok((data, changed))
 }
 
 /// The per-user logon autostart file: a command file for the Startup folder that starts the daemon
-/// without a window (WG-5702).
+/// (WG-5702). `start /MIN` gives the ensure process its own console. With `/B` it shared this
+/// command file's console, which closes as soon as the file ends, and that could end the ensure
+/// process before the daemon answered. The daemon itself is detached and survives either way.
 #[must_use]
 pub fn autostart_text(command: &str) -> String {
-    format!("@echo off\r\nstart \"\" /B \"{command}\" serve --ensure --passive\r\n")
+    format!("@echo off\r\nstart \"\" /MIN \"{command}\" serve --ensure --passive\r\n")
 }
 
 /// The argument vector of `claude mcp remove workgraph -s {scope}`.
@@ -656,6 +665,29 @@ mod tests {
         assert!(!again);
         let groups = data["hooks"]["SessionStart"].as_array().map_or(0, Vec::len);
         assert_eq!(groups, 1);
+    }
+
+    #[test]
+    fn install_ensure_replaces_an_older_async_handler() {
+        let exe = "C:/x/workgraph.exe";
+        let mut old = ensure_group(exe);
+        old["hooks"][0]["async"] = json!(true);
+        let mut data = Map::new();
+        data.insert("hooks".to_owned(), json!({"SessionStart": [old]}));
+        let (data, changed) = install_ensure(data, "s.json", exe).expect("installs");
+        assert!(changed, "the async group is replaced");
+        let groups = data["hooks"]["SessionStart"].as_array().expect("a list");
+        assert_eq!(groups.len(), 1);
+        assert_eq!(groups[0]["hooks"][0]["async"], json!(false));
+    }
+
+    #[test]
+    fn the_autostart_file_gives_the_ensure_its_own_console() {
+        let text = autostart_text("C:\\bin\\workgraph.exe");
+        assert!(
+            text.contains("start \"\" /MIN \"C:\\bin\\workgraph.exe\" serve --ensure --passive")
+        );
+        assert!(!text.contains("/B"));
     }
 
     #[test]

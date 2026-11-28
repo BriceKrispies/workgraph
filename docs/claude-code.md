@@ -33,9 +33,14 @@ All Claude Code sessions share one `workgraph serve` daemon, which serves HTTP M
 connects:
 
 - a SessionStart handler runs `workgraph serve --ensure --passive`: it starts the daemon only when nothing
-  answers on the configured address, is async and passive, and always exits 0;
+  answers on the configured address, is synchronous (Claude Code waits for it, up to 30 seconds, before the
+  session goes on) and passive, and always exits 0;
 - a per-user logon autostart (on Windows a `workgraph-serve.cmd` in the Startup folder) runs the same command at
-  logon, so the daemon is up even before a session starts.
+  logon, so the daemon is up even before a session starts. The file starts the command with `start /MIN`, so
+  the ensure process keeps its own console and finishes after the file ends.
+
+If no daemon is running and a session's MCP connect still fails, run `workgraph serve --ensure` once (or
+`workgraph serve --restart` to replace a stale one), then reconnect the server with `/mcp`.
 
 `workgraph claude uninstall` removes the SessionStart handler and the autostart file, and leaves the daemon
 running. After an upgrade, `workgraph serve --restart` replaces the daemon (the maintainer procedure does this).

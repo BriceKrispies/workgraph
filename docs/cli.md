@@ -243,7 +243,7 @@ workgraph serve --ensure --passive     # the form the SessionStart hook runs: si
 
 `--ensure` probes `/api/v1/health` on the configured host and port. When nothing answers it starts
 `workgraph serve` detached, with the same start `ui open` uses, and waits up to 20 seconds for it to answer; it
-prints the status (`running` or `started`), the base URL and the process id of a server it started. Two
+prints the status (`running` or `started`), the base URL, and the process id and `version` (as the health endpoint reports them) of a server it started. Two
 invocations that race leave one server: each takes an exclusive lock on `serve.ensure.lock` in the data
 directory around its probe and start, so the second waits, then finds the first one answering.
 

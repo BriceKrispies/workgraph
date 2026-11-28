@@ -57,6 +57,7 @@ struct Run {
     answer: String,
     status: Option<String>,
     pid: Option<u64>,
+    version: Option<String>,
 }
 
 /// Runs `workgraph --home HOME --json serve --ensure --port PORT`, with its output in `out`.
@@ -82,6 +83,9 @@ fn ensure(exe: &Path, home: &Path, port: u16, out: &Path) -> Run {
             .as_ref()
             .and_then(|v| v["status"].as_str().map(str::to_owned)),
         pid: value.as_ref().and_then(|v| v["pid"].as_u64()),
+        version: value
+            .as_ref()
+            .and_then(|v| v["version"].as_str().map(str::to_owned)),
     }
 }
 
@@ -166,6 +170,16 @@ fn racing_ensures_leave_one_daemon_and_a_later_one_starts_nothing() {
     );
     assert_eq!(running, 1, "the other racer found it running: {describe:?}");
     assert!(answered, "the started server answers its health probe");
+    let started_version = runs
+        .iter()
+        .find(|run| run.status.as_deref() == Some("started"))
+        .and_then(|run| run.version.clone());
+    assert!(
+        started_version
+            .as_deref()
+            .is_some_and(|v| !v.is_empty() && v != "unknown"),
+        "the started daemon reports its real version: {describe:?}"
+    );
     assert!(later.success, "a later invocation exits 0");
     assert_eq!(
         later.status.as_deref(),

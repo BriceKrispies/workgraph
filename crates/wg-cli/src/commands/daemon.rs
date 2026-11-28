@@ -268,9 +268,9 @@ fn ensure_outcome(state: &mut CliState, m: &ArgMatches) -> Result<Outcome, CliFa
     ) {
         Ok(pid) => Ok(Outcome {
             status: "started",
+            version: health_version(&base),
             base,
             pid: Some(pid),
-            version: None,
         }),
         // Another invocation started the server while this one did: the port is answered by it.
         Err(err) => {
